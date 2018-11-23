@@ -151,7 +151,7 @@ class TestCase:
 	def getBeaconLocUrl(self, record):
 		url_str = "https://api.iitrtclab.com/beacons/"
 		url_str += BuildingCodeToStr[record["building_id"]] + "/"
-		url_str += 	"{:0>2d}".format(record["floor"])
+		url_str += 	str(record["floor"])
 		return(url_str)
 	
 	"""
