@@ -10,7 +10,7 @@ table schemas:
 	test data table: [testid][beacon_major][beacon_minor][building_id][floor][x][y][rssi][interval][id][timestamp]
 	beacon table:	 [beacon_id][major][minor][building_id][floor][x][y][loc_id][temperature][humidity][updatetimestamp]
 	
-csv schema: [testid][beacon_major][beacon_minor][b_building][b_floor][b_x][b_y][rssi][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
+csv schema: [testid][beacon_major][beacon_minor][b_building][b_floor][b_x][b_y][rssi][duration][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
 """
 
 import requests
@@ -151,7 +151,7 @@ class TestCase:
 	def getBeaconLocUrl(self, record):
 		url_str = "https://api.iitrtclab.com/beacons/"
 		url_str += BuildingCodeToStr[record["building_id"]] + "/"
-		url_str += 	str(record["floor"])
+		url_str += str(record["floor"])
 		return(url_str)
 	
 	"""
@@ -366,7 +366,7 @@ class TestCases:
 	def toCsv(self, output="testresults.csv"):
 		try:
 			file = open(output, "w")
-			string = "testid,beacon_major,beacon_minor,b_building,b_floor,b_x,b_y,rssi,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
+			string = "testid,beacon_major,beacon_minor,b_building,b_floor,b_x,b_y,rssi,duration,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
 			for test_case in self.test_cases:
 				for beacon in test_case.beacons:
 					for rssi in beacon.rssis:
@@ -378,6 +378,7 @@ class TestCases:
 						string += str(beacon.x) + ","
 						string += str(beacon.y) + ","
 						string += str(rssi) + ","
+						string += str(test_case.scan_period) + ","
 						string += "\"" + str(test_case.building) + "\"" + ","
 						string += str(test_case.floor_true) + ","
 						string += str(test_case.x_true) + ","

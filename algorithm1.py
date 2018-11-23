@@ -1,9 +1,7 @@
-
 """
 In this file, we test the ability of algorithm
 1 to approximate the location of a user based
 on bluetooth signals. This is how we do it:
-
 1. Acquire all test cases from the database
 2. Run location algorithm on each test case
 3. Store a csv of the results of the algorithm
@@ -91,4 +89,3 @@ def find_floor_simple(floor, building_id):
 
 if __name__ == "__main__":
 	main()
-	
