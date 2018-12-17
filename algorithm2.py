@@ -16,17 +16,17 @@ import testdata as td
 from collections import Counter
 
 
-proximity_vals = [(-70, 15), (-60, 7), (-50, 3), (0, 2)]
+proximity_vals = [(-70, 9), (-60, 5), (-50, 2), (0, 1)]
 
 def main():
 
 	#Download all of the test cases
 	cases = td.TestCases()
-	cases.loadCsv1Folder("old_data")
+	cases.downloadRecords()
 	
 	#Set the test case analysis output
-	cases.setCsvUrl("testresults1_3_beacons.csv")
-	
+	cases.setCsvUrl("testresults2_3_beacons.csv")
+
 	for case in cases:
 		#Acquire the positions and signal strengths of the beacons
 		(buildings, floors, xs, ys, rssis) = case.getNearestBeaconsAvgMwToDbm(3)
@@ -34,7 +34,7 @@ def main():
 			print("No beacons were detected. Continuing")
 			continue
 		
-		#We have 2 parameters (x0, y0), and thus need at least 2 data points (beacons)
+		#We have 2 parameters (x0, y0), and thus need at least 2 data points
 		if(len(buildings) < 2):
 			buildings.append(buildings[0])
 			floors.append(floors[0])
@@ -63,7 +63,7 @@ def main():
 		case.setTestResults(x0, y0, flr)
 		
 	#Store a record of the tests
-	cases.toCsv()
+	cases.toCsv("testResults_Old.csv")
 
 def getProximity(rssis):
 	prox = []
@@ -75,9 +75,10 @@ def getProximity(rssis):
 	return np.array(prox)
 
 def model(params, x, y, prox):
+
     x0 = params['x0']
     y0 = params['y0']
-    t = (x - x0)**2 + (y - y0)**2
+    t = np.sqrt((x - x0)**2 + (y - y0)**2)
     t = (prox - t)/prox
 	
     return t

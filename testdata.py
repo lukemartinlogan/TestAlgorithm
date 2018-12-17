@@ -3,21 +3,26 @@
 This file acquires test cases from the database and
 puts them into a meaningful format. 
 
-NOTE: this file assumes that the beacon positions 
-are NOT stored in the test table.
-
 table schemas:
-	test data table: [testid][beacon_major][beacon_minor][building_id][floor][x][y][rssi][interval][id][timestamp]
-	beacon table:	 [beacon_id][major][minor][building_id][floor][x][y][loc_id][temperature][humidity][updatetimestamp]
-	
-csv schema: [testid][beacon_major][beacon_minor][b_building][b_floor][b_x][b_y][rssi][duration][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
+	test data table 1: 	[testid][beacon_major][beacon_minor][building_id][floor][x][y][rssi][interval][id][timestamp]
+	test data table 2:	[testid][beacon_major][beacon_minor][building_id][t_floor][t_x][t_y][bt_floor][bt_x][bt_y][rssi][interval][id][timestamp]
+	beacon table:	 	[beacon_id][major][minor][building_id][floor][x][y][loc_id][temperature][humidity][updatetimestamp]
+
+csv1 schema: [major][minor][rssi][testid][t_floor][t_x][t_y][bt_floor][bt_x][bt_Y][deployid][watt][proximity]
+output csv schema: [testid][beacon_major][beacon_minor][b_building][b_floor][b_x][b_y][rssi][duration][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
+
+NOTE: for test data table 1, beacon positions are not stored with the record itself. So floor, x, and y
+represent the testing device's position, not the bluetooth beacon position.
+
+NOTE: test data table 2 has not been created when this file was created. I'm assuming that
+the schema for this table will be exactly as written above.
 """
 
 import requests
 import json
 import sys, os
 import numpy as np
-
+import csv
 
 """
 This table converts building
@@ -33,10 +38,12 @@ BuildingCodeToStr = {
 }
 
 """
+--------------------------------------------------
 This object will represent an IBeacon throughout
 the duration of a test case. It will hold all of
 the rssi values this beacon transmitted during a
 test case along with multiple different averages.
+--------------------------------------------------
 """
 
 class IBeacon:
@@ -54,8 +61,13 @@ class IBeacon:
 		self.dbm_avg = None
 		self.mw_avg = None
 		self.mw_to_dbm_avg = None
-		
-	def setBeacon(self, building, floor, x, y):
+	
+	"""
+	This function initializes a beacon whose
+	rssis will not be considered.
+	"""
+	
+	def initBeacon(self, building, floor, x, y):
 		self.building = BuildingCodeToStr[building]
 		self.floor = floor
 		self.x = x;
@@ -63,13 +75,13 @@ class IBeacon:
 	
 	"""
 	This function will initialize a beacon from
-	a single database record. It will be called
+	a record from test table 1. It will be called
 	immediately after a call to IBeacon(). This 
 	function can only be called if the beacon
 	position was found in the DB.
 	"""
 	
-	def setBeaconFromRecord(self, record, beacon_positions):
+	def initBeaconFromRecord1(self, record, beacon_positions):
 		self.major = str(record["beacon_major"])
 		self.minor = str(record["beacon_minor"])
 		self.key = self.major + self.minor
@@ -83,7 +95,27 @@ class IBeacon:
 		self.dbm_avg = 0
 		self.mw_avg = 0
 		self.mw_to_dbm_avg = 0
-		self.addRssi(record)
+		
+	"""
+	This function will initialize a beacon from
+	a record from test table 2. It will be called
+	immediately after a call to IBeacon().
+	"""
+	
+	def initBeaconFromRecord2(self, record):
+		self.major = str(record["beacon_major"])
+		self.minor = str(record["beacon_minor"])
+		self.key = self.major + self.minor
+		self.building = BuildingCodeToStr[record["building_id"]]
+		self.floor = record["bt_floor"]
+		self.x = record["bt_x"]
+		self.y = record["bt_y"]
+		self.rssis = []
+		self.dbm_sum = 0
+		self.mw_sum = 0
+		self.dbm_avg = 0
+		self.mw_avg = 0
+		self.mw_to_dbm_avg = 0
 	
 	"""
 	This function will add an rssi to the beacon.
@@ -112,16 +144,28 @@ class IBeacon:
 
 
 """
+---------------------------------------------
 This object will represent a single test case.
 A test case is comprised of a user's testing
 position (building, floor, x, y), the amount
 of time the bluetooth scan was conducted,
 and the list of unique beacons.
+---------------------------------------------
 """
 
 class TestCase:
 
-	def __init__(self, record, beacon_positions):
+	def __init__(self, record, beacon_positions=None):
+		if(beacon_positions):
+			self.initTestCase1(record, beacon_positions)
+		else:
+			self.initTestCase2(record)
+	
+	"""
+	Initialize test case from record with same schema
+	as test data table 1.
+	"""
+	def initTestCase1(self, record, beacon_positions):
 		self.beacon_positions = beacon_positions
 		self.checked_beacon = {}
 		self.checked_url = {}
@@ -140,7 +184,29 @@ class TestCase:
 		self.error = 0.0
 		self.floor_error = 0
 		
-		self.addRecord(record, beacon_positions);
+	"""
+	Initialize test case from record with same schema
+	as test data table 2
+	"""
+	
+	def initTestCase2(self, record):
+		self.checked_beacon = {}
+		self.checked_url = {}
+		self.building = BuildingCodeToStr[record["building_id"]];
+		self.floor_true = int(record["t_floor"]);
+		self.x_true = float(record["t_x"]);
+		self.y_true = float(record["t_y"]);
+		self.scan_period = int(record["interval"]);
+		self.test_id = record["testid"]
+		self.beacons = []
+		self.iteration = 0
+		
+		self.floor_est = 0
+		self.x_est = 0.0
+		self.y_est = 0.0
+		self.error = 0.0
+		self.floor_error = 0
+		
 	
 	"""
 	This function computes the url of the beacon
@@ -155,20 +221,20 @@ class TestCase:
 		return(url_str)
 	
 	"""
-	This function will add a record to the test case.
-	It will extract the beacon information from the
-	record, and create a new beacon if it didn't
+	This function will add a record from test data table 1
+	to the test case. It will extract the beacon information 
+	from the record, and create a new beacon if it didn't
 	already exist. The beacon position will be downloaded
 	from BOSSA. If the beacon did exist, we will just
 	add the rssi to the list of rssis in the beacon.
 	"""
 	
-	def addRecord(self, record, beacon_positions):
+	def addRecord1(self, record):
 		key = str(record["beacon_major"]) + str(record["beacon_minor"])
 		
 		#If the key is not in the beacon position list,
 		#we will have to acquire it from the DB.
-		if(key not in beacon_positions):
+		if(key not in self.beacon_positions):
 		
 			#Make sure it's worth downloading the beacon data
 			url_str = self.getBeaconLocUrl(record)
@@ -184,24 +250,44 @@ class TestCase:
 			json_records = requests.get(url_str, params=payload)  
 			pos_records = json.loads(json_records.content.decode('utf-8'))
 			
-			#Iterate over all beacon from a floor and add to beacon positions
+			#Iterate over all beacons from the floor and add to beacon positions
 			for pos in pos_records:
 				beacon = IBeacon()
-				beacon.setBeacon(pos["building_id"], pos["floor"], pos["x"], pos["y"])
-				beacon_positions[str(pos["major"])+str(pos["minor"])] = beacon
+				beacon.initBeacon(pos["building_id"], pos["floor"], pos["x"], pos["y"])
+				self.beacon_positions[str(pos["major"])+str(pos["minor"])] = beacon
 		
 		#Add a beacon to the list of unique beacons OR
 		#add an rssi to an existing beacon
-		if(key in beacon_positions):
+		if(key in self.beacon_positions):
 			if(key not in self.checked_beacon):
 				beacon = IBeacon()
-				beacon.setBeaconFromRecord(record, beacon_positions)
+				beacon.initBeaconFromRecord1(record, self.beacon_positions)
 				self.beacons.append(beacon)
 				self.checked_beacon[key] = beacon
-			else:
-				self.checked_beacon[key].addRssi(record)
+			self.checked_beacon[key].addRssi(record)
 
+	
+	"""
+	This function will add a record from test data table 2
+	to the test case. It will extract the beacon information
+	from the record, and create a new beacon if it didn't
+	already exist. The beacon position is included with
+	the record.
+	"""
+	
+	def addRecord2(self, record):
+		key = str(record["beacon_major"]) + str(record["beacon_minor"])
 				
+		#Add a beacon to the list of unique beacons OR
+		#add an rssi to an existing beacon
+		if(key not in self.checked_beacon):
+			beacon = IBeacon()
+			beacon.initBeaconFromRecord2(record)
+			self.beacons.append(beacon)
+			self.checked_beacon[key] = beacon
+		self.checked_beacon[key].addRssi(record)
+	
+	
 	"""
 	Sort beacons by mw_to_dbm_avg
 	"""
@@ -282,9 +368,11 @@ class TestCase:
 
 
 """
+------------------------------------------
 This object will be a list of test cases.
 We will run the algorithms on each test
 case in this object.
+------------------------------------------
 """
 
 class TestCases:
@@ -294,19 +382,21 @@ class TestCases:
 		self.test_ids = {}
 		self.test_cases = []
 		self.iteration = 0
-		self.acquireAllRecords()
+		self.csvOut = "testresults.csv"
 	
 	"""
 	This function acquires all test cases from
 	the database. It will partition the test
-	data based on testid. 
+	data based on testid. It assumes that the
+	table schema is test data table 1.
 	
 	In other words, we will create a list of test cases. 
 	Each element of this list will be a test case. Each 
 	test case is a set of records from the database who
 	have the same testid.
 	"""
-	def acquireAllRecords(self):
+	
+	def downloadTestTable1(self):
 		self.beacon_positions = {}
 		self.test_ids = {}
 		self.test_cases = []
@@ -314,23 +404,89 @@ class TestCases:
 		url_str = "https://api.iitrtclab.com/test"
 		json_records = requests.get(url_str, "")
 		records = json.loads(json_records.content.decode('utf-8'))
-		self.partitionRecords(records);
-	
+		self.partitionTestTable1(records);
+		
 	"""
 	This function will convert the list of test records
 	into a list of test cases. It will also build a list
 	of beacon positions.
+	
+	This version assumes that the beacon positions ARE NOT stored
+	with the test file and will download them from the database.
 	"""
 
-	def partitionRecords(self, records):
+	def partitionTestTable1(self, records):
 		for record in records:
 			if(record["testid"] not in self.test_ids):
 				test_case = TestCase(record, self.beacon_positions)
 				self.test_cases.append(test_case)
 				self.test_ids[record["testid"]] = test_case
-			else:
-				self.test_ids[record["testid"]].addRecord(record, self.beacon_positions)
-				
+			self.test_ids[record["testid"]].addRecord1(record)
+		
+	"""
+	This function acquires the test data from a csv1 file and converts it
+	to a record with the same form as test data table 2.
+	
+	[major][minor][rssi][testid][t_floor][t_x][t_y][bt_floor][bt_x][bt_Y][deployid][watt][proximity] ->
+	[testid][beacon_major][beacon_minor][building_id][t_floor][t_x][t_y][bt_floor][bt_x][bt_y][rssi][interval][id][timestamp]
+	
+	NOTE: the csv file of type 1 does NOT include building id, record id (id), or timestamp. The
+	scan interval (interval) is 10 seconds. The csv1 file also includes some info we do not need:
+	(watt and proximity).
+	"""
+	
+	def loadCsv1(self, url):
+		file = open(url)
+		reader = csv.DictReader(file);
+		
+		records = []
+		for r in reader:
+			record = {}
+			record["testid"] = r["testid"]
+			record["beacon_major"] = int(r["major"])
+			record["beacon_minor"] = int(r["minor"])
+			record["building_id"] = -1
+			record["t_floor"] = int(r["t_floor"])
+			record["t_x"] = float(r["t_x"])
+			record["t_y"] = float(r["t_y"])
+			record["bt_floor"] = int(r["bt_floor"])
+			record["bt_x"] = float(r["bt_x"])
+			record["bt_y"] = float(r["bt_Y"])
+			record["rssi"] = float(r["rssi"])
+			record["interval"] = 10
+			record["id"] = -1
+			record["timestamp"] = 0
+			records.append(record)
+		
+		self.partitionTestTable2(records)
+		
+	"""
+	This function imports a folder containing only csv1 files.
+	"""
+	
+	def loadCsv1Folder(self, url):
+		files = os.listdir(url)
+		for file in files:
+			self.loadCsv1(url + "/" + file)
+	
+	
+	"""
+	This function will convert the list of test records
+	into a list of test cases.
+	
+	This version assumes that the beacon positions ARE stored
+	with the test file and will download them from the database.
+	"""
+	
+	def partitionTestTable2(self, records):
+		for record in records:
+			if(record["testid"] not in self.test_ids):
+				test_case = TestCase(record)
+				self.test_cases.append(test_case)
+				self.test_ids[record["testid"]] = test_case
+			self.test_ids[record["testid"]].addRecord2(record)
+	
+	
 	"""
 	This function initializes the
 	iterator.
@@ -358,12 +514,24 @@ class TestCases:
 			string += str(test_case) + "\n"
 		return string 
 	
+	
+	"""
+	Set the csv output location
+	"""
+	
+	def setCsvUrl(self, output):
+		self.csvOut = output
+	
 	"""
 	This function will convert the test case analysis
 	into a CSV file.
 	"""
 		
-	def toCsv(self, output="testresults.csv"):
+	def toCsv(self, output=None):
+	
+		if(output is None):
+			output = self.csvOut
+	
 		try:
 			file = open(output, "w")
 			string = "testid,beacon_major,beacon_minor,b_building,b_floor,b_x,b_y,rssi,duration,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
