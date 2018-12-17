@@ -25,45 +25,46 @@ def main():
 	cases.loadCsv1Folder("old_data")
 	
 	#Set the test case analysis output
-	cases.setCsvUrl("testresults1_3_beacons.csv")
+	cases.setCsvUrl("testresults1.csv")
 	
-	for case in cases:
-		#Acquire the positions and signal strengths of the beacons
-		(buildings, floors, xs, ys, rssis) = case.getNearestBeaconsAvgMwToDbm(3)
-		if(len(buildings) == 0):
-			print("No beacons were detected. Continuing")
-			continue
+	for n in range(1,5):
+		for case in cases:
+			#Acquire the positions and signal strengths of the beacons
+			(buildings, floors, xs, ys, rssis) = case.getNearestBeaconsAvgMwToDbm(n)
+			if(len(buildings) == 0):
+				print("No beacons were detected. Continuing")
+				continue
+			
+			#We have 2 parameters (x0, y0), and thus need at least 2 data points (beacons)
+			if(len(buildings) < 2):
+				buildings.append(buildings[0])
+				floors.append(floors[0])
+				xs.append(xs[0])
+				ys.append(ys[0])
+				rssis.append(rssis[0])
+			
+			#Convert rssi to proximity
+			proximities = getProximity(rssis)
+			
+			# defining our final x0 and y0 parameters that we minimize.
+			params = lmfit.Parameters()
+			params.add('x0', value=0)
+			params.add('y0', value=0)
+			
+			#Estimate position on floor
+			mini = lmfit.Minimizer(model, params, fcn_args=(xs, ys, proximities))
+			result = mini.minimize()
+			x0 = result.params['x0'].value
+			y0 = result.params['y0'].value
+			
+			#Estimate floor
+			flr, bldg = find_floor_simple(floors, buildings)
+			
+			#Calculate errors
+			case.setTestResults(x0, y0, flr)
 		
-		#We have 2 parameters (x0, y0), and thus need at least 2 data points (beacons)
-		if(len(buildings) < 2):
-			buildings.append(buildings[0])
-			floors.append(floors[0])
-			xs.append(xs[0])
-			ys.append(ys[0])
-			rssis.append(rssis[0])
-		
-		#Convert rssi to proximity
-		proximities = getProximity(rssis)
-		
-		# defining our final x0 and y0 parameters that we minimize.
-		params = lmfit.Parameters()
-		params.add('x0', value=0)
-		params.add('y0', value=0)
-		
-		#Estimate position on floor
-		mini = lmfit.Minimizer(model, params, fcn_args=(xs, ys, proximities))
-		result = mini.minimize()
-		x0 = result.params['x0'].value
-		y0 = result.params['y0'].value
-		
-		#Estimate floor
-		flr, bldg = find_floor_simple(floors, buildings)
-		
-		#Calculate errors
-		case.setTestResults(x0, y0, flr)
-		
-	#Store a record of the tests
-	cases.toCsv()
+		#Store a record of the tests
+		cases.toCsv()
 
 def getProximity(rssis):
 	prox = []

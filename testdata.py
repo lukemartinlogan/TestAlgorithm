@@ -9,7 +9,7 @@ table schemas:
 	beacon table:	 	[beacon_id][major][minor][building_id][floor][x][y][loc_id][temperature][humidity][updatetimestamp]
 
 csv1 schema: [major][minor][rssi][testid][t_floor][t_x][t_y][bt_floor][bt_x][bt_Y][deployid][watt][proximity]
-output csv schema: [testid][beacon_major][beacon_minor][b_building][b_floor][b_x][b_y][rssi][duration][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
+output csv schema: [testid][duration][top_n_beacons][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
 
 NOTE: for test data table 1, beacon positions are not stored with the record itself. So floor, x, and y
 represent the testing device's position, not the bluetooth beacon position.
@@ -177,6 +177,7 @@ class TestCase:
 		self.test_id = record["testid"]
 		self.beacons = []
 		self.iteration = 0
+		self.top_n = 3
 		
 		self.floor_est = 0
 		self.x_est = 0.0
@@ -200,6 +201,7 @@ class TestCase:
 		self.test_id = record["testid"]
 		self.beacons = []
 		self.iteration = 0
+		self.top_n = 3
 		
 		self.floor_est = 0
 		self.x_est = 0.0
@@ -294,7 +296,7 @@ class TestCase:
 	
 	def avgMwToDbm(self, beacon):
 		return beacon.mw_to_dbm_avg
-			
+	
 	"""
 	This function will acquire the beacons whose
 	average rssi was computed by averaging power
@@ -302,6 +304,7 @@ class TestCase:
 	"""
 	
 	def getNearestBeaconsAvgMwToDbm(self, n=3):
+		self.top_n = n
 		self.beacons.sort(reverse = True, key = self.avgMwToDbm)
 		subset = self.beacons[0:n]
 		
@@ -356,6 +359,7 @@ class TestCase:
 		string += "\tFloor: " + str(self.floor_true) + "\n"
 		string += "\tPosition: (" + str(self.x_true) + ", " + str(self.y_true) + ")\n"
 		string += "\tScan Duration: " + str(self.scan_period) + "\n"
+		string += "\tTop N Beacons: " + str(self.top_n) + "\n"
 		string += "\tBEACONS:\n"
 		for beacon in self.beacons:
 			string += str(beacon)
@@ -533,32 +537,27 @@ class TestCases:
 			output = self.csvOut
 	
 		try:
-			file = open(output, "w")
-			string = "testid,beacon_major,beacon_minor,b_building,b_floor,b_x,b_y,rssi,duration,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
-			for test_case in self.test_cases:
-				for beacon in test_case.beacons:
-					for rssi in beacon.rssis:
-						string += "\"" + str(test_case.test_id) + "\"" + ","
-						string += str(beacon.major) + ","
-						string += str(beacon.minor) + ","
-						string += "\"" + str(beacon.building) + "\"" + ","
-						string += str(beacon.floor) + ","
-						string += str(beacon.x) + ","
-						string += str(beacon.y) + ","
-						string += str(rssi) + ","
-						string += str(test_case.scan_period) + ","
-						string += "\"" + str(test_case.building) + "\"" + ","
-						string += str(test_case.floor_true) + ","
-						string += str(test_case.x_true) + ","
-						string += str(test_case.y_true) + ","
-						string += str(test_case.floor_est) + ","
-						string += str(test_case.x_est) + ","
-						string += str(test_case.y_est) + ","
-						string += str(test_case.error) + ","
-						string += str(test_case.floor_error)
-						string += "\n"
+			string = ""
+			if(not os.path.isfile(output)):
+				string = "testid,duration,top_n_beacons,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
+			file = open(output, "a")
 			
-			file.write(string)		
+			for test_case in self.test_cases:
+				string += "\"" + str(test_case.test_id) + "\"" + ","
+				string += str(test_case.scan_period) + ","
+				string += str(test_case.top_n) + ","
+				string += "\"" + str(test_case.building) + "\"" + ","
+				string += str(test_case.floor_true) + ","
+				string += str(test_case.x_true) + ","
+				string += str(test_case.y_true) + ","
+				string += str(test_case.floor_est) + ","
+				string += str(test_case.x_est) + ","
+				string += str(test_case.y_est) + ","
+				string += str(test_case.error) + ","
+				string += str(test_case.floor_error)
+				string += "\n"
+			
+			file.write(string)
 			file.close()
 		except:
 			print("There was a problem with creating the csv")

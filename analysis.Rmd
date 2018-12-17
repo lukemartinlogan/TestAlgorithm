@@ -9,7 +9,11 @@ Old Algorithm
 csv = read.csv("testresults1_3_beacons.csv")
 only_results = csv[!duplicated(csv[,c("testid")]),]
 
-only_results[c("testid", "error")]
+floor0 = only_results[which(only_results$floor_true == 0),]$error
+mean(floor0)
+
+floor2 = only_results[which(only_results$floor_true == 2),]$error
+mean(floor0)
 ```
 
 
@@ -27,3 +31,13 @@ cdf(10)
 cdf(15)
 cdf(20)
 ```
+
+
+
+
+
+
+
+
+
+
