@@ -22,11 +22,11 @@ def main():
 
 	#Download all of the test cases
 	cases = td.TestCases()
-	cases.downloadRecords()
+	cases.downloadTestTable1()
 	
 	#Set the test case analysis output
 	cases.setCsvUrl("testresults2_3_beacons.csv")
-
+	
 	for case in cases:
 		#Acquire the positions and signal strengths of the beacons
 		(buildings, floors, xs, ys, rssis) = case.getNearestBeaconsAvgMwToDbm(3)
@@ -63,7 +63,7 @@ def main():
 		case.setTestResults(x0, y0, flr)
 		
 	#Store a record of the tests
-	cases.toCsv("testResults_Old.csv")
+	cases.toCsv()
 
 def getProximity(rssis):
 	prox = []

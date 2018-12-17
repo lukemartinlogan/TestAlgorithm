@@ -156,7 +156,7 @@ and the list of unique beacons.
 class TestCase:
 
 	def __init__(self, record, beacon_positions=None):
-		if(beacon_positions):
+		if(beacon_positions is not None):
 			self.initTestCase1(record, beacon_positions)
 		else:
 			self.initTestCase2(record)

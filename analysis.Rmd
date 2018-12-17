@@ -16,7 +16,7 @@ only_results[c("testid", "error")]
 New Algorithm
 
 ```{r}
-csv = read.csv("testresults1.csv")
+csv = read.csv("testresults2_3_beacons.csv")
 only_results = csv[!duplicated(csv[,c("testid")]),]
 
 cdf = ecdf(only_results$error)
