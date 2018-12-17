@@ -173,47 +173,134 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
-<p>Old Algorithm</p>
+<p>Old Data</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY3N2ID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czFfM19iZWFjb25zLmNzdlwiKVxub25seV9yZXN1bHRzID0gY3N2WyFkdXBsaWNhdGVkKGNzdlssYyhcInRlc3RpZFwiKV0pLF1cbmZsb29yMCA9IG9ubHlfcmVzdWx0c1t3aGljaChvbmx5X3Jlc3VsdHMkZmxvb3JfdHJ1ZSA9PSAwKSxdJGVycm9yXG5tZWFuKGZsb29yMClcbmBgYCJ9 -->
-<pre class="r"><code>csv = read.csv(&quot;testresults1_3_beacons.csv&quot;)
-only_results = csv[!duplicated(csv[,c(&quot;testid&quot;)]),]
-floor0 = only_results[which(only_results$floor_true == 0),]$error
-mean(floor0)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxnb3JpdGhtMSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMxX29sZC5jc3ZcIilcbmFsZ29yaXRobTIgPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMl9vbGQuY3N2XCIpXG4jRmxvb3IgYW5kIG51bWJlciBvZiBiZWFjb25zXG5mb3IoZmxvb3IgaW4gMDoyKSB7XG4gIGZsb29yX2JlYWNfMSA9IGFsZ29yaXRobTFbd2hpY2goYWxnb3JpdGhtMSRmbG9vcl90cnVlID09IGZsb29yKSxdXG4gIGZsb29yX2JlYWNfMiA9IGFsZ29yaXRobTJbd2hpY2goYWxnb3JpdGhtMiRmbG9vcl90cnVlID09IGZsb29yKSxdXG4gIFxuICBpZihucm93KGZsb29yX2JlYWNfMSkgPT0gMClcbiAgICBuZXh0XG4gIFxuICBmb3IobiBpbiAzOjQpIHtcbiAgICBuX2JlYWNfMSA9IGZsb29yX2JlYWNfMVt3aGljaChmbG9vcl9iZWFjXzEkdG9wX25fYmVhY29ucyA9PSBuKSxdJGVycm9yXG4gICAgbl9iZWFjXzIgPSBmbG9vcl9iZWFjXzJbd2hpY2goZmxvb3JfYmVhY18yJHRvcF9uX2JlYWNvbnMgPT0gbiksXSRlcnJvclxuICAgIFxuICAgIG1lYW5fb2xkID0gbWVhbihuX2JlYWNfMSlcbiAgICBzdGRkZXZfb2xkID0gc3FydCh2YXIobl9iZWFjXzEpKVxuICAgIFxuICAgIG1lYW5fbmV3ID0gbWVhbihuX2JlYWNfMilcbiAgICBzdGRkZXZfbmV3ID0gc3FydCh2YXIobl9iZWFjXzIpKVxuICAgIFxuICAgIHRfdmFsID0gdC50ZXN0KG5fYmVhY18xLCBuX2JlYWNfMiwgcGFpcmVkPVRSVUUpXG4gICAgXG4gICAgc3RyaW5nPXBhc3RlMChcIihmbG9vcjogXCIsIGZsb29yLCBcIiwgdG9wIG46IFwiLCBuLCBcIik6IFxcblwiKVxuICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgIG1lYW4gMTogICAgICAgICAgICAgICBcIiwgbWVhbl9vbGQsIFwiXFxuXCIpXG4gICAgc3RyaW5nPXBhc3RlMChzdHJpbmcsIFwiICAgc3RhbmRhcmQgZGV2aWF0aW9uIDE6IFwiLCBzdGRkZXZfb2xkLCBcIlxcblwiKVxuICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgIG1lYW4gMjogICAgICAgICAgICAgICBcIiwgbWVhbl9uZXcsIFwiXFxuXCIpXG4gICAgc3RyaW5nPXBhc3RlMChzdHJpbmcsIFwiICAgc3RhbmRhcmQgZGV2aWF0aW9uIDI6IFwiLCBzdGRkZXZfbmV3LCBcIlxcblwiKVxuICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIFwiLCB0X3ZhbCRwLnZhbHVlLCBcIlxcblwiKVxuICAgIFxuICAgIGNhdChzdHJpbmcpXG4gIH1cbn1cbmBgYCJ9 -->
+<pre class="r"><code>algorithm1 = read.csv(&quot;testresults1_old.csv&quot;)
+algorithm2 = read.csv(&quot;testresults2_old.csv&quot;)
+#Floor and number of beacons
+for(floor in 0:2) {
+  floor_beac_1 = algorithm1[which(algorithm1$floor_true == floor),]
+  floor_beac_2 = algorithm2[which(algorithm2$floor_true == floor),]
+  
+  if(nrow(floor_beac_1) == 0)
+    next
+  
+  for(n in 3:4) {
+    n_beac_1 = floor_beac_1[which(floor_beac_1$top_n_beacons == n),]$error
+    n_beac_2 = floor_beac_2[which(floor_beac_2$top_n_beacons == n),]$error
+    
+    mean_old = mean(n_beac_1)
+    stddev_old = sqrt(var(n_beac_1))
+    
+    mean_new = mean(n_beac_2)
+    stddev_new = sqrt(var(n_beac_2))
+    
+    t_val = t.test(n_beac_1, n_beac_2, paired=TRUE)
+    
+    string=paste0(&quot;(floor: &quot;, floor, &quot;, top n: &quot;, n, &quot;): \n&quot;)
+    string=paste0(string, &quot;   mean 1:               &quot;, mean_old, &quot;\n&quot;)
+    string=paste0(string, &quot;   standard deviation 1: &quot;, stddev_old, &quot;\n&quot;)
+    string=paste0(string, &quot;   mean 2:               &quot;, mean_new, &quot;\n&quot;)
+    string=paste0(string, &quot;   standard deviation 2: &quot;, stddev_new, &quot;\n&quot;)
+    string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
+    
+    cat(string)
+  }
+}</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQuMTA0NTA4XG4ifQ== -->
-<pre><code>[1] 4.104508</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiKGZsb29yOiAwLCB0b3AgbjogMyk6IFxuICAgbWVhbiAxOiAgICAgICAgICAgICAgIDQuMTA0NTA3NTU1Nzg2MjFcbiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiAzLjIzMTMxOTc4NzQyNzAxXG4gICBtZWFuIDI6ICAgICAgICAgICAgICAgNC4wMjM2MDYwNzg3OTgyNFxuICAgc3RhbmRhcmQgZGV2aWF0aW9uIDI6IDIuNDkwNDY0OTc0NjM2MDRcbiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuODc4NTA1NDQ1MDI5ODM0XG4oZmxvb3I6IDAsIHRvcCBuOiA0KTogXG4gICBtZWFuIDE6ICAgICAgICAgICAgICAgNC42MTQwMDcyODAxODM2MVxuICAgc3RhbmRhcmQgZGV2aWF0aW9uIDE6IDIuOTg5ODE3MTg4NzM5MzJcbiAgIG1lYW4gMjogICAgICAgICAgICAgICAzLjc3NDYzODU2NDgxODU1XG4gICBzdGFuZGFyZCBkZXZpYXRpb24gMjogMi40OTEyMTM1NzAxMTE1N1xuICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4yMzkwMTY0OTU1MTM3NzdcbihmbG9vcjogMiwgdG9wIG46IDMpOiBcbiAgIG1lYW4gMTogICAgICAgICAgICAgICA1LjA1NTU3OTk4NTExODg2XG4gICBzdGFuZGFyZCBkZXZpYXRpb24gMTogMy4xNDAzNzE2NzY3MTE5M1xuICAgbWVhbiAyOiAgICAgICAgICAgICAgIDUuOTE3NjAxNzUyMjQ3NDFcbiAgIHN0YW5kYXJkIGRldmlhdGlvbiAyOiA0LjEyOTIwMDkwODQ1MjE3XG4gICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjEyNjM2NTI1ODEyNTI3N1xuKGZsb29yOiAyLCB0b3AgbjogNCk6IFxuICAgbWVhbiAxOiAgICAgICAgICAgICAgIDQuOTc0NjI2MDA0NTUwNjFcbiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiAzLjE0NTQ3Mzc0Nzg0MTk0XG4gICBtZWFuIDI6ICAgICAgICAgICAgICAgNC44MDcyMzI5MjQ0Njg5MlxuICAgc3RhbmRhcmQgZGV2aWF0aW9uIDI6IDQuMDM2NDEyMTI1NTc4NTNcbiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuNzgwMzk3OTg5NjUzNTM2XG4ifQ== -->
+<pre><code>(floor: 0, top n: 3): 
+   mean 1:               4.10450755578621
+   standard deviation 1: 3.23131978742701
+   mean 2:               4.02360607879824
+   standard deviation 2: 2.49046497463604
+   p Value:                0.878505445029834
+(floor: 0, top n: 4): 
+   mean 1:               4.61400728018361
+   standard deviation 1: 2.98981718873932
+   mean 2:               3.77463856481855
+   standard deviation 2: 2.49121357011157
+   p Value:                0.239016495513777
+(floor: 2, top n: 3): 
+   mean 1:               5.05557998511886
+   standard deviation 1: 3.14037167671193
+   mean 2:               5.91760175224741
+   standard deviation 2: 4.12920090845217
+   p Value:                0.126365258125277
+(floor: 2, top n: 4): 
+   mean 1:               4.97462600455061
+   standard deviation 1: 3.14547374784194
+   mean 2:               4.80723292446892
+   standard deviation 2: 4.03641212557853
+   p Value:                0.780397989653536</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmxvb3IyID0gb25seV9yZXN1bHRzW3doaWNoKG9ubHlfcmVzdWx0cyRmbG9vcl90cnVlID09IDApLF0kZXJyb3Jcbm1lYW4oZmxvb3IwKVxuYGBgIn0= -->
-<pre class="r"><code>floor2 = only_results[which(only_results$floor_true == 0),]$error
-mean(floor0)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIFxuYGBgIn0= -->
+<pre class="r"><code> </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDQuMTA0NTA4XG4ifQ== -->
-<pre><code>[1] 4.104508</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>New Algorithm</p>
+<p>New Data</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY3N2ID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czJfM19iZWFjb25zLmNzdlwiKVxub25seV9yZXN1bHRzID0gY3N2WyFkdXBsaWNhdGVkKGNzdlssYyhcInRlc3RpZFwiKV0pLF1cblxuY2RmID0gZWNkZihvbmx5X3Jlc3VsdHMkZXJyb3IpXG5wbG90KGNkZiwgeWxhYj1cIlByb2JhYmlsaXR5XCIsIHhsYWIgPSBcImVycm9yXCIsIG1haW49XCJDREYgb2YgRXJyb3JcIilcblxuY2RmKDUpXG5jZGYoMTApXG5jZGYoMTUpXG5jZGYoMjApXG5gYGAifQ== -->
-<pre class="r"><code>csv = read.csv(&quot;testresults2_3_beacons.csv&quot;)
-only_results = csv[!duplicated(csv[,c(&quot;testid&quot;)]),]
-
-cdf = ecdf(only_results$error)
-plot(cdf, ylab=&quot;Probability&quot;, xlab = &quot;error&quot;, main=&quot;CDF of Error&quot;)
-
-cdf(5)
-cdf(10)
-cdf(15)
-cdf(20)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxnb3JpdGhtMSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMxX25ldy5jc3ZcIilcbmFsZ29yaXRobTIgPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMl9uZXcuY3N2XCIpXG4jRmxvb3IgYW5kIG51bWJlciBvZiBiZWFjb25zXG5mb3IoZmxvb3IgaW4gMDoyKSB7XG4gIGZsb29yX2JlYWNfMSA9IGFsZ29yaXRobTFbd2hpY2goYWxnb3JpdGhtMSRmbG9vcl90cnVlID09IGZsb29yKSxdXG4gIGZsb29yX2JlYWNfMiA9IGFsZ29yaXRobTJbd2hpY2goYWxnb3JpdGhtMiRmbG9vcl90cnVlID09IGZsb29yKSxdXG4gIFxuICBpZihucm93KGZsb29yX2JlYWNfMSkgPT0gMClcbiAgICBuZXh0XG4gIFxuICBmb3IobiBpbiAzOjQpIHtcbiAgICBuX2JlYWNfMSA9IGZsb29yX2JlYWNfMVt3aGljaChmbG9vcl9iZWFjXzEkdG9wX25fYmVhY29ucyA9PSBuKSxdJGVycm9yXG4gICAgbl9iZWFjXzIgPSBmbG9vcl9iZWFjXzJbd2hpY2goZmxvb3JfYmVhY18yJHRvcF9uX2JlYWNvbnMgPT0gbiksXSRlcnJvclxuICAgIFxuICAgIG1lYW5fb2xkID0gbWVhbihuX2JlYWNfMSlcbiAgICBzdGRkZXZfb2xkID0gc3FydCh2YXIobl9iZWFjXzEpKVxuICAgIFxuICAgIG1lYW5fbmV3ID0gbWVhbihuX2JlYWNfMilcbiAgICBzdGRkZXZfbmV3ID0gc3FydCh2YXIobl9iZWFjXzIpKVxuICAgIFxuICAgIHRfdmFsID0gdC50ZXN0KG5fYmVhY18xLCBuX2JlYWNfMiwgcGFpcmVkPVRSVUUsIGNvbmYubGV2ZWw9MC45KVxuICAgIFxuICAgIHN0cmluZz1wYXN0ZTAoXCIoZmxvb3I6IFwiLCBmbG9vciwgXCIsIHRvcCBuOiBcIiwgbiwgXCIpOiBcXG5cIilcbiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgXCIgICBtZWFuIDE6ICAgICAgICAgICAgICAgXCIsIG1lYW5fb2xkLCBcIlxcblwiKVxuICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiBcIiwgc3RkZGV2X29sZCwgXCJcXG5cIilcbiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgXCIgICBtZWFuIDI6ICAgICAgICAgICAgICAgXCIsIG1lYW5fbmV3LCBcIlxcblwiKVxuICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgIHN0YW5kYXJkIGRldmlhdGlvbiAyOiBcIiwgc3RkZGV2X25ldywgXCJcXG5cIilcbiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgXCIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICBcIiwgdF92YWwkcC52YWx1ZSwgXCJcXG5cIilcbiAgICBcbiAgICBjYXQoc3RyaW5nKVxuICB9XG59XG5gYGAifQ== -->
+<pre class="r"><code>algorithm1 = read.csv(&quot;testresults1_new.csv&quot;)
+algorithm2 = read.csv(&quot;testresults2_new.csv&quot;)
+#Floor and number of beacons
+for(floor in 0:2) {
+  floor_beac_1 = algorithm1[which(algorithm1$floor_true == floor),]
+  floor_beac_2 = algorithm2[which(algorithm2$floor_true == floor),]
+  
+  if(nrow(floor_beac_1) == 0)
+    next
+  
+  for(n in 3:4) {
+    n_beac_1 = floor_beac_1[which(floor_beac_1$top_n_beacons == n),]$error
+    n_beac_2 = floor_beac_2[which(floor_beac_2$top_n_beacons == n),]$error
+    
+    mean_old = mean(n_beac_1)
+    stddev_old = sqrt(var(n_beac_1))
+    
+    mean_new = mean(n_beac_2)
+    stddev_new = sqrt(var(n_beac_2))
+    
+    t_val = t.test(n_beac_1, n_beac_2, paired=TRUE, conf.level=0.9)
+    
+    string=paste0(&quot;(floor: &quot;, floor, &quot;, top n: &quot;, n, &quot;): \n&quot;)
+    string=paste0(string, &quot;   mean 1:               &quot;, mean_old, &quot;\n&quot;)
+    string=paste0(string, &quot;   standard deviation 1: &quot;, stddev_old, &quot;\n&quot;)
+    string=paste0(string, &quot;   mean 2:               &quot;, mean_new, &quot;\n&quot;)
+    string=paste0(string, &quot;   standard deviation 2: &quot;, stddev_new, &quot;\n&quot;)
+    string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
+    
+    cat(string)
+  }
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiKGZsb29yOiAxLCB0b3AgbjogMyk6IFxuICAgbWVhbiAxOiAgICAgICAgICAgICAgIDcuMDQ3MDY2NzcyNzI3ODdcbiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiA0LjE4NDU0NDc1OTQzNjE5XG4gICBtZWFuIDI6ICAgICAgICAgICAgICAgNy44MDQ3ODA5NzcwNzI1OVxuICAgc3RhbmRhcmQgZGV2aWF0aW9uIDI6IDQuMjUwMTI2NzE3NjQyMTRcbiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMDcxNjU2ODQ0OTA3Nzc0N1xuKGZsb29yOiAxLCB0b3AgbjogNCk6IFxuICAgbWVhbiAxOiAgICAgICAgICAgICAgIDcuNjY1MTQzMzM4MDM5MDdcbiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiA0LjQ0NTQ3MjQyMjcwNzk3XG4gICBtZWFuIDI6ICAgICAgICAgICAgICAgNy45OTg1NDQzODExNjUzXG4gICBzdGFuZGFyZCBkZXZpYXRpb24gMjogNC41NzEzOTUzMzM0OTg3OVxuICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4zNTA4NTE5MTc4MTIyNDdcbiJ9 -->
+<pre><code>(floor: 1, top n: 3): 
+   mean 1:               7.04706677272787
+   standard deviation 1: 4.18454475943619
+   mean 2:               7.80478097707259
+   standard deviation 2: 4.25012671764214
+   p Value:                0.0716568449077747
+(floor: 1, top n: 4): 
+   mean 1:               7.66514333803907
+   standard deviation 1: 4.44547242270797
+   mean 2:               7.9985443811653
+   standard deviation 2: 4.57139533349879
+   p Value:                0.350851917812247</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIFxuIFxuYGBgIn0= -->
+<pre class="r"><code> 
+ </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpPbGQgQWxnb3JpdGhtDQoNCmBgYHtyfQ0KY3N2ID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzMV8zX2JlYWNvbnMuY3N2IikNCm9ubHlfcmVzdWx0cyA9IGNzdlshZHVwbGljYXRlZChjc3ZbLGMoInRlc3RpZCIpXSksXQ0KDQpmbG9vcjAgPSBvbmx5X3Jlc3VsdHNbd2hpY2gob25seV9yZXN1bHRzJGZsb29yX3RydWUgPT0gMCksXSRlcnJvcg0KbWVhbihmbG9vcjApDQoNCmZsb29yMiA9IG9ubHlfcmVzdWx0c1t3aGljaChvbmx5X3Jlc3VsdHMkZmxvb3JfdHJ1ZSA9PSAyKSxdJGVycm9yDQptZWFuKGZsb29yMCkNCmBgYA0KDQoNCk5ldyBBbGdvcml0aG0NCg0KYGBge3J9DQpjc3YgPSByZWFkLmNzdigidGVzdHJlc3VsdHMyXzNfYmVhY29ucy5jc3YiKQ0Kb25seV9yZXN1bHRzID0gY3N2WyFkdXBsaWNhdGVkKGNzdlssYygidGVzdGlkIildKSxdDQoNCmNkZiA9IGVjZGYob25seV9yZXN1bHRzJGVycm9yKQ0KcGxvdChjZGYsIHlsYWI9IlByb2JhYmlsaXR5IiwgeGxhYiA9ICJlcnJvciIsIG1haW49IkNERiBvZiBFcnJvciIpDQoNCmNkZig1KQ0KY2RmKDEwKQ0KY2RmKDE1KQ0KY2RmKDIwKQ0KYGBgDQoNCg0KDQoNCg0KDQoNCg0KDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpPbGQgRGF0YQ0KDQpgYGB7cn0NCmFsZ29yaXRobTEgPSByZWFkLmNzdigidGVzdHJlc3VsdHMxX29sZC5jc3YiKQ0KYWxnb3JpdGhtMiA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czJfb2xkLmNzdiIpDQoNCiNGbG9vciBhbmQgbnVtYmVyIG9mIGJlYWNvbnMNCmZvcihmbG9vciBpbiAwOjIpIHsNCiAgZmxvb3JfYmVhY18xID0gYWxnb3JpdGhtMVt3aGljaChhbGdvcml0aG0xJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgZmxvb3JfYmVhY18yID0gYWxnb3JpdGhtMlt3aGljaChhbGdvcml0aG0yJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgDQogIGlmKG5yb3coZmxvb3JfYmVhY18xKSA9PSAwKQ0KICAgIG5leHQNCiAgDQogIGZvcihuIGluIDM6NCkgew0KICAgIG5fYmVhY18xID0gZmxvb3JfYmVhY18xW3doaWNoKGZsb29yX2JlYWNfMSR0b3Bfbl9iZWFjb25zID09IG4pLF0kZXJyb3INCiAgICBuX2JlYWNfMiA9IGZsb29yX2JlYWNfMlt3aGljaChmbG9vcl9iZWFjXzIkdG9wX25fYmVhY29ucyA9PSBuKSxdJGVycm9yDQogICAgDQogICAgbWVhbl9vbGQgPSBtZWFuKG5fYmVhY18xKQ0KICAgIHN0ZGRldl9vbGQgPSBzcXJ0KHZhcihuX2JlYWNfMSkpDQogICAgDQogICAgbWVhbl9uZXcgPSBtZWFuKG5fYmVhY18yKQ0KICAgIHN0ZGRldl9uZXcgPSBzcXJ0KHZhcihuX2JlYWNfMikpDQogICAgDQogICAgdF92YWwgPSB0LnRlc3Qobl9iZWFjXzEsIG5fYmVhY18yLCBwYWlyZWQ9VFJVRSkNCiAgICANCiAgICBzdHJpbmc9cGFzdGUwKCIoZmxvb3I6ICIsIGZsb29yLCAiLCB0b3AgbjogIiwgbiwgIik6IFxuIikNCiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIG1lYW4gMTogICAgICAgICAgICAgICAiLCBtZWFuX29sZCwgIlxuIikNCiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiAiLCBzdGRkZXZfb2xkLCAiXG4iKQ0KICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCAiICAgbWVhbiAyOiAgICAgICAgICAgICAgICIsIG1lYW5fbmV3LCAiXG4iKQ0KICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCAiICAgc3RhbmRhcmQgZGV2aWF0aW9uIDI6ICIsIHN0ZGRldl9uZXcsICJcbiIpDQogICAgc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KICAgIA0KICAgIGNhdChzdHJpbmcpDQogIH0NCn0NCiANCmBgYA0KDQpOZXcgRGF0YQ0KDQpgYGB7cn0NCmFsZ29yaXRobTEgPSByZWFkLmNzdigidGVzdHJlc3VsdHMxX25ldy5jc3YiKQ0KYWxnb3JpdGhtMiA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czJfbmV3LmNzdiIpDQoNCiNGbG9vciBhbmQgbnVtYmVyIG9mIGJlYWNvbnMNCmZvcihmbG9vciBpbiAwOjIpIHsNCiAgZmxvb3JfYmVhY18xID0gYWxnb3JpdGhtMVt3aGljaChhbGdvcml0aG0xJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgZmxvb3JfYmVhY18yID0gYWxnb3JpdGhtMlt3aGljaChhbGdvcml0aG0yJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgDQogIGlmKG5yb3coZmxvb3JfYmVhY18xKSA9PSAwKQ0KICAgIG5leHQNCiAgDQogIGZvcihuIGluIDM6NCkgew0KICAgIG5fYmVhY18xID0gZmxvb3JfYmVhY18xW3doaWNoKGZsb29yX2JlYWNfMSR0b3Bfbl9iZWFjb25zID09IG4pLF0kZXJyb3INCiAgICBuX2JlYWNfMiA9IGZsb29yX2JlYWNfMlt3aGljaChmbG9vcl9iZWFjXzIkdG9wX25fYmVhY29ucyA9PSBuKSxdJGVycm9yDQogICAgDQogICAgbWVhbl9vbGQgPSBtZWFuKG5fYmVhY18xKQ0KICAgIHN0ZGRldl9vbGQgPSBzcXJ0KHZhcihuX2JlYWNfMSkpDQogICAgDQogICAgbWVhbl9uZXcgPSBtZWFuKG5fYmVhY18yKQ0KICAgIHN0ZGRldl9uZXcgPSBzcXJ0KHZhcihuX2JlYWNfMikpDQogICAgDQogICAgdF92YWwgPSB0LnRlc3Qobl9iZWFjXzEsIG5fYmVhY18yLCBwYWlyZWQ9VFJVRSkNCiAgICANCiAgICBzdHJpbmc9cGFzdGUwKCIoZmxvb3I6ICIsIGZsb29yLCAiLCB0b3AgbjogIiwgbiwgIik6IFxuIikNCiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIG1lYW4gMTogICAgICAgICAgICAgICAiLCBtZWFuX29sZCwgIlxuIikNCiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiAiLCBzdGRkZXZfb2xkLCAiXG4iKQ0KICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCAiICAgbWVhbiAyOiAgICAgICAgICAgICAgICIsIG1lYW5fbmV3LCAiXG4iKQ0KICAgIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCAiICAgc3RhbmRhcmQgZGV2aWF0aW9uIDI6ICIsIHN0ZGRldl9uZXcsICJcbiIpDQogICAgc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KICAgIA0KICAgIGNhdChzdHJpbmcpDQogIH0NCn0NCiANCiANCmBgYA0KDQoNCg0KDQoNCg0KDQoNCg0KDQo=</div>
 
 
 

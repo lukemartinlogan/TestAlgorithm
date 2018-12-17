@@ -3,33 +3,83 @@ title: "R Notebook"
 output: html_notebook
 ---
 
-Old Algorithm
+Old Data
 
 ```{r}
-csv = read.csv("testresults1_3_beacons.csv")
-only_results = csv[!duplicated(csv[,c("testid")]),]
+algorithm1 = read.csv("testresults1_old.csv")
+algorithm2 = read.csv("testresults2_old.csv")
 
-floor0 = only_results[which(only_results$floor_true == 0),]$error
-mean(floor0)
-
-floor2 = only_results[which(only_results$floor_true == 2),]$error
-mean(floor0)
+#Floor and number of beacons
+for(floor in 0:2) {
+  floor_beac_1 = algorithm1[which(algorithm1$floor_true == floor),]
+  floor_beac_2 = algorithm2[which(algorithm2$floor_true == floor),]
+  
+  if(nrow(floor_beac_1) == 0)
+    next
+  
+  for(n in 3:4) {
+    n_beac_1 = floor_beac_1[which(floor_beac_1$top_n_beacons == n),]$error
+    n_beac_2 = floor_beac_2[which(floor_beac_2$top_n_beacons == n),]$error
+    
+    mean_old = mean(n_beac_1)
+    stddev_old = sqrt(var(n_beac_1))
+    
+    mean_new = mean(n_beac_2)
+    stddev_new = sqrt(var(n_beac_2))
+    
+    t_val = t.test(n_beac_1, n_beac_2, paired=TRUE)
+    
+    string=paste0("(floor: ", floor, ", top n: ", n, "): \n")
+    string=paste0(string, "   mean 1:               ", mean_old, "\n")
+    string=paste0(string, "   standard deviation 1: ", stddev_old, "\n")
+    string=paste0(string, "   mean 2:               ", mean_new, "\n")
+    string=paste0(string, "   standard deviation 2: ", stddev_new, "\n")
+    string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+    
+    cat(string)
+  }
+}
+ 
 ```
 
-
-New Algorithm
+New Data
 
 ```{r}
-csv = read.csv("testresults2_3_beacons.csv")
-only_results = csv[!duplicated(csv[,c("testid")]),]
+algorithm1 = read.csv("testresults1_new.csv")
+algorithm2 = read.csv("testresults2_new.csv")
 
-cdf = ecdf(only_results$error)
-plot(cdf, ylab="Probability", xlab = "error", main="CDF of Error")
-
-cdf(5)
-cdf(10)
-cdf(15)
-cdf(20)
+#Floor and number of beacons
+for(floor in 0:2) {
+  floor_beac_1 = algorithm1[which(algorithm1$floor_true == floor),]
+  floor_beac_2 = algorithm2[which(algorithm2$floor_true == floor),]
+  
+  if(nrow(floor_beac_1) == 0)
+    next
+  
+  for(n in 3:4) {
+    n_beac_1 = floor_beac_1[which(floor_beac_1$top_n_beacons == n),]$error
+    n_beac_2 = floor_beac_2[which(floor_beac_2$top_n_beacons == n),]$error
+    
+    mean_old = mean(n_beac_1)
+    stddev_old = sqrt(var(n_beac_1))
+    
+    mean_new = mean(n_beac_2)
+    stddev_new = sqrt(var(n_beac_2))
+    
+    t_val = t.test(n_beac_1, n_beac_2, paired=TRUE)
+    
+    string=paste0("(floor: ", floor, ", top n: ", n, "): \n")
+    string=paste0(string, "   mean 1:               ", mean_old, "\n")
+    string=paste0(string, "   standard deviation 1: ", stddev_old, "\n")
+    string=paste0(string, "   mean 2:               ", mean_new, "\n")
+    string=paste0(string, "   standard deviation 2: ", stddev_new, "\n")
+    string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+    
+    cat(string)
+  }
+}
+ 
+ 
 ```
 
 

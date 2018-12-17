@@ -1,12 +1,5 @@
 """
-In this file, we test the ability of algorithm
-1 to approximate the location of a user based
-on bluetooth signals. This is how we do it:
-1. Acquire all test cases from the database
-2. Run location algorithm on each test case
-3. Store a csv of the results of the algorithm
-   and the test case information
-   
+This is the first location algorithm used.
 """
 
 import ast, json, sys
@@ -22,10 +15,11 @@ def main():
 
 	#Download all of the test cases
 	cases = td.TestCases()
-	cases.loadCsv1Folder("old_data")
+	cases.downloadTestTable1()
+	#cases.loadCsv1Folder("old_data")
 	
 	#Set the test case analysis output
-	cases.setCsvUrl("testresults1.csv")
+	cases.setCsvUrl("testresults1_new.csv")
 	
 	for n in range(1,5):
 		for case in cases:
@@ -79,7 +73,7 @@ def model(params, x, y, prox):
     x0 = params['x0']
     y0 = params['y0']
     t = (x - x0)**2 + (y - y0)**2
-    t = (prox - t)/prox
+    t = (t - prox)/prox
 	
     return t
 
