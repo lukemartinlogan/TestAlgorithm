@@ -6,40 +6,81 @@ output: html_notebook
 Old Data
 
 ```{r}
-algorithm1 = read.csv("testresults1_old.csv")
-algorithm2 = read.csv("testresults2_old.csv")
+num_algorithms = 4
+algorithm = list(num_algorithms)
+algorithm[[1]] = read.csv("testresults1_old.csv")
+algorithm[[2]] = read.csv("testresults2_old.csv")
+algorithm[[3]] = read.csv("testresults3_old.csv")
+algorithm[[4]] = read.csv("testresults4_old.csv")
 
-#Floor and number of beacons
+#Statistics
 for(floor in 0:2) {
-  floor_beac_1 = algorithm1[which(algorithm1$floor_true == floor),]
-  floor_beac_2 = algorithm2[which(algorithm2$floor_true == floor),]
   
-  if(nrow(floor_beac_1) == 0)
+  #Get the test cases on a certain floor for each algorithm
+  floor_beac = list()
+  for(i in 1:num_algorithms) {
+    floor_beac[[i]] = algorithm[[i]][which(algorithm[[i]]$floor_true == floor),]
+  }
+  if(nrow(floor_beac[[1]]) == 0)
     next
   
-  for(n in 3:4) {
-    n_beac_1 = floor_beac_1[which(floor_beac_1$top_n_beacons == n),]$error
-    n_beac_2 = floor_beac_2[which(floor_beac_2$top_n_beacons == n),]$error
+  #Get the mean and std dev of each algorithm using 3 and 4 beacons
+  for(n in 3:3) {
     
-    mean_old = mean(n_beac_1)
-    stddev_old = sqrt(var(n_beac_1))
-    
-    mean_new = mean(n_beac_2)
-    stddev_new = sqrt(var(n_beac_2))
-    
-    t_val = t.test(n_beac_1, n_beac_2, paired=TRUE)
-    
-    string=paste0("(floor: ", floor, ", top n: ", n, "): \n")
-    string=paste0(string, "   mean 1:               ", mean_old, "\n")
-    string=paste0(string, "   standard deviation 1: ", stddev_old, "\n")
-    string=paste0(string, "   mean 2:               ", mean_new, "\n")
-    string=paste0(string, "   standard deviation 2: ", stddev_new, "\n")
-    string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
-    
-    cat(string)
+    for(i in 1:num_algorithms) {
+        n_beac_1 = floor_beac[[i]][which(floor_beac[[i]]$top_n_beacons == n),]$error
+        
+        mean = mean(n_beac_1)
+        stddev = sqrt(var(n_beac_1))
+        
+        string=paste0("(floor: ", floor, ", top n: ", n, ", algorithm: ", i, "): \n")
+        string=paste0(string, "   mean 1:               ", mean, "\n")
+        string=paste0(string, "   standard deviation 1: ", stddev, "\n")
+        
+        cat(string)
+    }
   }
 }
- 
+
+
+#Effectiveness
+for(floor in 0:2) {
+  
+  #Get the test cases on a certain floor for each algorithm
+  floor_beac = list()
+  for(i in 1:num_algorithms) {
+    floor_beac[[i]] = algorithm[[i]][which(algorithm[[i]]$floor_true == floor),]
+  }
+  if(nrow(floor_beac[[1]]) == 0)
+    next
+  
+  #Compare the effectiveness of each algorithm using 3 and 4 beacons
+  for(n in 3:3) {
+    
+    png(paste0(paste0("./Floor", floor, "_", n, "_beacons.png")))
+    par(mfrow=c(4,4))
+    
+    #Compare the effectiveness of algorithm i against algorithm j
+    for(i in 1:num_algorithms){
+      for(j in 1:num_algorithms) {
+        n_beac_1 = floor_beac[[i]][which(floor_beac[[i]]$top_n_beacons == n),]$error
+        n_beac_2 = floor_beac[[j]][which(floor_beac[[j]]$top_n_beacons == n),]$error
+        
+        t_val = t.test(n_beac_1, n_beac_2, paired=TRUE)
+        
+        string=paste0("(floor: ", floor, ", top n: ", n, ", algorithms: ", i, " and ", j, "): \n")
+        string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+        
+        cat(string)
+        
+        hist(n_beac_2 - n_beac_1, main = paste0(i, " v ", j), xlab="Error Difference (m)")
+      }
+    }
+    
+    dev.off()
+  }
+}
+
 ```
 
 New Data
