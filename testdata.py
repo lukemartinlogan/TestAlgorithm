@@ -37,6 +37,12 @@ BuildingCodeToStr = {
 	65: "KI"
 }
 
+def GetBuildingName(code):
+	try:
+		return BuildingCodeToStr[code]
+	except KeyError:
+		return "Building"
+
 """
 --------------------------------------------------
 This object will represent an IBeacon throughout
@@ -68,7 +74,7 @@ class IBeacon:
 	"""
 	
 	def initBeacon(self, building, floor, x, y):
-		self.building = BuildingCodeToStr[building]
+		self.building = GetBuildingName(building)
 		self.floor = floor
 		self.x = x;
 		self.y = y;
@@ -106,7 +112,7 @@ class IBeacon:
 		self.major = str(record["beacon_major"])
 		self.minor = str(record["beacon_minor"])
 		self.key = self.major + self.minor
-		self.building = BuildingCodeToStr[record["building_id"]]
+		self.building = GetBuilding(record["building_id"])
 		self.floor = record["bt_floor"]
 		self.x = record["bt_x"]
 		self.y = record["bt_y"]
@@ -169,7 +175,7 @@ class TestCase:
 		self.beacon_positions = beacon_positions
 		self.checked_beacon = {}
 		self.checked_url = {}
-		self.building = BuildingCodeToStr[record["building_id"]];
+		self.building = GetBuildingName(record["building_id"]);
 		self.floor_true = int(record["floor"]);
 		self.x_true = float(record["x"]);
 		self.y_true = float(record["y"]);
@@ -193,7 +199,7 @@ class TestCase:
 	def initTestCase2(self, record):
 		self.checked_beacon = {}
 		self.checked_url = {}
-		self.building = BuildingCodeToStr[record["building_id"]];
+		self.building = GetBuildingName(record["building_id"]);
 		self.floor_true = int(record["t_floor"]);
 		self.x_true = float(record["t_x"]);
 		self.y_true = float(record["t_y"]);
@@ -218,7 +224,7 @@ class TestCase:
 	
 	def getBeaconLocUrl(self, record):
 		url_str = "https://api.iitrtclab.com/beacons/"
-		url_str += BuildingCodeToStr[record["building_id"]] + "/"
+		url_str += GetBuildingName(record["building_id"]) + "/"
 		url_str += str(record["floor"])
 		return(url_str)
 	

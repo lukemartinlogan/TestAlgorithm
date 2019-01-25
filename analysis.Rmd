@@ -82,7 +82,7 @@ for(floor in 0:2) {
 
 ```
 
-New Data
+New Data - This file compares the effectiveness the new binning strategy as compared to the original binning strategy.
 
 ```{r}
 num_algorithms = 8
@@ -96,9 +96,18 @@ algorithm[[6]] = read.csv("testresults2_ON.csv")
 algorithm[[7]] = read.csv("testresults3_ON.csv")
 algorithm[[8]] = read.csv("testresults4_ON.csv")
 
+#Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+for(i in 1:8)
+{
+  algorithm[[i]] = algorithm[[i]][which(algorithm[[i]]$testid != "FAKE_TEST"),]
+  algorithm[[i]] = algorithm[[i]][which(algorithm[[i]]$testid != "FAKE_TEST_2"),]
+  algorithm[[i]] = algorithm[[i]][which(algorithm[[i]]$testid != "FAKE_TEST_3"),]
+}
+
 png("./Figure.png")
 par(mfrow=c(2,2))
 
+floor_beac = list()
 floor_beac[[1]] = algorithm[[1]][which(algorithm[[1]]$floor_true == 1),]
 floor_beac[[5]] = algorithm[[5]][which(algorithm[[5]]$floor_true == 1),]
 n_beac_1 = floor_beac[[1]][which(floor_beac[[1]]$top_n_beacons == 3),]$error
@@ -106,6 +115,7 @@ n_beac_2 = floor_beac[[5]][which(floor_beac[[5]]$top_n_beacons == 3),]$error
 t_val = t.test(n_beac_1, n_beac_2, paired=TRUE)
 string=paste0("(algorithm: ", 1, "): \n")
 string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+string=paste0(string, "   mean alg1:              ", mean(floo))
 cat(string)
 hist(n_beac_2 - n_beac_1, breaks=100, main = paste0("Algorithm ", 1), xlab="Error Difference (m)")
 
@@ -128,10 +138,6 @@ string=paste0("(algorithm: ", 3, "): \n")
 string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
 cat(string)
 hist(n_beac_2 - n_beac_1, breaks=100, main = paste0("Algorithm ", 3), xlab="Error Difference (m)")
-n_beac_2
-print("")
-n_beac_1
-print("")
 
 floor_beac[[4]] = algorithm[[4]][which(algorithm[[4]]$floor_true == 1),]
 floor_beac[[8]] = algorithm[[8]][which(algorithm[[8]]$floor_true == 1),]
@@ -142,10 +148,6 @@ string=paste0("(algorithm: ", 4, "): \n")
 string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
 cat(string)
 hist(n_beac_2 - n_beac_1, breaks=100, main = paste0("Algorithm ", 4), xlab="Error Difference (m)")
-n_beac_2
-print("")
-n_beac_1
-print("")
 
 dev.off()
 
