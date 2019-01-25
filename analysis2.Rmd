@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+This segment compares the effectiveness the new binning strategy as compared to the original binning strategy on the new data.
+
+```{r}
+num_algorithms = 8
+alg = list(num_algorithms)
+alg[[1]] = read.csv("testresults1_NN.csv")
+alg[[2]] = read.csv("testresults2_NN.csv")
+alg[[3]] = read.csv("testresults3_NN.csv")
+alg[[4]] = read.csv("testresults4_NN.csv")
+alg[[5]] = read.csv("testresults1_ON.csv")
+alg[[6]] = read.csv("testresults2_ON.csv")
+alg[[7]] = read.csv("testresults3_ON.csv")
+alg[[8]] = read.csv("testresults4_ON.csv")
+
+#Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+#Only select observations from floor 1
+#Only select observations from SB
+for(i in 1:8)
+{
+  alg[[i]] = alg[[i]][which(alg[[i]]$testid != "FAKE_TEST"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$testid != "FAKE_TEST_2"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$testid != "FAKE_TEST_3"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$floor_true == 1),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$building == "SB"),]
+}
+
+png("./Figure.png")
+par(mfrow=c(2,2))
+
+t_val = t.test(alg[[1]]$error, alg[[5]]$error, paired=TRUE)
+string=paste0("(algorithm: ", 1, "): \n")
+string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+cat(string)
+hist(alg[[1]]$error - alg[[5]]$error, breaks=100, main = paste0("Algorithm ", 1), xlab="Error Difference (m)")
+
+t_val = t.test(alg[[2]]$error, alg[[6]]$error, paired=TRUE)
+string=paste0("(algorithm: ", 2, "): \n")
+string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+cat(string)
+hist(alg[[2]]$error - alg[[6]]$error, breaks=5, main = paste0("Algorithm ", 2), xlab="Error Difference (m)")
+
+t_val = t.test(alg[[3]]$error, alg[[7]]$error, paired=TRUE)
+string=paste0("(algorithm: ", 3, "): \n")
+string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+cat(string)
+hist(alg[[3]]$error - alg[[7]]$error, breaks=100, main = paste0("Algorithm ", 3), xlab="Error Difference (m)")
+
+t_val = t.test(alg[[4]]$error, alg[[8]]$error, paired=TRUE)
+string=paste0("(algorithm: ", 4, "): \n")
+string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+cat(string)
+hist(alg[[4]]$error - alg[[8]]$error, breaks=100, main = paste0("Algorithm ", 4), xlab="Error Difference (m)")
+
+dev.off()
+
+```
+
+
+This segment compares the different algorithms under the new binning strategy on the new data.
+
+```{r}
+num_algorithms = 4
+alg = list(num_algorithms)
+alg[[1]] = read.csv("testresults1_NN.csv")
+alg[[2]] = read.csv("testresults2_NN.csv")
+alg[[3]] = read.csv("testresults3_NN.csv")
+alg[[4]] = read.csv("testresults4_NN.csv")
+
+#Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+#Only select observations from floor 1
+#Only select observations from SB
+#Only select observations with top 3 beacons
+for(i in 1:4)
+{
+  alg[[i]] = alg[[i]][which(alg[[i]]$testid != "FAKE_TEST"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$testid != "FAKE_TEST_2"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$testid != "FAKE_TEST_3"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$floor_true == 1),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$building == "SB"),]
+  alg[[i]] = alg[[i]][which(alg[[i]]$top_n_beacons == 3),]
+}
+
+#Get the mean and std dev of each algorithm
+for(i in 1:num_algorithms) {
+    mean = mean(alg[[i]]$error)
+    stddev = sqrt(var(alg[[i]]$error))
+    
+    string=paste0("(floor: ", 1, ", algorithm: ", i, "): \n")
+    string=paste0(string, "   mean 1:               ", mean, "\n")
+    string=paste0(string, "   standard deviation 1: ", stddev, "\n")
+    
+    cat(string)
+}
+
+#Compare the effectiveness of each algorithm
+png("./Effectiveness.png")
+par(mfrow=c(4,4))
+
+#Compare the effectiveness of algorithm i against algorithm j
+for(i in 1:num_algorithms){
+  for(j in 1:num_algorithms) { 
+    
+    t_val = t.test(alg[[i]]$error, alg[[j]]$error, paired=TRUE)
+    
+    string=paste0("(floor: ", 1, ", algorithms: ", i, " and ", j, "): \n")
+    string=paste0(string, "   p Value:                ", t_val$p.value, "\n")
+    
+    cat(string)
+    
+    hist(alg[[i]]$error - alg[[j]]$error, main = paste0(i, " v ", j), xlab="Error Difference (m)")
+  }
+}
+
+
+dev.off()
+```
+
+
+
+
+
+
+
