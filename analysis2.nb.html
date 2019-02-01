@@ -173,12 +173,81 @@ $(document).ready(function () {
 
 
 <!-- rnb-text-begin -->
+<p>This segment computes the histograms of running the new binning strategy on the new data for each algorithm at each interval.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxnID0gbGlzdCg0KVxuYWxnW1sxXV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMV9OTi5jc3ZcIilcbmFsZ1tbMl1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czJfTk4uY3N2XCIpXG5hbGdbWzNdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMzX05OLmNzdlwiKVxuYWxnW1s0XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzNF9OTi5jc3ZcIilcbmludGVydmFscyA9IGxpc3QoNSlcbmludGVydmFsc1tbMV1dID0gMVxuaW50ZXJ2YWxzW1syXV0gPSAyXG5pbnRlcnZhbHNbWzNdXSA9IDNcbmludGVydmFsc1tbNF1dID0gNVxuaW50ZXJ2YWxzW1s1XV0gPSAxMFxuY3JlYXRlX2R1cl9oaXN0ID0gZnVuY3Rpb24oc3ViLCBhbGdfaWQsIGkpXG57XG4gIHN1YjEgPSBzdWJbW2FsZ19pZF1dW3doaWNoKHN1YltbYWxnX2lkXV0kZHVyYXRpb24gPT0gaSksXVxuICB0aXRsZSA9IHBhc3RlMChcIkFsZyBcIiwgYWxnX2lkLCBcIiwgSW50IFwiLCBpKVxuICBpZihucm93KHN1YjEpID09IDApXG4gICAgcmV0dXJuKClcbiAgaGlzdChzdWIxJGVycm9yLCBicmVha3M9NSwgbWFpbiA9IHRpdGxlLCB4bGFiPVwiRXJyb3IgKG0pXCIpXG59XG5jcmVhdGVfZHVyX2hpc3RzID0gZnVuY3Rpb24oYWxnLCBhbGdfaWQsIGludGVydmFscywgYnVpbGRpbmcsIGZsb29yLCB0b3BfbilcbntcbiAgc3ViID0gbGlzdChsZW5ndGgoYWxnKSlcbiAgXG4gICNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBmbG9vciAxXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBTQlxuICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdpdGggYSBkdXJhdGlvbiBvZiBpbnRlcnZhbCBzZWNvbmRzXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgd2hlcmUgdG9wX24gYmVhY29ucyB3ZXJlIHVzZWQgaW4gdGhlIGxvY2F0aW9uIGFwcHJveGltYXRpb25cbiAgZm9yKGkgaW4gMTpsZW5ndGgoYWxnKSlcbiAge1xuICAgIHN1YltbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9IFwiRkFLRV9URVNUXCIpLF1cbiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJHRlc3RpZCAhPSBcIkZBS0VfVEVTVF8yXCIpLF1cbiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJHRlc3RpZCAhPSBcIkZBS0VfVEVTVF8zXCIpLF1cbiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGZsb29yX3RydWUgPT0gZmxvb3IpLF1cbiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGJ1aWxkaW5nID09IGJ1aWxkaW5nKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0b3Bfbl9iZWFjb25zID09IHRvcF9uKSxdXG4gIH1cbiAgXG4gIGZpbGVuYW1lID0gcGFzdGUwKFwiLi9EdXJWRHVyLVwiKVxuICBmaWxlbmFtZSA9IHBhc3RlMChmaWxlbmFtZSwgXCJBbGcgXCIsIGFsZ19pZCwgXCItXCIpXG4gIGZpbGVuYW1lID0gcGFzdGUwKGZpbGVuYW1lLCBcIkJ1aWxkIFwiLCBidWlsZGluZywgXCItXCIpXG4gIGZpbGVuYW1lID0gcGFzdGUwKGZpbGVuYW1lLCBcIkZsb29yIFwiLCBmbG9vciwgXCItXCIpXG4gIGZpbGVuYW1lID0gcGFzdGUwKGZpbGVuYW1lLCBcIlRvcE4gXCIsIHRvcF9uLCBcIi5wbmdcIilcbiAgcG5nKGZpbGVuYW1lKVxuICBwYXIobWZyb3c9YygyLDIpKVxuICBcbiAgZm9yKGkgaW4gMTpsZW5ndGgoaW50ZXJ2YWxzKSlcbiAgICBjcmVhdGVfZHVyX2hpc3Qoc3ViLCBhbGdfaWQsIGludGVydmFsc1tbaV1dKVxufVxuY3JlYXRlX2R1cl9oaXN0cyhhbGcsIDEsIGludGVydmFscywgXCJTQlwiLCAxLCAzKVxuY3JlYXRlX2R1cl9oaXN0cyhhbGcsIDIsIGludGVydmFscywgXCJTQlwiLCAxLCAzKVxuYGBgIn0= -->
+<pre class="r"><code>alg = list(4)
+alg[[1]] = read.csv(&quot;testresults1_NN.csv&quot;)
+alg[[2]] = read.csv(&quot;testresults2_NN.csv&quot;)
+alg[[3]] = read.csv(&quot;testresults3_NN.csv&quot;)
+alg[[4]] = read.csv(&quot;testresults4_NN.csv&quot;)
+intervals = list(5)
+intervals[[1]] = 1
+intervals[[2]] = 2
+intervals[[3]] = 3
+intervals[[4]] = 5
+intervals[[5]] = 10
+create_dur_hist = function(sub, alg_id, i)
+{
+  sub1 = sub[[alg_id]][which(sub[[alg_id]]$duration == i),]
+  title = paste0(&quot;Alg &quot;, alg_id, &quot;, Int &quot;, i)
+  if(nrow(sub1) == 0)
+    return()
+  hist(sub1$error, breaks=5, main = title, xlab=&quot;Error (m)&quot;)
+}
+create_dur_hists = function(alg, alg_id, intervals, building, floor, top_n)
+{
+  sub = list(length(alg))
+  
+  #Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+  #Only select observations from floor 1
+  #Only select observations from SB
+  #Only select observations with a duration of interval seconds
+  #Only select observations where top_n beacons were used in the location approximation
+  for(i in 1:length(alg))
+  {
+    sub[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_2&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_3&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$floor_true == floor),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$building == building),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$top_n_beacons == top_n),]
+  }
+  
+  filename = paste0(&quot;./DurVDur-&quot;)
+  filename = paste0(filename, &quot;Alg &quot;, alg_id, &quot;-&quot;)
+  filename = paste0(filename, &quot;Build &quot;, building, &quot;-&quot;)
+  filename = paste0(filename, &quot;Floor &quot;, floor, &quot;-&quot;)
+  filename = paste0(filename, &quot;TopN &quot;, top_n, &quot;.png&quot;)
+  png(filename)
+  par(mfrow=c(2,2))
+  
+  for(i in 1:length(intervals))
+    create_dur_hist(sub, alg_id, intervals[[i]])
+}
+create_dur_hists(alg, 1, intervals, &quot;SB&quot;, 1, 3)
+create_dur_hists(alg, 2, intervals, &quot;SB&quot;, 1, 3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY3JlYXRlX2R1cl9oaXN0cyhhbGcsIDMsIGludGVydmFscywgXCJTQlwiLCAxLCAzKVxuY3JlYXRlX2R1cl9oaXN0cyhhbGcsIDQsIGludGVydmFscywgXCJTQlwiLCAxLCAzKVxuYGBgIn0= -->
+<pre class="r"><code>create_dur_hists(alg, 3, intervals, &quot;SB&quot;, 1, 3)
+create_dur_hists(alg, 4, intervals, &quot;SB&quot;, 1, 3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2hpbGUoZGV2Lm9mZigpKVxue1xufVxuYGBgIn0= -->
+<pre class="r"><code>while(dev.off())
+{
+}</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZGV2Lm9mZigpIDogY2Fubm90IHNodXQgZG93biBkZXZpY2UgMSAodGhlIG51bGwgZGV2aWNlKVxuIn0= -->
+<pre><code>Error in dev.off() : cannot shut down device 1 (the null device)</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
 <p>This segment compares the effectiveness the new binning strategy as compared to the original binning strategy on the new data.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubnVtX2FsZ29yaXRobXMgPSA4XG5hbGcgPSBsaXN0KG51bV9hbGdvcml0aG1zKVxuYWxnW1sxXV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMV9OTi5jc3ZcIilcbmFsZ1tbMl1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czJfTk4uY3N2XCIpXG5hbGdbWzNdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMzX05OLmNzdlwiKVxuYWxnW1s0XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzNF9OTi5jc3ZcIilcbmFsZ1tbNV1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czFfT04uY3N2XCIpXG5hbGdbWzZdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMyX09OLmNzdlwiKVxuYWxnW1s3XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzM19PTi5jc3ZcIilcbmFsZ1tbOF1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czRfT04uY3N2XCIpXG4jUmVtb3ZlIEZBS0VfVEVTVCwgRkFLRV9URVNUXzEsIGFuZCBGQUtFX1RFU1RfMlxuI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyBmcm9tIGZsb29yIDFcbiNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBTQlxuZm9yKGkgaW4gMTo4KVxue1xuICBhbGdbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJHRlc3RpZCAhPSBcIkZBS0VfVEVTVFwiKSxdXG4gIGFsZ1tbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9IFwiRkFLRV9URVNUXzJcIiksXVxuICBhbGdbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJHRlc3RpZCAhPSBcIkZBS0VfVEVTVF8zXCIpLF1cbiAgYWxnW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSRmbG9vcl90cnVlID09IDEpLF1cbiAgYWxnW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSRidWlsZGluZyA9PSBcIlNCXCIpLF1cbn1cbnBuZyhcIi4vRmlndXJlLnBuZ1wiKVxucGFyKG1mcm93PWMoMiwyKSlcbnRfdmFsID0gdC50ZXN0KGFsZ1tbMV1dJGVycm9yLCBhbGdbWzVdXSRlcnJvciwgcGFpcmVkPVRSVUUpXG5zdHJpbmc9cGFzdGUwKFwiKGFsZ29yaXRobTogXCIsIDEsIFwiKTogXFxuXCIpXG5zdHJpbmc9cGFzdGUwKHN0cmluZywgXCIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICBcIiwgdF92YWwkcC52YWx1ZSwgXCJcXG5cIilcbmNhdChzdHJpbmcpXG5gYGAifQ== -->
-<pre class="r"><code>num_algorithms = 8
-alg = list(num_algorithms)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxnID0gbGlzdCg4KVxuYWxnW1sxXV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMV9OTi5jc3ZcIilcbmFsZ1tbMl1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czJfTk4uY3N2XCIpXG5hbGdbWzNdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMzX05OLmNzdlwiKVxuYWxnW1s0XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzNF9OTi5jc3ZcIilcbmFsZ1tbNV1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czFfT04uY3N2XCIpXG5hbGdbWzZdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMyX09OLmNzdlwiKVxuYWxnW1s3XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzM19PTi5jc3ZcIilcbmFsZ1tbOF1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czRfT04uY3N2XCIpXG5cbiNDb21wYXJlIG5ldyBiaW5ubmluZyBzdHJhdGVneSB0byBvbGQgYmlubmluZyBzdHJhdGVneSBmb3IgYW4gYWxnb3JpdGhtXG5jb21wYXJlX2JpbnMgPSBmdW5jdGlvbihzdWIsIGFsZ19pZClcbntcbiAgaWYobnJvdyhzdWJbW2FsZ19pZF1dKSA9PSAwKVxuICAgIHJldHVybigpXG4gIGlmKG5yb3coc3ViW1thbGdfaWQrNF1dKSA9PSAwKVxuICAgIHJldHVybigpXG4gIFxuICB0X3ZhbCA9IHQudGVzdChzdWJbW2FsZ19pZF1dJGVycm9yLCBzdWJbW2FsZ19pZCs0XV0kZXJyb3IsIHBhaXJlZD1UUlVFKVxuICBzdHJpbmc9cGFzdGUwKFwiICAgKGFsZ29yaXRobTogXCIsIGFsZ19pZCwgXCIpOiBcXG5cIilcbiAgc3RyaW5nPXBhc3RlMChzdHJpbmcsIFwiICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgXCIsIHRfdmFsJHAudmFsdWUsIFwiXFxuXCIpXG4gIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgICAgIG5ld19tZWFuOiAgICAgICAgICAgICAgIFwiLCBtZWFuKHN1YltbYWxnX2lkXV0kZXJyb3IpLCBcIlxcblwiKVxuICBzdHJpbmc9cGFzdGUwKHN0cmluZywgXCIgICAgICBuZXdfZGV2OiAgICAgICAgICAgICAgICBcIiwgc2Qoc3ViW1thbGdfaWRdXSRlcnJvciksIFwiXFxuXCIpXG4gIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgICAgIG9sZF9tZWFuOiAgICAgICAgICAgICAgIFwiLCBtZWFuKHN1YltbYWxnX2lkKzRdXSRlcnJvciksIFwiXFxuXCIpXG4gIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgICAgIG9sZF9kZXY6ICAgICAgICAgICAgICAgIFwiLCBzZChzdWJbW2FsZ19pZCs0XV0kZXJyb3IpLCBcIlxcblwiKVxuICBjYXQoc3RyaW5nKVxuICBcbiAgZGlmZiA9IHN1YltbYWxnX2lkXV0kZXJyb3IgLSBzdWJbW2FsZ19pZCs0XV0kZXJyb3JcbiAgaGlzdChkaWZmLCBicmVha3M9MTAwLCBtYWluID0gcGFzdGUwKFwiQWxnb3JpdGhtIFwiLCBhbGdfaWQpLCB4bGFiPVwiRXJyb3IgRGlmZmVyZW5jZSAobSlcIilcbn1cblxubmV3X3Zfb2xkX2JpbnMgPSBmdW5jdGlvbihhbGcsIGludGVydmFsLCBidWlsZGluZywgZmxvb3IsIHRvcF9uKVxue1xuICBzdWIgPSBsaXN0KDgpXG4gIFxuICBzdHJpbmc9cGFzdGUwKFwiTmV3IEJpbnMgViBPbGQgRm9yIFwiLCBidWlsZGluZywgXCIgZmxvb3IgXCIsIGZsb29yLCBcIiBhdCBhbiBpbnRlcnZhbCBvZiBcIiwgaW50ZXJ2YWwsIFwiIHNlY29uZHNcXG5cIilcbiAgY2F0KHN0cmluZylcbiAgXG4gICNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBmbG9vciAxXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBTQlxuICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdpdGggYSBkdXJhdGlvbiBvZiBpbnRlcnZhbCBzZWNvbmRzXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgd2hlcmUgdG9wX24gYmVhY29ucyB3ZXJlIHVzZWQgaW4gdGhlIGxvY2F0aW9uIGFwcHJveGltYXRpb25cbiAgZm9yKGkgaW4gMTo4KVxuICB7XG4gICAgc3ViW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSR0ZXN0aWQgIT0gXCJGQUtFX1RFU1RcIiksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9IFwiRkFLRV9URVNUXzJcIiksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9IFwiRkFLRV9URVNUXzNcIiksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kZmxvb3JfdHJ1ZSA9PSBmbG9vciksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kYnVpbGRpbmcgPT0gYnVpbGRpbmcpLF1cbiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGR1cmF0aW9uID09IGludGVydmFsKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0b3Bfbl9iZWFjb25zID09IHRvcF9uKSxdXG4gIH1cbiAgXG4gIHBuZyhcIi4vRmlndXJlLnBuZ1wiKVxuICBwYXIobWZyb3c9YygyLDIpKVxuICBcbiAgY29tcGFyZV9iaW5zKHN1YiwgMSlcbiAgY29tcGFyZV9iaW5zKHN1YiwgMilcbiAgY29tcGFyZV9iaW5zKHN1YiwgMylcbiAgY29tcGFyZV9iaW5zKHN1YiwgNClcbiAgXG4gIGRldi5vZmYoKVxufVxuXG5uZXdfdl9vbGRfYmlucyhhbGcsIDEsIFwiU0JcIiwgMSlcbm5ld192X29sZF9iaW5zKGFsZywgMiwgXCJTQlwiLCAxKVxubmV3X3Zfb2xkX2JpbnMoYWxnLCAzLCBcIlNCXCIsIDEpXG5uZXdfdl9vbGRfYmlucyhhbGcsIDUsIFwiU0JcIiwgMSlcbm5ld192X29sZF9iaW5zKGFsZywgMTAsIFwiU0JcIiwgMSlcbmBgYCJ9 -->
+<pre class="r"><code>alg = list(8)
 alg[[1]] = read.csv(&quot;testresults1_NN.csv&quot;)
 alg[[2]] = read.csv(&quot;testresults2_NN.csv&quot;)
 alg[[3]] = read.csv(&quot;testresults3_NN.csv&quot;)
@@ -187,90 +256,364 @@ alg[[5]] = read.csv(&quot;testresults1_ON.csv&quot;)
 alg[[6]] = read.csv(&quot;testresults2_ON.csv&quot;)
 alg[[7]] = read.csv(&quot;testresults3_ON.csv&quot;)
 alg[[8]] = read.csv(&quot;testresults4_ON.csv&quot;)
-#Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
-#Only select observations from floor 1
-#Only select observations from SB
-for(i in 1:8)
+
+#Compare new binnning strategy to old binning strategy for an algorithm
+compare_bins = function(sub, alg_id)
 {
-  alg[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST&quot;),]
-  alg[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST_2&quot;),]
-  alg[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST_3&quot;),]
-  alg[[i]] = alg[[i]][which(alg[[i]]$floor_true == 1),]
-  alg[[i]] = alg[[i]][which(alg[[i]]$building == &quot;SB&quot;),]
+  if(nrow(sub[[alg_id]]) == 0)
+    return()
+  if(nrow(sub[[alg_id+4]]) == 0)
+    return()
+  
+  t_val = t.test(sub[[alg_id]]$error, sub[[alg_id+4]]$error, paired=TRUE)
+  string=paste0(&quot;   (algorithm: &quot;, alg_id, &quot;): \n&quot;)
+  string=paste0(string, &quot;      p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
+  string=paste0(string, &quot;      new_mean:               &quot;, mean(sub[[alg_id]]$error), &quot;\n&quot;)
+  string=paste0(string, &quot;      new_dev:                &quot;, sd(sub[[alg_id]]$error), &quot;\n&quot;)
+  string=paste0(string, &quot;      old_mean:               &quot;, mean(sub[[alg_id+4]]$error), &quot;\n&quot;)
+  string=paste0(string, &quot;      old_dev:                &quot;, sd(sub[[alg_id+4]]$error), &quot;\n&quot;)
+  cat(string)
+  
+  diff = sub[[alg_id]]$error - sub[[alg_id+4]]$error
+  hist(diff, breaks=100, main = paste0(&quot;Algorithm &quot;, alg_id), xlab=&quot;Error Difference (m)&quot;)
 }
-png(&quot;./Figure.png&quot;)
-par(mfrow=c(2,2))
-t_val = t.test(alg[[1]]$error, alg[[5]]$error, paired=TRUE)
-string=paste0(&quot;(algorithm: &quot;, 1, &quot;): \n&quot;)
-string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
-cat(string)</code></pre>
+
+new_v_old_bins = function(alg, interval, building, floor, top_n)
+{
+  sub = list(8)
+  
+  string=paste0(&quot;New Bins V Old For &quot;, building, &quot; floor &quot;, floor, &quot; at an interval of &quot;, interval, &quot; seconds\n&quot;)
+  cat(string)
+  
+  #Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+  #Only select observations from floor 1
+  #Only select observations from SB
+  #Only select observations with a duration of interval seconds
+  #Only select observations where top_n beacons were used in the location approximation
+  for(i in 1:8)
+  {
+    sub[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_2&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_3&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$floor_true == floor),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$building == building),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$duration == interval),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$top_n_beacons == top_n),]
+  }
+  
+  png(&quot;./Figure.png&quot;)
+  par(mfrow=c(2,2))
+  
+  compare_bins(sub, 1)
+  compare_bins(sub, 2)
+  compare_bins(sub, 3)
+  compare_bins(sub, 4)
+  
+  dev.off()
+}
+
+new_v_old_bins(alg, 1, &quot;SB&quot;, 1)
+new_v_old_bins(alg, 2, &quot;SB&quot;, 1)
+new_v_old_bins(alg, 3, &quot;SB&quot;, 1)
+new_v_old_bins(alg, 5, &quot;SB&quot;, 1)
+new_v_old_bins(alg, 10, &quot;SB&quot;, 1)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiKGFsZ29yaXRobTogMSk6IFxuICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4wMTUzNTU0ODg5MjM3MDQ3XG4ifQ== -->
-<pre><code>(algorithm: 1): 
-   p Value:                0.0153554889237047</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGlzdChhbGdbWzFdXSRlcnJvciAtIGFsZ1tbNV1dJGVycm9yLCBicmVha3M9MTAwLCBtYWluID0gcGFzdGUwKFwiQWxnb3JpdGhtIFwiLCAxKSwgeGxhYj1cIkVycm9yIERpZmZlcmVuY2UgKG0pXCIpXG50X3ZhbCA9IHQudGVzdChhbGdbWzJdXSRlcnJvciwgYWxnW1s2XV0kZXJyb3IsIHBhaXJlZD1UUlVFKVxuc3RyaW5nPXBhc3RlMChcIihhbGdvcml0aG06IFwiLCAyLCBcIik6IFxcblwiKVxuc3RyaW5nPXBhc3RlMChzdHJpbmcsIFwiICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgXCIsIHRfdmFsJHAudmFsdWUsIFwiXFxuXCIpXG5jYXQoc3RyaW5nKVxuYGBgIn0= -->
-<pre class="r"><code>hist(alg[[1]]$error - alg[[5]]$error, breaks=100, main = paste0(&quot;Algorithm &quot;, 1), xlab=&quot;Error Difference (m)&quot;)
-t_val = t.test(alg[[2]]$error, alg[[6]]$error, paired=TRUE)
-string=paste0(&quot;(algorithm: &quot;, 2, &quot;): \n&quot;)
-string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
-cat(string)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiKGFsZ29yaXRobTogMik6IFxuICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMS4zNzc2MjExNTkxNjcxOWUtMDZcbiJ9 -->
-<pre><code>(algorithm: 2): 
-   p Value:                1.37762115916719e-06</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGlzdChhbGdbWzJdXSRlcnJvciAtIGFsZ1tbNl1dJGVycm9yLCBicmVha3M9NSwgbWFpbiA9IHBhc3RlMChcIkFsZ29yaXRobSBcIiwgMiksIHhsYWI9XCJFcnJvciBEaWZmZXJlbmNlIChtKVwiKVxuYGBgIn0= -->
-<pre class="r"><code>hist(alg[[2]]$error - alg[[6]]$error, breaks=5, main = paste0(&quot;Algorithm &quot;, 2), xlab=&quot;Error Difference (m)&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudF92YWwgPSB0LnRlc3QoYWxnW1szXV0kZXJyb3IsIGFsZ1tbN11dJGVycm9yLCBwYWlyZWQ9VFJVRSlcbnN0cmluZz1wYXN0ZTAoXCIoYWxnb3JpdGhtOiBcIiwgMywgXCIpOiBcXG5cIilcbnN0cmluZz1wYXN0ZTAoc3RyaW5nLCBcIiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIFwiLCB0X3ZhbCRwLnZhbHVlLCBcIlxcblwiKVxuY2F0KHN0cmluZylcbmBgYCJ9 -->
-<pre class="r"><code>t_val = t.test(alg[[3]]$error, alg[[7]]$error, paired=TRUE)
-string=paste0(&quot;(algorithm: &quot;, 3, &quot;): \n&quot;)
-string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
-cat(string)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiKGFsZ29yaXRobTogMyk6IFxuICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC44NzQ0NTU0MzczNDU0MDVcbiJ9 -->
-<pre><code>(algorithm: 3): 
-   p Value:                0.874455437345405</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGlzdChhbGdbWzNdXSRlcnJvciAtIGFsZ1tbN11dJGVycm9yLCBicmVha3M9MTAwLCBtYWluID0gcGFzdGUwKFwiQWxnb3JpdGhtIFwiLCAzKSwgeGxhYj1cIkVycm9yIERpZmZlcmVuY2UgKG0pXCIpXG50X3ZhbCA9IHQudGVzdChhbGdbWzRdXSRlcnJvciwgYWxnW1s4XV0kZXJyb3IsIHBhaXJlZD1UUlVFKVxuc3RyaW5nPXBhc3RlMChcIihhbGdvcml0aG06IFwiLCA0LCBcIik6IFxcblwiKVxuc3RyaW5nPXBhc3RlMChzdHJpbmcsIFwiICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgXCIsIHRfdmFsJHAudmFsdWUsIFwiXFxuXCIpXG5jYXQoc3RyaW5nKVxuYGBgIn0= -->
-<pre class="r"><code>hist(alg[[3]]$error - alg[[7]]$error, breaks=100, main = paste0(&quot;Algorithm &quot;, 3), xlab=&quot;Error Difference (m)&quot;)
-t_val = t.test(alg[[4]]$error, alg[[8]]$error, paired=TRUE)
-string=paste0(&quot;(algorithm: &quot;, 4, &quot;): \n&quot;)
-string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
-cat(string)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiKGFsZ29yaXRobTogNCk6IFxuICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4wMjcwMjU4NDc0MjMyMzk5XG4ifQ== -->
-<pre><code>(algorithm: 4): 
-   p Value:                0.0270258474232399</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGlzdChhbGdbWzRdXSRlcnJvciAtIGFsZ1tbOF1dJGVycm9yLCBicmVha3M9MTAwLCBtYWluID0gcGFzdGUwKFwiQWxnb3JpdGhtIFwiLCA0KSwgeGxhYj1cIkVycm9yIERpZmZlcmVuY2UgKG0pXCIpXG5gYGAifQ== -->
-<pre class="r"><code>hist(alg[[4]]$error - alg[[8]]$error, breaks=100, main = paste0(&quot;Algorithm &quot;, 4), xlab=&quot;Error Difference (m)&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGV2Lm9mZigpXG5gYGAifQ== -->
-<pre class="r"><code>dev.off()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoibnVsbCBkZXZpY2UgXG4gICAgICAgICAgMSBcbiJ9 -->
-<pre><code>null device 
-          1 </code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>This segment compares the different algorithms under the new binning strategy on the new data.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGV2Lm9mZigpXG5cbmBgYCJ9 -->
-<pre class="r"><code>dev.off()
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxnID0gbGlzdCg0KVxuYWxnW1sxXV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMV9OTi5jc3ZcIilcbmFsZ1tbMl1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czJfTk4uY3N2XCIpXG5hbGdbWzNdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMzX05OLmNzdlwiKVxuYWxnW1s0XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzNF9OTi5jc3ZcIilcblxuY29tcGFyZV9hbGdvcml0aG1zID0gZnVuY3Rpb24oc3ViLCBpLCBqLCBpbnRlcnZhbCwgYnVpbGRpbmcsIGZsb29yKVxue1xuICBpZihucm93KHN1YltbaV1dKSA9PSAwKVxuICAgIHJldHVybigpXG4gIGlmKG5yb3coc3ViW1tqXV0pID09IDApXG4gICAgcmV0dXJuKClcbiAgXG4gIFxuICB0X3ZhbCA9IHQudGVzdChzdWJbW2ldXSRlcnJvciwgc3ViW1tqXV0kZXJyb3IsIHBhaXJlZD1UUlVFKVxuICBcbiAgc3RyaW5nPXBhc3RlMChcIiAgKGZsb29yOiBcIiwgZmxvb3IsIFwiLCBhbGdvcml0aG1zOiBcIiwgaSwgXCIgYW5kIFwiLCBqLCBcIik6IFxcblwiKVxuICBzdHJpbmc9cGFzdGUwKHN0cmluZywgXCIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICBcIiwgdF92YWwkcC52YWx1ZSwgXCJcXG5cIilcbiAgY2F0KHN0cmluZylcbiAgXG4gIGhpc3Qoc3ViW1tpXV0kZXJyb3IgLSBzdWJbW2pdXSRlcnJvciwgbWFpbiA9IHBhc3RlMChpLCBcIiB2IFwiLCBqKSwgeGxhYj1cIkVycm9yIERpZmZlcmVuY2UgKG0pXCIpXG59XG5cbmNvbXBhcmVfbmV3X2FsZ29yaXRobXMgPSBmdW5jdGlvbihhbGcsIGludGVydmFsLCBidWlsZGluZywgZmxvb3IsIHRvcF9uKVxue1xuICBzdWIgPSBsaXN0KDQpXG4gIFxuICBzdHJpbmc9cGFzdGUwKFwiQWxnb3JpdGhtIHYgQWxnb3JpdGhtIEZvciBcIiwgYnVpbGRpbmcsIFwiIGZsb29yIFwiLCBmbG9vciwgXCIgYXQgYW4gaW50ZXJ2YWwgb2YgXCIsIGludGVydmFsLCBcIiBzZWNvbmRzXFxuXCIpXG4gIGNhdChzdHJpbmcpXG4gIFxuICAjUmVtb3ZlIEZBS0VfVEVTVCwgRkFLRV9URVNUXzEsIGFuZCBGQUtFX1RFU1RfMlxuICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIGZyb20gZmxvb3IgMVxuICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIGZyb20gU0JcbiAgI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyB3aXRoIHRvcCAzIGJlYWNvbnNcbiAgZm9yKGkgaW4gMTo0KVxuICB7XG4gICAgc3ViW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSR0ZXN0aWQgIT0gXCJGQUtFX1RFU1RcIiksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9IFwiRkFLRV9URVNUXzJcIiksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9IFwiRkFLRV9URVNUXzNcIiksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kZmxvb3JfdHJ1ZSA9PSBmbG9vciksXVxuICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kYnVpbGRpbmcgPT0gYnVpbGRpbmcpLF1cbiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGR1cmF0aW9uID09IGludGVydmFsKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0b3Bfbl9iZWFjb25zID09IHRvcF9uKSxdXG4gIH1cbiAgXG4gICNDb21wYXJlIHRoZSBlZmZlY3RpdmVuZXNzIG9mIGVhY2ggYWxnb3JpdGhtXG4gIHBuZyhcIi4vRWZmZWN0aXZlbmVzcy5wbmdcIilcbiAgcGFyKG1mcm93PWMoNCw0KSlcbiAgXG4gICNDb21wYXJlIHRoZSBlZmZlY3RpdmVuZXNzIG9mIGFsZ29yaXRobSBpIGFnYWluc3QgYWxnb3JpdGhtIGpcbiAgZm9yKGkgaW4gMTo0KXtcbiAgICBmb3IoaiBpbiAxOjQpIHsgXG4gICAgICBjb21wYXJlX2FsZ29yaXRobXMoc3ViLCBpLCBqLCBpbnRlcnZhbCwgYnVpbGRpbmcsIGZsb29yKVxuICAgIH1cbiAgfVxufVxuXG5jb21wYXJlX25ld19hbGdvcml0aG1zKGFsZywgMSwgXCJTQlwiLCAxLCAzKVxuY29tcGFyZV9uZXdfYWxnb3JpdGhtcyhhbGcsIDIsIFwiU0JcIiwgMSwgMylcbmNvbXBhcmVfbmV3X2FsZ29yaXRobXMoYWxnLCAzLCBcIlNCXCIsIDEsIDMpXG5jb21wYXJlX25ld19hbGdvcml0aG1zKGFsZywgNSwgXCJTQlwiLCAxLCAzKVxuY29tcGFyZV9uZXdfYWxnb3JpdGhtcyhhbGcsIDEwLCBcIlNCXCIsIDEsIDMpXG5cbmRldi5vZmYoKVxuYGBgIn0= -->
+<pre class="r"><code>alg = list(4)
+alg[[1]] = read.csv(&quot;testresults1_NN.csv&quot;)
+alg[[2]] = read.csv(&quot;testresults2_NN.csv&quot;)
+alg[[3]] = read.csv(&quot;testresults3_NN.csv&quot;)
+alg[[4]] = read.csv(&quot;testresults4_NN.csv&quot;)
+
+compare_algorithms = function(sub, i, j, interval, building, floor)
+{
+  if(nrow(sub[[i]]) == 0)
+    return()
+  if(nrow(sub[[j]]) == 0)
+    return()
+  
+  
+  t_val = t.test(sub[[i]]$error, sub[[j]]$error, paired=TRUE)
+  
+  string=paste0(&quot;  (floor: &quot;, floor, &quot;, algorithms: &quot;, i, &quot; and &quot;, j, &quot;): \n&quot;)
+  string=paste0(string, &quot;   p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
+  cat(string)
+  
+  hist(sub[[i]]$error - sub[[j]]$error, main = paste0(i, &quot; v &quot;, j), xlab=&quot;Error Difference (m)&quot;)
+}
+
+compare_new_algorithms = function(alg, interval, building, floor, top_n)
+{
+  sub = list(4)
+  
+  string=paste0(&quot;Algorithm v Algorithm For &quot;, building, &quot; floor &quot;, floor, &quot; at an interval of &quot;, interval, &quot; seconds\n&quot;)
+  cat(string)
+  
+  #Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+  #Only select observations from floor 1
+  #Only select observations from SB
+  #Only select observations with top 3 beacons
+  for(i in 1:4)
+  {
+    sub[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_2&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_3&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$floor_true == floor),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$building == building),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$duration == interval),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$top_n_beacons == top_n),]
+  }
+  
+  #Compare the effectiveness of each algorithm
+  png(&quot;./Effectiveness.png&quot;)
+  par(mfrow=c(4,4))
+  
+  #Compare the effectiveness of algorithm i against algorithm j
+  for(i in 1:4){
+    for(j in 1:4) { 
+      compare_algorithms(sub, i, j, interval, building, floor)
+    }
+  }
+}
+
+compare_new_algorithms(alg, 1, &quot;SB&quot;, 1, 3)
+compare_new_algorithms(alg, 2, &quot;SB&quot;, 1, 3)
+compare_new_algorithms(alg, 3, &quot;SB&quot;, 1, 3)
+compare_new_algorithms(alg, 5, &quot;SB&quot;, 1, 3)
+compare_new_algorithms(alg, 10, &quot;SB&quot;, 1, 3)
+
+dev.off()</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gZGV2Lm9mZigpIDogY2Fubm90IHNodXQgZG93biBkZXZpY2UgMSAodGhlIG51bGwgZGV2aWNlKVxuIn0= -->
-<pre><code>Error in dev.off() : cannot shut down device 1 (the null device)</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>This segment compares each algorithm with itself at different durations. This is to show whether or not the scanning period can be lowered.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxnID0gbGlzdCg0KVxuYWxnW1sxXV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzMV9OTi5jc3ZcIilcbmFsZ1tbMl1dID0gcmVhZC5jc3YoXCJ0ZXN0cmVzdWx0czJfTk4uY3N2XCIpXG5hbGdbWzNdXSA9IHJlYWQuY3N2KFwidGVzdHJlc3VsdHMzX05OLmNzdlwiKVxuYWxnW1s0XV0gPSByZWFkLmNzdihcInRlc3RyZXN1bHRzNF9OTi5jc3ZcIilcbmludGVydmFscyA9IGxpc3QoNClcbmludGVydmFsc1tbMV1dID0gMlxuaW50ZXJ2YWxzW1syXV0gPSAzXG5pbnRlcnZhbHNbWzNdXSA9IDVcbmludGVydmFsc1tbNF1dID0gMTBcbiNDb21wYXJlIHRoZSBlcnJvciBvZiB0aGUgYWxnb3JpdGhtIGF0IGludGVydmFscyBpMSBhbmQgaTJcbmNvbXBhcmVfaW50ZXJ2YWxzID0gZnVuY3Rpb24oc3ViLCBhbGdfaWQsIGkxLCBpMilcbntcbiAgaWYobnJvdyhzdWJbW2FsZ19pZF1dKSA9PSAwKVxuICAgIHJldHVybigpXG4gIFxuICBzdWIxID0gc3ViW1thbGdfaWRdXVt3aGljaChzdWJbW2FsZ19pZF1dJGR1cmF0aW9uID09IGkxKSxdXG4gIHN1YjIgPSBzdWJbW2FsZ19pZF1dW3doaWNoKHN1YltbYWxnX2lkXV0kZHVyYXRpb24gPT0gaTIpLF1cbiAgXG4gIGlmKG5yb3coc3ViMSkgPT0gMCB8fCBucm93KHN1YjIpID09IDApXG4gICAgcmV0dXJuKClcbiAgXG4gIHRfdmFsID0gdC50ZXN0KHN1YjEkZXJyb3IsIHN1YjIkZXJyb3IsIHBhaXJlZD1GQUxTRSlcbiAgXG4gIHN0cmluZz1wYXN0ZTAoXCIgIChpMTogXCIsIGkxLCBcIiwgaTI6IFwiLCBpMiwgXCIpOiBcXG5cIilcbiAgc3RyaW5nPXBhc3RlMChzdHJpbmcsIFwiICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgXCIsIHRfdmFsJHAudmFsdWUsIFwiXFxuXCIpXG4gIGNhdChzdHJpbmcpXG59XG5jb21wYXJlX2FsZ29yaXRobV9pbnRlcnZhbHMgPSBmdW5jdGlvbihhbGcsIGFsZ19pZCwgaW50ZXJ2YWxzLCBidWlsZGluZywgZmxvb3IsIHRvcF9uKVxue1xuICBzdWIgPSBsaXN0KDQpXG4gIFxuICBzdHJpbmc9cGFzdGUwKFwiSW50ZXJ2YWwgdiBJbnRlcnZhbCBGb3IgXCIsIGJ1aWxkaW5nLCBcIiBmbG9vciBcIiwgZmxvb3IsIFwiIGZvciBhbGdvcml0aG0gXCIsIGFsZ19pZCwgXCJcXG5cIilcbiAgY2F0KHN0cmluZylcbiAgXG4gICNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBmbG9vciAxXG4gICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBTQlxuICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdpdGggdG9wIDMgYmVhY29uc1xuICBmb3IoaSBpbiAxOjQpXG4gIHtcbiAgICBzdWJbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJHRlc3RpZCAhPSBcIkZBS0VfVEVTVFwiKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0ZXN0aWQgIT0gXCJGQUtFX1RFU1RfMlwiKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0ZXN0aWQgIT0gXCJGQUtFX1RFU1RfM1wiKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSRmbG9vcl90cnVlID09IGZsb29yKSxdXG4gICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSRidWlsZGluZyA9PSBidWlsZGluZyksXVxuICAgIHN1YltbaV1dID0gYWxnW1tpXV1bd2hpY2goc3ViW1tpXV0kdG9wX25fYmVhY29ucyA9PSB0b3BfbiksXVxuICB9XG4gIFxuICBmaWxlbmFtZSA9IHBhc3RlMChcIi4vRHVyVkR1ci1cIilcbiAgZmlsZW5hbWUgPSBwYXN0ZTAoZmlsZW5hbWUsIFwiQWxnIFwiLCBhbGdfaWQsIFwiLVwiKVxuICBmaWxlbmFtZSA9IHBhc3RlMChmaWxlbmFtZSwgXCJCdWlsZCBcIiwgYnVpbGRpbmcsIFwiLVwiKVxuICBmaWxlbmFtZSA9IHBhc3RlMChmaWxlbmFtZSwgXCJGbG9vciBcIiwgZmxvb3IsIFwiLVwiKVxuICBmaWxlbmFtZSA9IHBhc3RlMChmaWxlbmFtZSwgXCJUb3BOIFwiLCB0b3BfbiwgXCIucG5nXCIpXG4gIHBuZyhmaWxlbmFtZSlcbiAgcGFyKG1mcm93PWMoNSw1KSlcbiAgXG4gIGZvcihpIGluIDE6NCl7XG4gICAgZm9yKGogaW4gMTo0KSB7IFxuICAgICAgY29tcGFyZV9pbnRlcnZhbHMoc3ViLCBhbGdfaWQsIGludGVydmFsc1tbaV1dLCBpbnRlcnZhbHNbW2pdXSlcbiAgICB9XG4gIH1cbn1cbmNvbXBhcmVfYWxnb3JpdGhtX2ludGVydmFscyhhbGcsIDEsIGludGVydmFscywgXCJTQlwiLCAxLCAzKVxuYGBgIn0= -->
+<pre class="r"><code>alg = list(4)
+alg[[1]] = read.csv(&quot;testresults1_NN.csv&quot;)
+alg[[2]] = read.csv(&quot;testresults2_NN.csv&quot;)
+alg[[3]] = read.csv(&quot;testresults3_NN.csv&quot;)
+alg[[4]] = read.csv(&quot;testresults4_NN.csv&quot;)
+intervals = list(4)
+intervals[[1]] = 2
+intervals[[2]] = 3
+intervals[[3]] = 5
+intervals[[4]] = 10
+#Compare the error of the algorithm at intervals i1 and i2
+compare_intervals = function(sub, alg_id, i1, i2)
+{
+  if(nrow(sub[[alg_id]]) == 0)
+    return()
+  
+  sub1 = sub[[alg_id]][which(sub[[alg_id]]$duration == i1),]
+  sub2 = sub[[alg_id]][which(sub[[alg_id]]$duration == i2),]
+  
+  if(nrow(sub1) == 0 || nrow(sub2) == 0)
+    return()
+  
+  t_val = t.test(sub1$error, sub2$error, paired=FALSE)
+  
+  string=paste0(&quot;  (i1: &quot;, i1, &quot;, i2: &quot;, i2, &quot;): \n&quot;)
+  string=paste0(string, &quot;      p Value:                &quot;, t_val$p.value, &quot;\n&quot;)
+  cat(string)
+}
+compare_algorithm_intervals = function(alg, alg_id, intervals, building, floor, top_n)
+{
+  sub = list(4)
+  
+  string=paste0(&quot;Interval v Interval For &quot;, building, &quot; floor &quot;, floor, &quot; for algorithm &quot;, alg_id, &quot;\n&quot;)
+  cat(string)
+  
+  #Remove FAKE_TEST, FAKE_TEST_1, and FAKE_TEST_2
+  #Only select observations from floor 1
+  #Only select observations from SB
+  #Only select observations with top 3 beacons
+  for(i in 1:4)
+  {
+    sub[[i]] = alg[[i]][which(alg[[i]]$testid != &quot;FAKE_TEST&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_2&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$testid != &quot;FAKE_TEST_3&quot;),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$floor_true == floor),]
+    sub[[i]] = sub[[i]][which(sub[[i]]$building == building),]
+    sub[[i]] = alg[[i]][which(sub[[i]]$top_n_beacons == top_n),]
+  }
+  
+  filename = paste0(&quot;./DurVDur-&quot;)
+  filename = paste0(filename, &quot;Alg &quot;, alg_id, &quot;-&quot;)
+  filename = paste0(filename, &quot;Build &quot;, building, &quot;-&quot;)
+  filename = paste0(filename, &quot;Floor &quot;, floor, &quot;-&quot;)
+  filename = paste0(filename, &quot;TopN &quot;, top_n, &quot;.png&quot;)
+  png(filename)
+  par(mfrow=c(5,5))
+  
+  for(i in 1:4){
+    for(j in 1:4) { 
+      compare_intervals(sub, alg_id, intervals[[i]], intervals[[j]])
+    }
+  }
+}
+compare_algorithm_intervals(alg, 1, intervals, &quot;SB&quot;, 1, 3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiSW50ZXJ2YWwgdiBJbnRlcnZhbCBGb3IgU0IgZmxvb3IgMSBmb3IgYWxnb3JpdGhtIDFcbiAgKGkxOiAyLCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMVxuICAoaTE6IDIsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjc3OTI2OTU5OTQ4ODQ0XG4gIChpMTogMiwgaTI6IDUpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzUyMTg3MDMwNTA3OTYyXG4gIChpMTogMiwgaTI6IDEwKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjAxNjg3ODQ2MTQzNzU0OTdcbiAgKGkxOiAzLCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC43NzkyNjk1OTk0ODg0NFxuICAoaTE6IDMsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAxXG4gIChpMTogMywgaTI6IDUpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzQzNzU3ODQwMDc5MDI2XG4gIChpMTogMywgaTI6IDEwKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjEwMzM1NDU1NDg1MTVcbiAgKGkxOiA1LCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4zNTIxODcwMzA1MDc5NjJcbiAgKGkxOiA1LCBpMjogMyk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4zNDM3NTc4NDAwNzkwMjZcbiAgKGkxOiA1LCBpMjogNSk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMVxuICAoaTE6IDUsIGkyOiAxMCk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4yOTkyMDU2NzMzNzA1NjVcbiAgKGkxOiAxMCwgaTI6IDIpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMDE2ODc4NDYxNDM3NTQ5N1xuICAoaTE6IDEwLCBpMjogMyk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4xMDMzNTQ1NTQ4NTE1XG4gIChpMTogMTAsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjI5OTIwNTY3MzM3MDU2NVxuICAoaTE6IDEwLCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiJ9 -->
+<pre><code>Interval v Interval For SB floor 1 for algorithm 1
+  (i1: 2, i2: 2): 
+      p Value:                1
+  (i1: 2, i2: 3): 
+      p Value:                0.77926959948844
+  (i1: 2, i2: 5): 
+      p Value:                0.352187030507962
+  (i1: 2, i2: 10): 
+      p Value:                0.0168784614375497
+  (i1: 3, i2: 2): 
+      p Value:                0.77926959948844
+  (i1: 3, i2: 3): 
+      p Value:                1
+  (i1: 3, i2: 5): 
+      p Value:                0.343757840079026
+  (i1: 3, i2: 10): 
+      p Value:                0.1033545548515
+  (i1: 5, i2: 2): 
+      p Value:                0.352187030507962
+  (i1: 5, i2: 3): 
+      p Value:                0.343757840079026
+  (i1: 5, i2: 5): 
+      p Value:                1
+  (i1: 5, i2: 10): 
+      p Value:                0.299205673370565
+  (i1: 10, i2: 2): 
+      p Value:                0.0168784614375497
+  (i1: 10, i2: 3): 
+      p Value:                0.1033545548515
+  (i1: 10, i2: 5): 
+      p Value:                0.299205673370565
+  (i1: 10, i2: 10): 
+      p Value:                1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgMiwgaW50ZXJ2YWxzLCBcIlNCXCIsIDEsIDMpXG5gYGAifQ== -->
+<pre class="r"><code>compare_algorithm_intervals(alg, 2, intervals, &quot;SB&quot;, 1, 3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiSW50ZXJ2YWwgdiBJbnRlcnZhbCBGb3IgU0IgZmxvb3IgMSBmb3IgYWxnb3JpdGhtIDJcbiAgKGkxOiAyLCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMVxuICAoaTE6IDIsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjQ1NTA1ODY2MDk4OTMzN1xuICAoaTE6IDIsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjM0NjUzOTMyNjk3NTE1NVxuICAoaTE6IDIsIGkyOiAxMCk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4wNDU2NzEzNzQzNDM3NTUyXG4gIChpMTogMywgaTI6IDIpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuNDU1MDU4NjYwOTg5MzM3XG4gIChpMTogMywgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiAgKGkxOiAzLCBpMjogNSk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4zMjU5NjEyMjk4OTYxMjNcbiAgKGkxOiAzLCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMjgxNDM5MjM3MzI1NjA4XG4gIChpMTogNSwgaTI6IDIpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzQ2NTM5MzI2OTc1MTU1XG4gIChpMTogNSwgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzI1OTYxMjI5ODk2MTIzXG4gIChpMTogNSwgaTI6IDUpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiAgKGkxOiA1LCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzAyNTY4ODU0NjE4MzQ2XG4gIChpMTogMTAsIGkyOiAyKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjA0NTY3MTM3NDM0Mzc1NTJcbiAgKGkxOiAxMCwgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMjgxNDM5MjM3MzI1NjA4XG4gIChpMTogMTAsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjMwMjU2ODg1NDYxODM0NlxuICAoaTE6IDEwLCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiJ9 -->
+<pre><code>Interval v Interval For SB floor 1 for algorithm 2
+  (i1: 2, i2: 2): 
+      p Value:                1
+  (i1: 2, i2: 3): 
+      p Value:                0.455058660989337
+  (i1: 2, i2: 5): 
+      p Value:                0.346539326975155
+  (i1: 2, i2: 10): 
+      p Value:                0.0456713743437552
+  (i1: 3, i2: 2): 
+      p Value:                0.455058660989337
+  (i1: 3, i2: 3): 
+      p Value:                1
+  (i1: 3, i2: 5): 
+      p Value:                0.325961229896123
+  (i1: 3, i2: 10): 
+      p Value:                0.281439237325608
+  (i1: 5, i2: 2): 
+      p Value:                0.346539326975155
+  (i1: 5, i2: 3): 
+      p Value:                0.325961229896123
+  (i1: 5, i2: 5): 
+      p Value:                1
+  (i1: 5, i2: 10): 
+      p Value:                0.302568854618346
+  (i1: 10, i2: 2): 
+      p Value:                0.0456713743437552
+  (i1: 10, i2: 3): 
+      p Value:                0.281439237325608
+  (i1: 10, i2: 5): 
+      p Value:                0.302568854618346
+  (i1: 10, i2: 10): 
+      p Value:                1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgMywgaW50ZXJ2YWxzLCBcIlNCXCIsIDEsIDMpXG5gYGAifQ== -->
+<pre class="r"><code>compare_algorithm_intervals(alg, 3, intervals, &quot;SB&quot;, 1, 3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiSW50ZXJ2YWwgdiBJbnRlcnZhbCBGb3IgU0IgZmxvb3IgMSBmb3IgYWxnb3JpdGhtIDNcbiAgKGkxOiAyLCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMVxuICAoaTE6IDIsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjg5ODY2MTI0ODYzNjE3MVxuICAoaTE6IDIsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjM0OTM2NTEyMTg1NjMxNlxuICAoaTE6IDIsIGkyOiAxMCk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4wMTU0MzQzNTAwMjg3NTIxXG4gIChpMTogMywgaTI6IDIpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuODk4NjYxMjQ4NjM2MTcxXG4gIChpMTogMywgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiAgKGkxOiAzLCBpMjogNSk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4zNDU2MzkwNDc5NjUzNTlcbiAgKGkxOiAzLCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMDYwMzQyOTg1MjYwNjI4M1xuICAoaTE6IDUsIGkyOiAyKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjM0OTM2NTEyMTg1NjMxNlxuICAoaTE6IDUsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjM0NTYzOTA0Nzk2NTM1OVxuICAoaTE6IDUsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAxXG4gIChpMTogNSwgaTI6IDEwKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjI5NDkxNjc2Mjg5OTY2M1xuICAoaTE6IDEwLCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4wMTU0MzQzNTAwMjg3NTIxXG4gIChpMTogMTAsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjA2MDM0Mjk4NTI2MDYyODNcbiAgKGkxOiAxMCwgaTI6IDUpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMjk0OTE2NzYyODk5NjYzXG4gIChpMTogMTAsIGkyOiAxMCk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMVxuIn0= -->
+<pre><code>Interval v Interval For SB floor 1 for algorithm 3
+  (i1: 2, i2: 2): 
+      p Value:                1
+  (i1: 2, i2: 3): 
+      p Value:                0.898661248636171
+  (i1: 2, i2: 5): 
+      p Value:                0.349365121856316
+  (i1: 2, i2: 10): 
+      p Value:                0.0154343500287521
+  (i1: 3, i2: 2): 
+      p Value:                0.898661248636171
+  (i1: 3, i2: 3): 
+      p Value:                1
+  (i1: 3, i2: 5): 
+      p Value:                0.345639047965359
+  (i1: 3, i2: 10): 
+      p Value:                0.0603429852606283
+  (i1: 5, i2: 2): 
+      p Value:                0.349365121856316
+  (i1: 5, i2: 3): 
+      p Value:                0.345639047965359
+  (i1: 5, i2: 5): 
+      p Value:                1
+  (i1: 5, i2: 10): 
+      p Value:                0.294916762899663
+  (i1: 10, i2: 2): 
+      p Value:                0.0154343500287521
+  (i1: 10, i2: 3): 
+      p Value:                0.0603429852606283
+  (i1: 10, i2: 5): 
+      p Value:                0.294916762899663
+  (i1: 10, i2: 10): 
+      p Value:                1</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgNCwgaW50ZXJ2YWxzLCBcIlNCXCIsIDEsIDMpXG5gYGAifQ== -->
+<pre class="r"><code>compare_algorithm_intervals(alg, 4, intervals, &quot;SB&quot;, 1, 3)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiSW50ZXJ2YWwgdiBJbnRlcnZhbCBGb3IgU0IgZmxvb3IgMSBmb3IgYWxnb3JpdGhtIDRcbiAgKGkxOiAyLCBpMjogMik6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMVxuICAoaTE6IDIsIGkyOiAzKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjg1MjY4MjU2NjQ2NzU4NVxuICAoaTE6IDIsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjM0NzY0MDQ1Njc3MzAzMVxuICAoaTE6IDIsIGkyOiAxMCk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4wMjU0Mjg0MzM2NzU5NzE3XG4gIChpMTogMywgaTI6IDIpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuODUyNjgyNTY2NDY3NTg1XG4gIChpMTogMywgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiAgKGkxOiAzLCBpMjogNSk6IFxuICAgICAgcCBWYWx1ZTogICAgICAgICAgICAgICAgMC4zNDE5NTU0ODE4ODE1OTNcbiAgKGkxOiAzLCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMDkyMjY5NDIyMjQyNzEyXG4gIChpMTogNSwgaTI6IDIpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzQ3NjQwNDU2NzczMDMxXG4gIChpMTogNSwgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMzQxOTU1NDgxODgxNTkzXG4gIChpMTogNSwgaTI6IDUpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiAgKGkxOiA1LCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMjk1NzE1Nzc0MzkwNjU0XG4gIChpMTogMTAsIGkyOiAyKTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjAyNTQyODQzMzY3NTk3MTdcbiAgKGkxOiAxMCwgaTI6IDMpOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDAuMDkyMjY5NDIyMjQyNzEyXG4gIChpMTogMTAsIGkyOiA1KTogXG4gICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAwLjI5NTcxNTc3NDM5MDY1NFxuICAoaTE6IDEwLCBpMjogMTApOiBcbiAgICAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgIDFcbiJ9 -->
+<pre><code>Interval v Interval For SB floor 1 for algorithm 4
+  (i1: 2, i2: 2): 
+      p Value:                1
+  (i1: 2, i2: 3): 
+      p Value:                0.852682566467585
+  (i1: 2, i2: 5): 
+      p Value:                0.347640456773031
+  (i1: 2, i2: 10): 
+      p Value:                0.0254284336759717
+  (i1: 3, i2: 2): 
+      p Value:                0.852682566467585
+  (i1: 3, i2: 3): 
+      p Value:                1
+  (i1: 3, i2: 5): 
+      p Value:                0.341955481881593
+  (i1: 3, i2: 10): 
+      p Value:                0.092269422242712
+  (i1: 5, i2: 2): 
+      p Value:                0.347640456773031
+  (i1: 5, i2: 3): 
+      p Value:                0.341955481881593
+  (i1: 5, i2: 5): 
+      p Value:                1
+  (i1: 5, i2: 10): 
+      p Value:                0.295715774390654
+  (i1: 10, i2: 2): 
+      p Value:                0.0254284336759717
+  (i1: 10, i2: 3): 
+      p Value:                0.092269422242712
+  (i1: 10, i2: 5): 
+      p Value:                0.295715774390654
+  (i1: 10, i2: 10): 
+      p Value:                1</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQoNClRoaXMgc2VnbWVudCBjb21wYXJlcyB0aGUgZWZmZWN0aXZlbmVzcyB0aGUgbmV3IGJpbm5pbmcgc3RyYXRlZ3kgYXMgY29tcGFyZWQgdG8gdGhlIG9yaWdpbmFsIGJpbm5pbmcgc3RyYXRlZ3kgb24gdGhlIG5ldyBkYXRhLg0KDQpgYGB7cn0NCm51bV9hbGdvcml0aG1zID0gOA0KYWxnID0gbGlzdChudW1fYWxnb3JpdGhtcykNCmFsZ1tbMV1dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzMV9OTi5jc3YiKQ0KYWxnW1syXV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMyX05OLmNzdiIpDQphbGdbWzNdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czNfTk4uY3N2IikNCmFsZ1tbNF1dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzNF9OTi5jc3YiKQ0KYWxnW1s1XV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMxX09OLmNzdiIpDQphbGdbWzZdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czJfT04uY3N2IikNCmFsZ1tbN11dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzM19PTi5jc3YiKQ0KYWxnW1s4XV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHM0X09OLmNzdiIpDQoNCiNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yDQojT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIGZyb20gZmxvb3IgMQ0KI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyBmcm9tIFNCDQpmb3IoaSBpbiAxOjgpDQp7DQogIGFsZ1tbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1QiKSxdDQogIGFsZ1tbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1RfMiIpLF0NCiAgYWxnW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSR0ZXN0aWQgIT0gIkZBS0VfVEVTVF8zIiksXQ0KICBhbGdbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJGZsb29yX3RydWUgPT0gMSksXQ0KICBhbGdbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJGJ1aWxkaW5nID09ICJTQiIpLF0NCn0NCg0KcG5nKCIuL0ZpZ3VyZS5wbmciKQ0KcGFyKG1mcm93PWMoMiwyKSkNCg0KdF92YWwgPSB0LnRlc3QoYWxnW1sxXV0kZXJyb3IsIGFsZ1tbNV1dJGVycm9yLCBwYWlyZWQ9VFJVRSkNCnN0cmluZz1wYXN0ZTAoIihhbGdvcml0aG06ICIsIDEsICIpOiBcbiIpDQpzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgICIsIHRfdmFsJHAudmFsdWUsICJcbiIpDQpjYXQoc3RyaW5nKQ0KaGlzdChhbGdbWzFdXSRlcnJvciAtIGFsZ1tbNV1dJGVycm9yLCBicmVha3M9MTAwLCBtYWluID0gcGFzdGUwKCJBbGdvcml0aG0gIiwgMSksIHhsYWI9IkVycm9yIERpZmZlcmVuY2UgKG0pIikNCg0KdF92YWwgPSB0LnRlc3QoYWxnW1syXV0kZXJyb3IsIGFsZ1tbNl1dJGVycm9yLCBwYWlyZWQ9VFJVRSkNCnN0cmluZz1wYXN0ZTAoIihhbGdvcml0aG06ICIsIDIsICIpOiBcbiIpDQpzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgICIsIHRfdmFsJHAudmFsdWUsICJcbiIpDQpjYXQoc3RyaW5nKQ0KaGlzdChhbGdbWzJdXSRlcnJvciAtIGFsZ1tbNl1dJGVycm9yLCBicmVha3M9NSwgbWFpbiA9IHBhc3RlMCgiQWxnb3JpdGhtICIsIDIpLCB4bGFiPSJFcnJvciBEaWZmZXJlbmNlIChtKSIpDQoNCnRfdmFsID0gdC50ZXN0KGFsZ1tbM11dJGVycm9yLCBhbGdbWzddXSRlcnJvciwgcGFpcmVkPVRSVUUpDQpzdHJpbmc9cGFzdGUwKCIoYWxnb3JpdGhtOiAiLCAzLCAiKTogXG4iKQ0Kc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KY2F0KHN0cmluZykNCmhpc3QoYWxnW1szXV0kZXJyb3IgLSBhbGdbWzddXSRlcnJvciwgYnJlYWtzPTEwMCwgbWFpbiA9IHBhc3RlMCgiQWxnb3JpdGhtICIsIDMpLCB4bGFiPSJFcnJvciBEaWZmZXJlbmNlIChtKSIpDQoNCnRfdmFsID0gdC50ZXN0KGFsZ1tbNF1dJGVycm9yLCBhbGdbWzhdXSRlcnJvciwgcGFpcmVkPVRSVUUpDQpzdHJpbmc9cGFzdGUwKCIoYWxnb3JpdGhtOiAiLCA0LCAiKTogXG4iKQ0Kc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KY2F0KHN0cmluZykNCmhpc3QoYWxnW1s0XV0kZXJyb3IgLSBhbGdbWzhdXSRlcnJvciwgYnJlYWtzPTEwMCwgbWFpbiA9IHBhc3RlMCgiQWxnb3JpdGhtICIsIDQpLCB4bGFiPSJFcnJvciBEaWZmZXJlbmNlIChtKSIpDQoNCmRldi5vZmYoKQ0KDQpgYGANCg0KDQpUaGlzIHNlZ21lbnQgY29tcGFyZXMgdGhlIGRpZmZlcmVudCBhbGdvcml0aG1zIHVuZGVyIHRoZSBuZXcgYmlubmluZyBzdHJhdGVneSBvbiB0aGUgbmV3IGRhdGEuDQoNCmBgYHtyfQ0KbnVtX2FsZ29yaXRobXMgPSA0DQphbGcgPSBsaXN0KG51bV9hbGdvcml0aG1zKQ0KYWxnW1sxXV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMxX05OLmNzdiIpDQphbGdbWzJdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czJfTk4uY3N2IikNCmFsZ1tbM11dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzM19OTi5jc3YiKQ0KYWxnW1s0XV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHM0X05OLmNzdiIpDQoNCiNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yDQojT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIGZyb20gZmxvb3IgMQ0KI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyBmcm9tIFNCDQojT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdpdGggdG9wIDMgYmVhY29ucw0KZm9yKGkgaW4gMTo0KQ0Kew0KICBhbGdbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJHRlc3RpZCAhPSAiRkFLRV9URVNUIiksXQ0KICBhbGdbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJHRlc3RpZCAhPSAiRkFLRV9URVNUXzIiKSxdDQogIGFsZ1tbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1RfMyIpLF0NCiAgYWxnW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSRmbG9vcl90cnVlID09IDEpLF0NCiAgYWxnW1tpXV0gPSBhbGdbW2ldXVt3aGljaChhbGdbW2ldXSRidWlsZGluZyA9PSAiU0IiKSxdDQogIGFsZ1tbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdG9wX25fYmVhY29ucyA9PSAzKSxdDQp9DQoNCiNHZXQgdGhlIG1lYW4gYW5kIHN0ZCBkZXYgb2YgZWFjaCBhbGdvcml0aG0NCmZvcihpIGluIDE6bnVtX2FsZ29yaXRobXMpIHsNCiAgICBtZWFuID0gbWVhbihhbGdbW2ldXSRlcnJvcikNCiAgICBzdGRkZXYgPSBzcXJ0KHZhcihhbGdbW2ldXSRlcnJvcikpDQogICAgDQogICAgc3RyaW5nPXBhc3RlMCgiKGZsb29yOiAiLCAxLCAiLCBhbGdvcml0aG06ICIsIGksICIpOiBcbiIpDQogICAgc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICBtZWFuIDE6ICAgICAgICAgICAgICAgIiwgbWVhbiwgIlxuIikNCiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIHN0YW5kYXJkIGRldmlhdGlvbiAxOiAiLCBzdGRkZXYsICJcbiIpDQogICAgDQogICAgY2F0KHN0cmluZykNCn0NCg0KI0NvbXBhcmUgdGhlIGVmZmVjdGl2ZW5lc3Mgb2YgZWFjaCBhbGdvcml0aG0NCnBuZygiLi9FZmZlY3RpdmVuZXNzLnBuZyIpDQpwYXIobWZyb3c9Yyg0LDQpKQ0KDQojQ29tcGFyZSB0aGUgZWZmZWN0aXZlbmVzcyBvZiBhbGdvcml0aG0gaSBhZ2FpbnN0IGFsZ29yaXRobSBqDQpmb3IoaSBpbiAxOm51bV9hbGdvcml0aG1zKXsNCiAgZm9yKGogaW4gMTpudW1fYWxnb3JpdGhtcykgeyANCiAgICANCiAgICB0X3ZhbCA9IHQudGVzdChhbGdbW2ldXSRlcnJvciwgYWxnW1tqXV0kZXJyb3IsIHBhaXJlZD1UUlVFKQ0KICAgIA0KICAgIHN0cmluZz1wYXN0ZTAoIihmbG9vcjogIiwgMSwgIiwgYWxnb3JpdGhtczogIiwgaSwgIiBhbmQgIiwgaiwgIik6IFxuIikNCiAgICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgIHAgVmFsdWU6ICAgICAgICAgICAgICAgICIsIHRfdmFsJHAudmFsdWUsICJcbiIpDQogICAgDQogICAgY2F0KHN0cmluZykNCiAgICANCiAgICBoaXN0KGFsZ1tbaV1dJGVycm9yIC0gYWxnW1tqXV0kZXJyb3IsIG1haW4gPSBwYXN0ZTAoaSwgIiB2ICIsIGopLCB4bGFiPSJFcnJvciBEaWZmZXJlbmNlIChtKSIpDQogIH0NCn0NCg0KDQpkZXYub2ZmKCkNCmBgYA0KDQoNCg0KDQoNCg0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlIgTm90ZWJvb2siDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQpUaGlzIHNlZ21lbnQgY29tcHV0ZXMgdGhlIGhpc3RvZ3JhbXMgb2YgcnVubmluZyB0aGUgbmV3IGJpbm5pbmcgc3RyYXRlZ3kgb24gdGhlIG5ldyBkYXRhIGZvciBlYWNoIGFsZ29yaXRobSBhdCBlYWNoIGludGVydmFsLg0KDQpgYGB7cn0NCmFsZyA9IGxpc3QoNCkNCmFsZ1tbMV1dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzMV9OTi5jc3YiKQ0KYWxnW1syXV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMyX05OLmNzdiIpDQphbGdbWzNdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czNfTk4uY3N2IikNCmFsZ1tbNF1dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzNF9OTi5jc3YiKQ0KDQppbnRlcnZhbHMgPSBsaXN0KDQpDQppbnRlcnZhbHNbWzFdXSA9IDINCmludGVydmFsc1tbMl1dID0gMw0KaW50ZXJ2YWxzW1szXV0gPSA1DQppbnRlcnZhbHNbWzRdXSA9IDEwDQoNCmNyZWF0ZV9kdXJfaGlzdCA9IGZ1bmN0aW9uKHN1YiwgYWxnX2lkLCBpKQ0Kew0KICBzdWIxID0gc3ViW1thbGdfaWRdXVt3aGljaChzdWJbW2FsZ19pZF1dJGR1cmF0aW9uID09IGkpLF0NCiAgdGl0bGUgPSBwYXN0ZTAoIkFsZyAiLCBhbGdfaWQsICIsIEludCAiLCBpKQ0KICBpZihucm93KHN1YjEpID09IDApDQogICAgcmV0dXJuKCkNCiAgaGlzdChzdWIxJGVycm9yLCBicmVha3M9NSwgbWFpbiA9IHRpdGxlLCB4bGFiPSJFcnJvciAobSkiKQ0KfQ0KDQpjcmVhdGVfZHVyX2hpc3RzID0gZnVuY3Rpb24oYWxnLCBhbGdfaWQsIGludGVydmFscywgYnVpbGRpbmcsIGZsb29yLCB0b3BfbikNCnsNCiAgc3ViID0gbGlzdChsZW5ndGgoYWxnKSkNCiAgDQogICNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yDQogICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBmbG9vciAxDQogICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBTQg0KICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdpdGggYSBkdXJhdGlvbiBvZiBpbnRlcnZhbCBzZWNvbmRzDQogICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgd2hlcmUgdG9wX24gYmVhY29ucyB3ZXJlIHVzZWQgaW4gdGhlIGxvY2F0aW9uIGFwcHJveGltYXRpb24NCiAgZm9yKGkgaW4gMTpsZW5ndGgoYWxnKSkNCiAgew0KICAgIHN1YltbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1QiKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0ZXN0aWQgIT0gIkZBS0VfVEVTVF8yIiksXQ0KICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1RfMyIpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGJ1aWxkaW5nID09IGJ1aWxkaW5nKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0b3Bfbl9iZWFjb25zID09IHRvcF9uKSxdDQogIH0NCiAgDQogIGZpbGVuYW1lID0gcGFzdGUwKCIuL0R1clZEdXItIikNCiAgZmlsZW5hbWUgPSBwYXN0ZTAoZmlsZW5hbWUsICJBbGcgIiwgYWxnX2lkLCAiLSIpDQogIGZpbGVuYW1lID0gcGFzdGUwKGZpbGVuYW1lLCAiQnVpbGQgIiwgYnVpbGRpbmcsICItIikNCiAgZmlsZW5hbWUgPSBwYXN0ZTAoZmlsZW5hbWUsICJGbG9vciAiLCBmbG9vciwgIi0iKQ0KICBmaWxlbmFtZSA9IHBhc3RlMChmaWxlbmFtZSwgIlRvcE4gIiwgdG9wX24sICIucG5nIikNCiAgcG5nKGZpbGVuYW1lKQ0KICBwYXIobWZyb3c9YygyLDIpKQ0KICANCiAgZm9yKGkgaW4gMTpsZW5ndGgoaW50ZXJ2YWxzKSkNCiAgICBjcmVhdGVfZHVyX2hpc3Qoc3ViLCBhbGdfaWQsIGludGVydmFsc1tbaV1dKQ0KfQ0KDQpjcmVhdGVfZHVyX2hpc3RzKGFsZywgMSwgaW50ZXJ2YWxzLCAiU0IiLCAxLCAzKQ0KY3JlYXRlX2R1cl9oaXN0cyhhbGcsIDIsIGludGVydmFscywgIlNCIiwgMSwgMykNCmNyZWF0ZV9kdXJfaGlzdHMoYWxnLCAzLCBpbnRlcnZhbHMsICJTQiIsIDEsIDMpDQpjcmVhdGVfZHVyX2hpc3RzKGFsZywgNCwgaW50ZXJ2YWxzLCAiU0IiLCAxLCAzKQ0KDQp3aGlsZShkZXYub2ZmKCkpDQp7DQp9DQpgYGANCg0KVGhpcyBzZWdtZW50IGNvbXBhcmVzIHRoZSBlZmZlY3RpdmVuZXNzIHRoZSBuZXcgYmlubmluZyBzdHJhdGVneSBhcyBjb21wYXJlZCB0byB0aGUgb3JpZ2luYWwgYmlubmluZyBzdHJhdGVneSBvbiB0aGUgbmV3IGRhdGEuDQoNCmBgYHtyfQ0KYWxnID0gbGlzdCg4KQ0KYWxnW1sxXV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMxX05OLmNzdiIpDQphbGdbWzJdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czJfTk4uY3N2IikNCmFsZ1tbM11dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzM19OTi5jc3YiKQ0KYWxnW1s0XV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHM0X05OLmNzdiIpDQphbGdbWzVdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czFfT04uY3N2IikNCmFsZ1tbNl1dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzMl9PTi5jc3YiKQ0KYWxnW1s3XV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMzX09OLmNzdiIpDQphbGdbWzhdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czRfT04uY3N2IikNCg0KI0NvbXBhcmUgbmV3IGJpbm5uaW5nIHN0cmF0ZWd5IHRvIG9sZCBiaW5uaW5nIHN0cmF0ZWd5IGZvciBhbiBhbGdvcml0aG0NCmNvbXBhcmVfYmlucyA9IGZ1bmN0aW9uKHN1YiwgYWxnX2lkKQ0Kew0KICBpZihucm93KHN1YltbYWxnX2lkXV0pID09IDApDQogICAgcmV0dXJuKCkNCiAgaWYobnJvdyhzdWJbW2FsZ19pZCs0XV0pID09IDApDQogICAgcmV0dXJuKCkNCiAgDQogIHRfdmFsID0gdC50ZXN0KHN1YltbYWxnX2lkXV0kZXJyb3IsIHN1YltbYWxnX2lkKzRdXSRlcnJvciwgcGFpcmVkPVRSVUUpDQogIHN0cmluZz1wYXN0ZTAoIiAgIChhbGdvcml0aG06ICIsIGFsZ19pZCwgIik6IFxuIikNCiAgc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgICAgIG5ld19tZWFuOiAgICAgICAgICAgICAgICIsIG1lYW4oc3ViW1thbGdfaWRdXSRlcnJvciksICJcbiIpDQogIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCAiICAgICAgbmV3X2RldjogICAgICAgICAgICAgICAgIiwgc2Qoc3ViW1thbGdfaWRdXSRlcnJvciksICJcbiIpDQogIHN0cmluZz1wYXN0ZTAoc3RyaW5nLCAiICAgICAgb2xkX21lYW46ICAgICAgICAgICAgICAgIiwgbWVhbihzdWJbW2FsZ19pZCs0XV0kZXJyb3IpLCAiXG4iKQ0KICBzdHJpbmc9cGFzdGUwKHN0cmluZywgIiAgICAgIG9sZF9kZXY6ICAgICAgICAgICAgICAgICIsIHNkKHN1YltbYWxnX2lkKzRdXSRlcnJvciksICJcbiIpDQogIGNhdChzdHJpbmcpDQogIA0KICBkaWZmID0gc3ViW1thbGdfaWRdXSRlcnJvciAtIHN1YltbYWxnX2lkKzRdXSRlcnJvcg0KICBoaXN0KGRpZmYsIGJyZWFrcz0xMDAsIG1haW4gPSBwYXN0ZTAoIkFsZ29yaXRobSAiLCBhbGdfaWQpLCB4bGFiPSJFcnJvciBEaWZmZXJlbmNlIChtKSIpDQp9DQoNCm5ld192X29sZF9iaW5zID0gZnVuY3Rpb24oYWxnLCBpbnRlcnZhbCwgYnVpbGRpbmcsIGZsb29yLCB0b3BfbikNCnsNCiAgc3ViID0gbGlzdCg4KQ0KICANCiAgc3RyaW5nPXBhc3RlMCgiTmV3IEJpbnMgViBPbGQgRm9yICIsIGJ1aWxkaW5nLCAiIGZsb29yICIsIGZsb29yLCAiIGF0IGFuIGludGVydmFsIG9mICIsIGludGVydmFsLCAiIHNlY29uZHNcbiIpDQogIGNhdChzdHJpbmcpDQogIA0KICAjUmVtb3ZlIEZBS0VfVEVTVCwgRkFLRV9URVNUXzEsIGFuZCBGQUtFX1RFU1RfMg0KICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIGZyb20gZmxvb3IgMQ0KICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIGZyb20gU0INCiAgI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyB3aXRoIGEgZHVyYXRpb24gb2YgaW50ZXJ2YWwgc2Vjb25kcw0KICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdoZXJlIHRvcF9uIGJlYWNvbnMgd2VyZSB1c2VkIGluIHRoZSBsb2NhdGlvbiBhcHByb3hpbWF0aW9uDQogIGZvcihpIGluIDE6OCkNCiAgew0KICAgIHN1YltbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1QiKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0ZXN0aWQgIT0gIkZBS0VfVEVTVF8yIiksXQ0KICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1RfMyIpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGJ1aWxkaW5nID09IGJ1aWxkaW5nKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSRkdXJhdGlvbiA9PSBpbnRlcnZhbCksXQ0KICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdG9wX25fYmVhY29ucyA9PSB0b3BfbiksXQ0KICB9DQogIA0KICBwbmcoIi4vRmlndXJlLnBuZyIpDQogIHBhcihtZnJvdz1jKDIsMikpDQogIA0KICBjb21wYXJlX2JpbnMoc3ViLCAxKQ0KICBjb21wYXJlX2JpbnMoc3ViLCAyKQ0KICBjb21wYXJlX2JpbnMoc3ViLCAzKQ0KICBjb21wYXJlX2JpbnMoc3ViLCA0KQ0KICANCiAgZGV2Lm9mZigpDQp9DQoNCm5ld192X29sZF9iaW5zKGFsZywgMSwgIlNCIiwgMSkNCm5ld192X29sZF9iaW5zKGFsZywgMiwgIlNCIiwgMSkNCm5ld192X29sZF9iaW5zKGFsZywgMywgIlNCIiwgMSkNCm5ld192X29sZF9iaW5zKGFsZywgNSwgIlNCIiwgMSkNCm5ld192X29sZF9iaW5zKGFsZywgMTAsICJTQiIsIDEpDQpgYGANCg0KDQpUaGlzIHNlZ21lbnQgY29tcGFyZXMgdGhlIGRpZmZlcmVudCBhbGdvcml0aG1zIHVuZGVyIHRoZSBuZXcgYmlubmluZyBzdHJhdGVneSBvbiB0aGUgbmV3IGRhdGEuDQoNCmBgYHtyfQ0KYWxnID0gbGlzdCg0KQ0KYWxnW1sxXV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMxX05OLmNzdiIpDQphbGdbWzJdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czJfTk4uY3N2IikNCmFsZ1tbM11dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzM19OTi5jc3YiKQ0KYWxnW1s0XV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHM0X05OLmNzdiIpDQoNCmNvbXBhcmVfYWxnb3JpdGhtcyA9IGZ1bmN0aW9uKHN1YiwgaSwgaiwgaW50ZXJ2YWwsIGJ1aWxkaW5nLCBmbG9vcikNCnsNCiAgaWYobnJvdyhzdWJbW2ldXSkgPT0gMCkNCiAgICByZXR1cm4oKQ0KICBpZihucm93KHN1Yltbal1dKSA9PSAwKQ0KICAgIHJldHVybigpDQogIA0KICANCiAgdF92YWwgPSB0LnRlc3Qoc3ViW1tpXV0kZXJyb3IsIHN1Yltbal1dJGVycm9yLCBwYWlyZWQ9VFJVRSkNCiAgDQogIHN0cmluZz1wYXN0ZTAoIiAgKGZsb29yOiAiLCBmbG9vciwgIiwgYWxnb3JpdGhtczogIiwgaSwgIiBhbmQgIiwgaiwgIik6IFxuIikNCiAgc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KICBjYXQoc3RyaW5nKQ0KICANCiAgaGlzdChzdWJbW2ldXSRlcnJvciAtIHN1Yltbal1dJGVycm9yLCBtYWluID0gcGFzdGUwKGksICIgdiAiLCBqKSwgeGxhYj0iRXJyb3IgRGlmZmVyZW5jZSAobSkiKQ0KfQ0KDQpjb21wYXJlX25ld19hbGdvcml0aG1zID0gZnVuY3Rpb24oYWxnLCBpbnRlcnZhbCwgYnVpbGRpbmcsIGZsb29yLCB0b3BfbikNCnsNCiAgc3ViID0gbGlzdCg0KQ0KICANCiAgc3RyaW5nPXBhc3RlMCgiQWxnb3JpdGhtIHYgQWxnb3JpdGhtIEZvciAiLCBidWlsZGluZywgIiBmbG9vciAiLCBmbG9vciwgIiBhdCBhbiBpbnRlcnZhbCBvZiAiLCBpbnRlcnZhbCwgIiBzZWNvbmRzXG4iKQ0KICBjYXQoc3RyaW5nKQ0KICANCiAgI1JlbW92ZSBGQUtFX1RFU1QsIEZBS0VfVEVTVF8xLCBhbmQgRkFLRV9URVNUXzINCiAgI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyBmcm9tIGZsb29yIDENCiAgI09ubHkgc2VsZWN0IG9ic2VydmF0aW9ucyBmcm9tIFNCDQogICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgd2l0aCB0b3AgMyBiZWFjb25zDQogIGZvcihpIGluIDE6NCkNCiAgew0KICAgIHN1YltbaV1dID0gYWxnW1tpXV1bd2hpY2goYWxnW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1QiKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSR0ZXN0aWQgIT0gIkZBS0VfVEVTVF8yIiksXQ0KICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1RfMyIpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGZsb29yX3RydWUgPT0gZmxvb3IpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJGJ1aWxkaW5nID09IGJ1aWxkaW5nKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSRkdXJhdGlvbiA9PSBpbnRlcnZhbCksXQ0KICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdG9wX25fYmVhY29ucyA9PSB0b3BfbiksXQ0KICB9DQogIA0KICAjQ29tcGFyZSB0aGUgZWZmZWN0aXZlbmVzcyBvZiBlYWNoIGFsZ29yaXRobQ0KICBwbmcoIi4vRWZmZWN0aXZlbmVzcy5wbmciKQ0KICBwYXIobWZyb3c9Yyg0LDQpKQ0KICANCiAgI0NvbXBhcmUgdGhlIGVmZmVjdGl2ZW5lc3Mgb2YgYWxnb3JpdGhtIGkgYWdhaW5zdCBhbGdvcml0aG0gag0KICBmb3IoaSBpbiAxOjQpew0KICAgIGZvcihqIGluIDE6NCkgeyANCiAgICAgIGNvbXBhcmVfYWxnb3JpdGhtcyhzdWIsIGksIGosIGludGVydmFsLCBidWlsZGluZywgZmxvb3IpDQogICAgfQ0KICB9DQp9DQoNCmNvbXBhcmVfbmV3X2FsZ29yaXRobXMoYWxnLCAxLCAiU0IiLCAxLCAzKQ0KY29tcGFyZV9uZXdfYWxnb3JpdGhtcyhhbGcsIDIsICJTQiIsIDEsIDMpDQpjb21wYXJlX25ld19hbGdvcml0aG1zKGFsZywgMywgIlNCIiwgMSwgMykNCmNvbXBhcmVfbmV3X2FsZ29yaXRobXMoYWxnLCA1LCAiU0IiLCAxLCAzKQ0KY29tcGFyZV9uZXdfYWxnb3JpdGhtcyhhbGcsIDEwLCAiU0IiLCAxLCAzKQ0KDQpkZXYub2ZmKCkNCmBgYA0KDQoNCg0KVGhpcyBzZWdtZW50IGNvbXBhcmVzIGVhY2ggYWxnb3JpdGhtIHdpdGggaXRzZWxmIGF0IGRpZmZlcmVudCBkdXJhdGlvbnMuIFRoaXMgaXMgdG8gc2hvdyB3aGV0aGVyDQpvciBub3QgdGhlIHNjYW5uaW5nIHBlcmlvZCBjYW4gYmUgbG93ZXJlZC4NCg0KYGBge3J9DQphbGcgPSBsaXN0KDQpDQphbGdbWzFdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czFfTk4uY3N2IikNCmFsZ1tbMl1dID0gcmVhZC5jc3YoInRlc3RyZXN1bHRzMl9OTi5jc3YiKQ0KYWxnW1szXV0gPSByZWFkLmNzdigidGVzdHJlc3VsdHMzX05OLmNzdiIpDQphbGdbWzRdXSA9IHJlYWQuY3N2KCJ0ZXN0cmVzdWx0czRfTk4uY3N2IikNCg0KaW50ZXJ2YWxzID0gbGlzdCg0KQ0KaW50ZXJ2YWxzW1sxXV0gPSAyDQppbnRlcnZhbHNbWzJdXSA9IDMNCmludGVydmFsc1tbM11dID0gNQ0KaW50ZXJ2YWxzW1s0XV0gPSAxMA0KDQojQ29tcGFyZSB0aGUgZXJyb3Igb2YgdGhlIGFsZ29yaXRobSBhdCBpbnRlcnZhbHMgaTEgYW5kIGkyDQpjb21wYXJlX2ludGVydmFscyA9IGZ1bmN0aW9uKHN1YiwgYWxnX2lkLCBpMSwgaTIpDQp7DQogIGlmKG5yb3coc3ViW1thbGdfaWRdXSkgPT0gMCkNCiAgICByZXR1cm4oKQ0KICANCiAgc3ViMSA9IHN1YltbYWxnX2lkXV1bd2hpY2goc3ViW1thbGdfaWRdXSRkdXJhdGlvbiA9PSBpMSksXQ0KICBzdWIyID0gc3ViW1thbGdfaWRdXVt3aGljaChzdWJbW2FsZ19pZF1dJGR1cmF0aW9uID09IGkyKSxdDQogIA0KICBpZihucm93KHN1YjEpID09IDAgfHwgbnJvdyhzdWIyKSA9PSAwKQ0KICAgIHJldHVybigpDQogIA0KICB0X3ZhbCA9IHQudGVzdChzdWIxJGVycm9yLCBzdWIyJGVycm9yLCBwYWlyZWQ9RkFMU0UpDQogIA0KICBzdHJpbmc9cGFzdGUwKCIgIChpMTogIiwgaTEsICIsIGkyOiAiLCBpMiwgIik6IFxuIikNCiAgc3RyaW5nPXBhc3RlMChzdHJpbmcsICIgICAgICBwIFZhbHVlOiAgICAgICAgICAgICAgICAiLCB0X3ZhbCRwLnZhbHVlLCAiXG4iKQ0KICBjYXQoc3RyaW5nKQ0KfQ0KDQpjb21wYXJlX2FsZ29yaXRobV9pbnRlcnZhbHMgPSBmdW5jdGlvbihhbGcsIGFsZ19pZCwgaW50ZXJ2YWxzLCBidWlsZGluZywgZmxvb3IsIHRvcF9uKQ0Kew0KICBzdWIgPSBsaXN0KDQpDQogIA0KICBzdHJpbmc9cGFzdGUwKCJJbnRlcnZhbCB2IEludGVydmFsIEZvciAiLCBidWlsZGluZywgIiBmbG9vciAiLCBmbG9vciwgIiBmb3IgYWxnb3JpdGhtICIsIGFsZ19pZCwgIlxuIikNCiAgY2F0KHN0cmluZykNCiAgDQogICNSZW1vdmUgRkFLRV9URVNULCBGQUtFX1RFU1RfMSwgYW5kIEZBS0VfVEVTVF8yDQogICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBmbG9vciAxDQogICNPbmx5IHNlbGVjdCBvYnNlcnZhdGlvbnMgZnJvbSBTQg0KICAjT25seSBzZWxlY3Qgb2JzZXJ2YXRpb25zIHdpdGggdG9wIDMgYmVhY29ucw0KICBmb3IoaSBpbiAxOjQpDQogIHsNCiAgICBzdWJbW2ldXSA9IGFsZ1tbaV1dW3doaWNoKGFsZ1tbaV1dJHRlc3RpZCAhPSAiRkFLRV9URVNUIiksXQ0KICAgIHN1YltbaV1dID0gc3ViW1tpXV1bd2hpY2goc3ViW1tpXV0kdGVzdGlkICE9ICJGQUtFX1RFU1RfMiIpLF0NCiAgICBzdWJbW2ldXSA9IHN1YltbaV1dW3doaWNoKHN1YltbaV1dJHRlc3RpZCAhPSAiRkFLRV9URVNUXzMiKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSRmbG9vcl90cnVlID09IGZsb29yKSxdDQogICAgc3ViW1tpXV0gPSBzdWJbW2ldXVt3aGljaChzdWJbW2ldXSRidWlsZGluZyA9PSBidWlsZGluZyksXQ0KICAgIHN1YltbaV1dID0gYWxnW1tpXV1bd2hpY2goc3ViW1tpXV0kdG9wX25fYmVhY29ucyA9PSB0b3BfbiksXQ0KICB9DQogIA0KICBmaWxlbmFtZSA9IHBhc3RlMCgiLi9EdXJWRHVyLSIpDQogIGZpbGVuYW1lID0gcGFzdGUwKGZpbGVuYW1lLCAiQWxnICIsIGFsZ19pZCwgIi0iKQ0KICBmaWxlbmFtZSA9IHBhc3RlMChmaWxlbmFtZSwgIkJ1aWxkICIsIGJ1aWxkaW5nLCAiLSIpDQogIGZpbGVuYW1lID0gcGFzdGUwKGZpbGVuYW1lLCAiRmxvb3IgIiwgZmxvb3IsICItIikNCiAgZmlsZW5hbWUgPSBwYXN0ZTAoZmlsZW5hbWUsICJUb3BOICIsIHRvcF9uLCAiLnBuZyIpDQogIHBuZyhmaWxlbmFtZSkNCiAgcGFyKG1mcm93PWMoNSw1KSkNCiAgDQogIGZvcihpIGluIDE6NCl7DQogICAgZm9yKGogaW4gMTo0KSB7IA0KICAgICAgY29tcGFyZV9pbnRlcnZhbHMoc3ViLCBhbGdfaWQsIGludGVydmFsc1tbaV1dLCBpbnRlcnZhbHNbW2pdXSkNCiAgICB9DQogIH0NCn0NCg0KY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgMSwgaW50ZXJ2YWxzLCAiU0IiLCAxLCAzKQ0KY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgMiwgaW50ZXJ2YWxzLCAiU0IiLCAxLCAzKQ0KY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgMywgaW50ZXJ2YWxzLCAiU0IiLCAxLCAzKQ0KY29tcGFyZV9hbGdvcml0aG1faW50ZXJ2YWxzKGFsZywgNCwgaW50ZXJ2YWxzLCAiU0IiLCAxLCAzKQ0KYGBgDQoNCg0KDQoNCg0K</div>
 
 
 

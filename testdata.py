@@ -9,7 +9,7 @@ table schemas:
 	beacon table:	 	[beacon_id][major][minor][building_id][floor][x][y][loc_id][temperature][humidity][updatetimestamp]
 
 csv1 schema: [major][minor][rssi][testid][t_floor][t_x][t_y][bt_floor][bt_x][bt_Y][deployid][watt][proximity]
-output csv schema: [testid][duration][top_n_beacons][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
+output csv schema: [testid][duration][top_n_beacons][algorithm][building][floor_true][x_true][y_true][floor_est][x_est][y_est][error][floor_error]
 
 NOTE: for test data table 1, beacon positions are not stored with the record itself. So floor, x, and y
 represent the testing device's position, not the bluetooth beacon position.
@@ -175,6 +175,7 @@ class TestCase:
 		self.beacon_positions = beacon_positions
 		self.checked_beacon = {}
 		self.checked_url = {}
+		self.algorithm = 1
 		self.building = GetBuildingName(record["building_id"]);
 		self.floor_true = int(record["floor"]);
 		self.x_true = float(record["x"]);
@@ -199,6 +200,7 @@ class TestCase:
 	def initTestCase2(self, record):
 		self.checked_beacon = {}
 		self.checked_url = {}
+		self.algorithm = 1
 		self.building = GetBuildingName(record["building_id"]);
 		self.floor_true = int(record["t_floor"]);
 		self.x_true = float(record["t_x"]);
@@ -215,6 +217,13 @@ class TestCase:
 		self.error = 0.0
 		self.floor_error = 0
 		
+	"""
+	This function sets the algorithm being used
+	in this test case.
+	"""
+	
+	def setAlgorithm(self, id):
+		self.algorithm = id
 	
 	"""
 	This function computes the url of the beacon
@@ -545,13 +554,14 @@ class TestCases:
 		try:
 			string = ""
 			if(not os.path.isfile(output)):
-				string = "testid,duration,top_n_beacons,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
+				string = "testid,duration,top_n_beacons,algorithm,building,floor_true,x_true,y_true,floor_est,x_est,y_est,error,floor_error\n"
 			file = open(output, "a")
 			
 			for test_case in self.test_cases:
 				string += "\"" + str(test_case.test_id) + "\"" + ","
 				string += str(test_case.scan_period) + ","
 				string += str(test_case.top_n) + ","
+				string += str(test_case.algorithm) + ","
 				string += "\"" + str(test_case.building) + "\"" + ","
 				string += str(test_case.floor_true) + ","
 				string += str(test_case.x_true) + ","

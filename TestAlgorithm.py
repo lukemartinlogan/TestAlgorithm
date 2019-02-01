@@ -11,7 +11,6 @@ import testdata as td
 
 from collections import Counter
 
-
 prox1 = [(-70, 15), (-60, 7), (-50, 3), (0, 2)]
 prox2 = [(-70, 9), (-60, 5), (-50, 2), (0, 1)]
 
@@ -41,25 +40,29 @@ def main():
 	#Run original bins over the new test data
 	cases = td.TestCases()
 	cases.downloadTestTable1()
-	TestAlgorithm("testresults1_ON.csv", model1, find_floor_simple, prox1, cases)
-	TestAlgorithm("testresults2_ON.csv", model2, find_floor_simple, prox2, cases)
-	TestAlgorithm("testresults3_ON.csv", model3, find_floor_simple, prox1, cases)
-	TestAlgorithm("testresults4_ON.csv", model4, find_floor_simple, prox1, cases)
+	TestAlgorithm("testresults_ON.csv", 1, find_floor_simple, prox1, cases)
+	TestAlgorithm("testresults_ON.csv", 2, find_floor_simple, prox2, cases)
+	TestAlgorithm("testresults_ON.csv", 3, find_floor_simple, prox1, cases)
+	TestAlgorithm("testresults_ON.csv", 4, find_floor_simple, prox1, cases)
 	
 	#Run the new bins over the new test data
-	TestAlgorithm("testresults1_NN.csv", model1, find_floor_simple, prox3, cases)
-	TestAlgorithm("testresults2_NN.csv", model2, find_floor_simple, prox4, cases)
-	TestAlgorithm("testresults3_NN.csv", model3, find_floor_simple, prox5, cases)
-	TestAlgorithm("testresults4_NN.csv", model4, find_floor_simple, prox6, cases)
+	TestAlgorithm("testresults_NN.csv", 1, find_floor_simple, prox3, cases)
+	TestAlgorithm("testresults_NN.csv", 2, find_floor_simple, prox4, cases)
+	TestAlgorithm("testresults_NN.csv", 3, find_floor_simple, prox5, cases)
+	TestAlgorithm("testresults_NN.csv", 4, find_floor_simple, prox6, cases)
 	
 	
 
-def TestAlgorithm(output, model, floor_model, bins, cases):
+def TestAlgorithm(output, model_id, floor_model, bins, cases):
+	model = model_list[model_id]
 
 	#Set the test case analysis output
 	cases.setCsvUrl(output)
 	
 	for case in cases:
+		#Set the algorithm type
+		case.setAlgorithm(model_id)
+	
 		#Acquire the positions and signal strengths of the beacons
 		(buildings, floors, xs, ys, rssis) = case.getNearestBeaconsAvgMwToDbm(3)
 		if(len(buildings) == 0):
@@ -148,6 +151,8 @@ def find_floor_simple(floor, building_id):
     
     # getting the 1 most common keys, gets a list of tuples(key, count) return the first tuple's key   
     return c.most_common(1)[0][0]
+
+model_list = [0, model1, model2, model3, model4]	
 
 if __name__ == "__main__":
 	main()
