@@ -122,7 +122,7 @@ def model2(params, x, y, prox):
     x0 = params['x0']
     y0 = params['y0']
     t = np.sqrt((x - x0)**2 + (y - y0)**2)
-    t = (prox - t)/prox
+    t = (prox - t)/prox**2
 	
     return t
 
