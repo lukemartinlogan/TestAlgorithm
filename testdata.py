@@ -540,6 +540,40 @@ class TestCases:
 	
 	def setCsvUrl(self, output):
 		self.csvOut = output
+		
+		
+	"""
+	This function will convert the test case data into
+	a CSV file.
+	
+	Output CSV schema 2
+	"""
+	
+	def testDataToCsv(self, filename):
+		output = open(filename, "w")
+		
+		string = "testid,bt_major,bt_minor,bt_x,bt_y,building_id,t_floor,t_x,t_y,bt_floor,rssi,interval"
+		try:
+			for test_case in self.test_cases:
+				for(
+				string += "\"" + str(test_case.test_id) + "\"" + ","
+				string += str(test_case.bt_major) + ","
+				string += str(test_case.bt_minor) + ","
+				string += str(test_case.bt_major) + ","
+				string += str(test_case.bt_major) + ","
+				string += "\"" + str(test_case.building) + "\"" + ","
+				string += str(test_case.floor_true) + ","
+				string += str(test_case.x_true) + ","
+				string += str(test_case.y_true) + ","
+				string += str(test_case.floor_est) + ","
+				string += str(test_case.x_est) + ","
+				string += str(test_case.y_est) + ","
+				string += "\n"
+			
+			output.write(string)
+			output.close()
+		except:
+			print("There was a problem with creating the csv")
 	
 	"""
 	This function will convert the test case analysis
@@ -579,4 +613,17 @@ class TestCases:
 			print("There was a problem with creating the csv")
 
 					
+
+
+
+
+
+
+
+
+
+
+
+
+
 					
