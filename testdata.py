@@ -552,25 +552,28 @@ class TestCases:
 	def testDataToCsv(self, filename):
 		output = open(filename, "w")
 		
-		string = "testid,bt_major,bt_minor,bt_x,bt_y,building_id,t_floor,t_x,t_y,bt_floor,rssi,interval"
+		string = "testid,building_id,t_floor,t_x,t_y,interval,bt_major,bt_minor,bt_floor,bt_x,bt_y,rssi\n"
+		output.write(string)
+		
 		try:
 			for test_case in self.test_cases:
-				for(
-				string += "\"" + str(test_case.test_id) + "\"" + ","
-				string += str(test_case.bt_major) + ","
-				string += str(test_case.bt_minor) + ","
-				string += str(test_case.bt_major) + ","
-				string += str(test_case.bt_major) + ","
-				string += "\"" + str(test_case.building) + "\"" + ","
-				string += str(test_case.floor_true) + ","
-				string += str(test_case.x_true) + ","
-				string += str(test_case.y_true) + ","
-				string += str(test_case.floor_est) + ","
-				string += str(test_case.x_est) + ","
-				string += str(test_case.y_est) + ","
-				string += "\n"
-			
-			output.write(string)
+				for b in test_case.beacons:
+					for rssi in b.rssis:
+						string = ""
+						string += "\"" + str(test_case.test_id) + "\"" + ","
+						string += "\"" + str(test_case.building) + "\"" + ","
+						string += str(test_case.floor_true) + ","
+						string += str(test_case.x_true) + ","
+						string += str(test_case.y_true) + ","
+						string += str(test_case.scan_period) + ","
+						string += str(b.major) + ","
+						string += str(b.minor) + ","
+						string += str(b.floor) + ","
+						string += str(b.x) + ","
+						string += str(b.y) + ","
+						string += str(rssi) + ","
+						string += "\n"
+						output.write(string)
 			output.close()
 		except:
 			print("There was a problem with creating the csv")

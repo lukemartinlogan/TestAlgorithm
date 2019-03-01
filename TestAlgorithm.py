@@ -40,6 +40,8 @@ def main():
 	#Run original bins over the new test data
 	cases = td.TestCases()
 	cases.downloadTestTable1()
+	cases.testDataToCsv("database.csv")
+	return
 	TestAlgorithm("testresults_ON.csv", 1, find_floor_simple, prox1, cases)
 	TestAlgorithm("testresults_ON.csv", 2, find_floor_simple, prox2, cases)
 	TestAlgorithm("testresults_ON.csv", 3, find_floor_simple, prox1, cases)

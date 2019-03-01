@@ -38,6 +38,7 @@ def OptimizeBinsForAlgorithm(model, floor_model, cases):
 	step = 5
 	step2 = 5
 	
+	#Change the signal strength size for the bins
 	for i in range(1, step):
 		for j in range(1, step):
 			for k in range(1, step):
@@ -67,7 +68,7 @@ def OptimizeBinsForAlgorithm(model, floor_model, cases):
 								min_err = err
 							
 							num = step*step*step2**3*i + step*step2**3*j + k*step2**3 + L*step2**2 + m*step2 + n
-							print(str(num/(step**3 * step2**3)))
+							#print(str(num/(step**3 * step2**3)))
 	
 	print(min_err)
 	print(min_bin)
