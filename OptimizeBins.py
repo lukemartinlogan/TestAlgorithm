@@ -1,9 +1,14 @@
 
 """
 This file will optimize the bins for a certain
-algorithm over a data set
+algorithm over a data set.
 
 RSSI = -65.167 + 10*(-1.889)*log(Distance)
+
+Change bins one through 4.
+
+630 292 9417
+
 
 """
 
@@ -11,12 +16,14 @@ import ast, json, sys
 import lmfit, math, numpy as np
 import testdata as td
 from scipy.optimize import minimize
+import random
 
 from collections import Counter
 
 
 prox1 = [(-70, 15), (-60, 7), (-50, 3), (0, 2)]
 prox2 = [(-70, 9), (-60, 5), (-50, 2), (0, 1)]
+prox3 = [(-143, 12), (-83, 9), (-51, 3), (0, 1)]
 
 def main():
 	
@@ -26,49 +33,39 @@ def main():
 	#cases.loadCsv1Folder("old_data")
 	
 	#Optimize bins to new data set
-	OptimizeBinsForAlgorithm(model1, find_floor_simple, cases)
+	#OptimizeBinsForAlgorithm(model1, find_floor_simple, cases)
 	OptimizeBinsForAlgorithm(model2, find_floor_simple, cases)
-	OptimizeBinsForAlgorithm(model3, find_floor_simple, cases)
-	OptimizeBinsForAlgorithm(model4, find_floor_simple, cases)
+	#OptimizeBinsForAlgorithm(model3, find_floor_simple, cases)
+	#OptimizeBinsForAlgorithm(model4, find_floor_simple, cases)
 
 def OptimizeBinsForAlgorithm(model, floor_model, cases):
 	
 	min_err = np.inf
 	min_bin = None
-	step = 5
-	step2 = 5
+	num_guesses = 20
 	
-	#Change the signal strength size for the bins
-	for i in range(1, step):
-		for j in range(1, step):
-			for k in range(1, step):
-				for L in range(1, step2):
-					for m in range(1, step2):
-						for n in range(1, step2):
-							bins = [
-								(-70 - 20/i, 5 + 10/L),
-								(-60 - 20/j, 3 + 8/m),
-								(-50 - 20/k, 0 + 3/n),
-								(0, 1)
-							]
-							if(bins[0][0] > bins[1][0]):
-								continue
-							if(bins[1][0] > bins[2][0]):
-								continue
-							if(bins[0][1] < bins[1][1]):
-								continue
-							if(bins[1][1] < bins[2][1]):
-								continue
-							if(bins[2][1] < bins[3][1]):
-								continue
-							
-							err = FitAlgorithm(model, floor_model, bins, cases)
-							if err < min_err:
-								min_bin = bins
-								min_err = err
-							
-							num = step*step*step2**3*i + step*step2**3*j + k*step2**3 + L*step2**2 + m*step2 + n
-							#print(str(num/(step**3 * step2**3)))
+	for i in range(0, num_guesses):
+		r2 = random.randint(-70, -10)
+		r3 = random.randint(-70, -10)
+		r4 = random.randint(-70, -10)
+		d1 = random.randint(1, 10)
+		d2 = random.randint(1, 10)
+		d3 = random.randint(1, 10)
+		d4 = random.randint(1, 10)
+	
+		bins = [
+			(r2 + r3 + r4, d1+d2+d3+d4),
+			(r2 + r3, d1+d2+d3),
+			(r2, d1+d2),
+			(0, d1)
+		]
+		
+		err = FitAlgorithm(model, floor_model, bins, cases)
+		if err < min_err:
+			min_bin = bins
+			min_err = err
+		
+		print((i+1)/num_guesses)
 	
 	print(min_err)
 	print(min_bin)
