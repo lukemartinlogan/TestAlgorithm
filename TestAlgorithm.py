@@ -21,8 +21,8 @@ prox6 = [(-76.66666666666667, 15.0), (-70.0, 5.0), (-70.0, 3.0), (0, 1)]
 
 def main():
 
-	#Run the original bins over the old test data
 	'''
+	#Run the original bins over the old test data
 	cases = td.TestCases()
 	cases.loadCsv1Folder("old_data")
 	TestAlgorithm("testresults1_OO.csv", model1, find_floor_simple, prox1, cases)
@@ -50,9 +50,8 @@ def main():
 	TestAlgorithm("testresults_NN.csv", 2, find_floor_simple, prox4, cases)
 	TestAlgorithm("testresults_NN.csv", 3, find_floor_simple, prox5, cases)
 	TestAlgorithm("testresults_NN.csv", 4, find_floor_simple, prox6, cases)
-	
-	
 
+	
 def TestAlgorithm(output, model_id, floor_model, bins, cases):
 	model = model_list[model_id]
 
@@ -100,6 +99,7 @@ def TestAlgorithm(output, model_id, floor_model, bins, cases):
 	#Store a record of the tests
 	cases.toCsv()
 
+	
 def getProximity(bins, rssis):
 	prox = []
 	for rssi in rssis:
@@ -109,6 +109,7 @@ def getProximity(bins, rssis):
 				break
 	return np.array(prox)
 
+	
 def model1(params, x, y, prox):
     x0 = params['x0']
     y0 = params['y0']
@@ -117,6 +118,7 @@ def model1(params, x, y, prox):
 	
     return t
 
+	
 def model2(params, x, y, prox):
 
     x0 = params['x0']
@@ -126,6 +128,7 @@ def model2(params, x, y, prox):
 	
     return t
 
+	
 def model3(params, x, y, prox):
     x0 = params['x0']
     y0 = params['y0']
@@ -134,6 +137,7 @@ def model3(params, x, y, prox):
 	
     return t
 
+	
 def model4(params, x, y, prox):
     x0 = params['x0']
     y0 = params['y0']
@@ -141,6 +145,7 @@ def model4(params, x, y, prox):
     t = t/prox**2
 	
     return t
+	
 	
 def find_floor_simple(floor, building_id):
     # making a list of tuples (floor, building_id)
@@ -152,6 +157,7 @@ def find_floor_simple(floor, building_id):
     # getting the 1 most common keys, gets a list of tuples(key, count) return the first tuple's key   
     return c.most_common(1)[0][0]
 
+	
 model_list = [0, model1, model2, model3, model4]	
 
 if __name__ == "__main__":
