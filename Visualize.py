@@ -3,7 +3,7 @@ import pandas
 import cv2
 
 def load_results(path):
-	return pandas.read_csv(path)
+	return pandas.read_csv(path, header=0)
 	
 def get_img_path(building, floor, portrait=True):
 	if portrait:
@@ -36,11 +36,12 @@ def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1,
 	img = img_file.read()
 	
 	#Get the data we will displaying
-	df = df[(df["building"] == building) & (df["floor_true"] == floor)]
+	df = df[(df["building"] == building) & (df["floor_true"] == floor) & (df["duration"] == 5)]
 	
 	#Make sure we select a range of results within our query
 	if results[1] > len(df):
-		results = (results[0], len(df))
+		results = (results[0], len(df)-1)
+	print(results)
 		
 	#Convert the portrait boolean to a string
 	if portrait:
@@ -75,8 +76,12 @@ def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1,
 
 def main():
 	df = load_results("./testresults_NN.csv")
-	view_tests(df, building="SB", floor=1, save_path="./Visualizations/SB-01-results.html", portrait=True)
-	view_tests(df, building="SB", floor=1, save_path="./Visualizations/SB-01-R-results.html", portrait=False)
+	#view_tests(df, building="SB", floor=1, save_path="./Visualizations/SB-01-results.html", portrait=True)
+	view_tests(df, building="SB", floor=2, save_path="./Visualizations/SB-02-R-resultsNewBins.html", portrait=False, results=(0, 1000))
+	
+	df = load_results("./testresults_ON.csv")
+	#view_tests(df, building="SB", floor=1, save_path="./Visualizations/SB-01-results.html", portrait=True)
+	view_tests(df, building="SB", floor=2, save_path="./Visualizations/SB-02-R-resultsOldBins.html", portrait=False, results=(0, 1000))
 	
 if __name__ == "__main__":
 	main()

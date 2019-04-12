@@ -42,7 +42,7 @@ def OptimizeBinsForAlgorithm(model, floor_model, cases):
 	
 	min_err = np.inf
 	min_bin = None
-	num_guesses = 20
+	num_guesses = 1000
 	
 	for i in range(0, num_guesses):
 		r2 = random.randint(-70, -10)
