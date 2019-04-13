@@ -34,6 +34,14 @@ BuildingCodeToStr = {
 	65: "KI"
 }
 
+BuildingStrToCode = {
+	"Building" : -1,
+	"SB" : 31,
+	"AM": 4,
+	"IS": 64,
+	"KI" : 65
+}
+
 def GetBuildingName(code):
 	try:
 		return BuildingCodeToStr[code]
@@ -118,14 +126,8 @@ def download_test_data1(out = "database.csv"):
 		)
 		
 		#Save this dataframe as a CSV
-		tests = tests.dropna()
+		tests = tests.dropna(axis=0, subset=["b_x", "b_y"])
 		tests.to_csv(out)
-
-
-
-		
-		
-		
 		
 		
 		

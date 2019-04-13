@@ -1,17 +1,47 @@
 
-import pandas
-import cv2
+import pandas as pd
+from TestData import *
+
 
 def load_results(path):
-	return pandas.read_csv(path, header=0)
+
+	"""
+	This function will load the results of the test cases
+	into a pandas dataframe.
 	
-def get_img_path(building, floor, portrait=True):
+	Inputs:
+		path: the location of the test data results from TestAlgorithm.py
+	Return:
+		A pandas dataframe of test results
+	"""
+
+	return pd.read_csv(path, header=0)
+
+	
+def get_img_path(building, floor, portrait=False):
+
+	"""
+	This function will acquire the path to the map file being
+	queried. This function assumes that the set of maps is
+	in the current working directory.
+	
+	Inputs:
+		building: the building we are finding a map for
+		floor: the exact floor of this building we are finding a map of
+		portrait: whether we are going to use the portrait (tall) or landscape (long) version of the map
+	"""
+
 	if portrait:
 		return "./Maps/{}-{:02d}.html".format(building, floor)
 	else:
 		return "./Maps/{}-{:02d}-R.html".format(building, floor)
 	
-def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1, results=(0, 10), portrait=True, save_path=None):
+	
+def view_tests(
+	df, tests=None, building="SB", floor=2, day=None, 
+	loc_algorithm=2, floor_algorithm=1, bin_strategy=1, top_n=3,
+	results=(0, 10), portrait=False, save_path=None
+):
 	
 	"""
 	This function displays the test data from a certain testing day on
@@ -21,14 +51,18 @@ def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1,
 	in purple.
 	
 	Inputs:
-		df: a pandas dataframe consisting of all test cases
-		building: the building the tests occurred in
-		floor: the floor of the building the tests occurred on
-		day: the day at which tests were made
-		algorithm: the algorithm used to compute distances
-		bin: the binning strategy used for computing distance
-		results: the range of results to display from the dataframe
-		save: the path to save the image to
+		df: 				a pandas dataframe consisting of all test case results (from TestAlgorithm)
+		tests:				a pandas dataframe of the test data (including beacon positions)
+		building: 			the building the tests occurred in
+		floor: 				the floor of the building the tests occurred on
+		day: 				the day at which tests were made (Year, Month, Day)
+		loc_algorithm: 		the algorithm used to estimate xy position
+		floor_algorithm: 	the algorithm used to estimate the floor
+		bin_strategy:		the binning strategy used for converting RSSI to distance
+		top_n: 				the number of beacons factored when estimating xy position
+		results: 			the range of results to display from the dataframe
+		portrait:			whether to use the portrait or landscape form of the building map
+		save_path: 			the path to save the image to
 	"""
 	
 	#Get the html we will be modifying
@@ -36,10 +70,27 @@ def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1,
 	img = img_file.read()
 	
 	#Get the data we will displaying
-	df = df[(df["building"] == building) & (df["floor_true"] == floor) & (df["duration"] == 5)]
+	code = BuildingStrToCode[building]
+	df = df[
+		(df["building_true"] == code) & 
+		(df["floor_true"] == floor) & 
+		(df["interval"] == 5) & 
+		(df["loc_alg"] == loc_algorithm) &
+		(df["floor_alg"] == floor_algorithm) &
+		(df["bin_strat"] == bin_strategy) &
+		(df["top_n"] == top_n)
+	]
+	
+	if day is not None:
+		df["timestamp"] = pd.to_datetime(df["timestamp"])
+		day_start = str(day[0]) + "-" + str(day[1]) + "-" + str(day[2]) + " 00:00:00"
+		day_end = str(day[0]) + "-" + str(day[1]) + "-" + str(day[2]) + " 23:59:59"
+		df = df[(df['timestamp'] >= day_start) & (df['timestamp'] <= day_end)]
 	
 	#Make sure we select a range of results within our query
-	if results[1] > len(df):
+	if results is None:
+		results = (0, len(df) - 1)
+	elif results[1] > len(df):
 		results = (results[0], len(df)-1)
 	print(results)
 		
@@ -54,8 +105,10 @@ def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1,
 	map = map_file.read()
 	img += map
 	
-	#Write the test cases to the screen
+	#Start the javascript
 	img += "<script>\n"
+	
+	#Write the test cases to the screen
 	for i in range(results[0], results[1]+1):
 		idx = df.index[i]
 		img += "render_test_case("
@@ -64,25 +117,17 @@ def view_tests(df, building="SB", floor=2, day=(2019, 3, 8), algorithm=2, bin=1,
 		img += str(df.loc[idx, "y_true"]) + ","
 		img += str(df.loc[idx, "x_est"]) + ","
 		img += str(df.loc[idx, "y_est"]) + ","
-		img += str(df.loc[idx, "error"]) + ","
+		img += str(df.loc[idx, "xy_error"]) + ","
 		img += portrait
 		img += ")\n"
+	
+	#Display bluetooth beacons on floor
+	
+	
+	#End the javascript
 	img += "</script>\n"
 	
 	#End the html file
 	img += "</html>"
 	save = open(save_path, "w")
 	save.write(img)
-
-def main():
-	df = load_results("./testresults_NN.csv")
-	#view_tests(df, building="SB", floor=1, save_path="./Visualizations/SB-01-results.html", portrait=True)
-	view_tests(df, building="SB", floor=2, save_path="./Visualizations/SB-02-R-resultsNewBins.html", portrait=False, results=(0, 1000))
-	
-	df = load_results("./testresults_ON.csv")
-	#view_tests(df, building="SB", floor=1, save_path="./Visualizations/SB-01-results.html", portrait=True)
-	view_tests(df, building="SB", floor=2, save_path="./Visualizations/SB-02-R-resultsOldBins.html", portrait=False, results=(0, 1000))
-	
-if __name__ == "__main__":
-	main()
-	

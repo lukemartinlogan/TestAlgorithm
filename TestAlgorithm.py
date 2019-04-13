@@ -5,8 +5,9 @@ the test data.
 RSSI = -65.167 + 10*(-1.889)*log(Distance)
 """
 
-import ast, json, sys
+import sys
 import lmfit, math, numpy as np
+import random
 import pandas as pd
 from Algorithms import *
 from TestData import *
@@ -91,6 +92,9 @@ class TestCase:
 		"""
 		This function will initialize the data for
 		a test case.
+		
+		Inputs:
+			df: a dataframe of records who all have the same testid
 		"""
 		
 		unique = df[["testid", "t_building", "t_floor", "t_x", "t_y", "interval"]].drop_duplicates().iloc[0]
@@ -102,6 +106,7 @@ class TestCase:
 		self.bin_strategy = 1
 		
 		self.testid = str(unique["testid"])
+		self.timestamp = str(df["timestamp"].iloc[0])
 		self.interval = int(unique["interval"]);
 		self.beacons = []
 		self.iteration = 0
@@ -164,6 +169,21 @@ class TestCase:
 		self.bin_strategy = id
 	
 	
+	def set_top_n(self, n):
+	
+		"""
+		In the location algorithm, we will estimate
+		position using the location of the n
+		highest-strength beacons to the tester.
+		
+		Inputs:
+			n: the maximum number of beacons to consider 
+			   when estimating position.
+		"""
+	
+		self.top_n = n
+	
+	
 	def estimate_location(self):
 		
 		#Get the location algorithm
@@ -173,10 +193,10 @@ class TestCase:
 		floor_algorithm = floor_algorithms[self.floor_algorithm]
 		
 		#Get the binning strategy
-		bins = binning_strategies[self.bin_strategy]
+		bins = bin_strategies[self.bin_strategy]
 
 		#Acquire the positions and signal strengths of the beacons
-		(buildings, floors, xs, ys, rssis) = self.getNearestBeaconsAvgMwToDbm(3)
+		(buildings, floors, xs, ys, rssis) = self.getNearestBeaconsAvgMwToDbm()
 		if(len(buildings) == 0):
 			print("No beacons were detected in this test case.")
 			return
@@ -226,17 +246,16 @@ class TestCase:
 		return beacon.mw_to_dbm_avg
 	
 		
-	def getNearestBeaconsAvgMwToDbm(self, n=3):
+	def getNearestBeaconsAvgMwToDbm(self):
 	
 		"""
 		This function will acquire the beacons whose
 		average rssi was computed by averaging power
 		and then converting from power to dbm.
 		"""
-	
-		self.top_n = n
+		
 		self.beacons.sort(reverse = True, key = self.avgMwToDbm)
-		subset = self.beacons[0:n]
+		subset = self.beacons[0:self.top_n]
 		
 		buildings = []
 		floors = []
@@ -344,7 +363,7 @@ class TestCase:
 		"""
 		This function will convert a test case to a record of the following form:
 				
-		[testid][interval][loc_alg][floor_alg][bin_strat][top_n_beacons]
+		[testid][timestamp][interval][loc_alg][floor_alg][bin_strat][top_n]
 		[building_true][floor_true][x_true][y_true]
 		[building_est][floor_est][x_est][y_est]
 		[building_error][floor_error][xy_error]
@@ -352,6 +371,7 @@ class TestCase:
 		
 		s = ""
 		s += str(self.testid) + ","
+		s += str(self.timestamp) + ","
 		s += str(self.interval) + ","
 		s += str(self.loc_algorithm) + ","
 		s += str(self.floor_algorithm) + ","
@@ -370,9 +390,7 @@ class TestCase:
 		s += str(self.xy_error)
 		
 		return s
-		
-		
-		
+				
 
 """
 ------------------------------------------
@@ -384,77 +402,130 @@ with.
 
 class TestCases:
 	
-	def __init__(self):
+	def __init__(self, out = "results.csv", append = False):
+		self.header = not append
+		if append:
+			self.out = open(out, "a")
+		else:
+			self.out = open(out, "w")
+		
 		self.test_data = None
 		self.test_ids = None
 		self.test_cases = []
+		
+		self.net_xy_error = 0
+		self.net_floor_error = 0
+		self.net_building_error = False
 	
 	
-	def open_test_data(self, path = "database.csv"):
+	def open_test_data(self, path = "database.csv", building = None, floor = None, sample=None):
+	
+		"""
+		This function will load the test data for algorithm analysis.
+		
+		Inputs:
+			path: the location of the test data
+			building: the building we are interested in
+			floor: the floor of that building we are interested in
+		"""
 	
 		#Open the CSV of test data
 		self.test_data = pd.read_csv(path)
+		if building is not None:
+			building_code = BuildingStrToCode[building]
+			self.test_data = self.test_data[self.test_data["t_building"] == building_code]
+		if floor is not None:
+			self.test_data = self.test_data[self.test_data["t_floor"] == floor]
 		
 		#Get the test case ids
 		self.test_ids = self.test_data["testid"].drop_duplicates()
+		if sample is not None:
+			self.test_ids = self.test_ids.sample(n=sample, axis=0)
 		
 		#Iterate over each test case id
 		i = 0
 		for id in self.test_ids:
 			self.test_cases.append(TestCase(self.test_data[self.test_data["testid"] == id]))
-			
-			if(i > 50):
-				break
-			i += 1
 	
 	
-	def test_algorithm(self, loc_alg = 2, floor_alg = 1, bin_strategy = 1):
+	def reset(self):
+	
+		"""
+		Resets the error metrics.
+		"""
+	
+		self.net_xy_error = 0
+		self.net_floor_error = 0
+		self.net_building_error = False
+	
+	
+	def test_algorithm(self, loc_alg = 2, floor_alg = 1, bin_strategy = 1, top_n = 3):
 		for case in self.test_cases:
 			case.set_location_algorithm(loc_alg)
 			case.set_floor_algorithm(floor_alg)
 			case.set_bin_strategy(bin_strategy)
+			case.set_top_n(top_n)
 			case.estimate_location()
+			
+			self.net_xy_error += case.xy_error
+			self.net_floor_error += case.floor_error
+			self.net_building_error += case.building_error
 
 	
-	def to_csv(self, out = "results.csv", append=False):
+	def optimize_bins(self, loc_alg=2, floor_alg=1, top_n=3, num_guesses = 1000):
+	
+		min_err = np.inf
+		min_bin = None
+		
+		for i in range(0, num_guesses):
+		
+			#r values are changes in rssi between the bins
+			r2 = random.randint(-70, -10)
+			r3 = random.randint(-70, -10)
+			r4 = random.randint(-70, -10)
+			
+			#d values are changes in distance between the bins
+			d1 = random.randint(1, 10)
+			d2 = random.randint(1, 10)
+			d3 = random.randint(1, 10)
+			d4 = random.randint(1, 10)
+		
+			#This guesses the bin
+			bin_strategies[-1] = [
+				(r2 + r3 + r4, d1+d2+d3+d4),
+				(r2 + r3, d1+d2+d3),
+				(r2, d1+d2),
+				(0, d1)
+			]
+			
+			#Test the algorithm with this new strategy
+			self.reset()
+			self.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=len(bin_strategies)-1, top_n=top_n)
+			if self.net_xy_error < min_err:
+				min_bin = bin_strategies[-1]
+				min_err = self.net_xy_error
+			
+			sys.stdout.write(str((i+1)/num_guesses) + "\r")
+		
+		print(min_err)
+		print(min_bin)
+	
+	
+	def to_csv(self):
 		
 		s = ""
-		s += "testid,interval,loc_alg,floor_alg,bin_strat,top_n_beacons,"
-		s += "building_true,floor_true,x_true,y_true,"
-		s += "building_est,floor_est,x_est,y_est,"
-		s += "building_error,floor_error,xy_error" + "\n"
+		if self.header:
+			s += "testid,timestamp,interval,loc_alg,floor_alg,bin_strat,top_n,"
+			s += "building_true,floor_true,x_true,y_true,"
+			s += "building_est,floor_est,x_est,y_est,"
+			s += "building_error,floor_error,xy_error" + "\n"
+			self.header = False
 		
 		for case in self.test_cases:
 			s += case.to_csv_record() + "\n"
 		
-		if append:
-			file = open(out, "a")
-		else:
-			file = open(out, "w")
-		
-		file.write(s)
-		file.close()
+		self.out.write(s)
 
 
-def main():
-	
-	print("Opening test cases")
-	cases = TestCases()
-	cases.open_test_data()
-	
-	#Run the original bins over the new test data
-	print("Testing original bin strategy")
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 1)
-	cases.to_csv("results.csv", append=True)
-	
-	#Run the new bins over the new test data
-	print("Testing new bin strategy")
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2)
-	cases.to_csv("results.csv", append=True)
 
-
-if __name__ == "__main__":
-	main()
-	
-	
 	
