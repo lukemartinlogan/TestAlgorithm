@@ -403,12 +403,10 @@ with.
 class TestCases:
 	
 	def __init__(self, out = "results.csv", append = False):
+		self.out_path = out
+		self.append = append
+		self.out = None
 		self.header = not append
-		if append:
-			self.out = open(out, "a")
-		else:
-			self.out = open(out, "w")
-		
 		self.test_data = None
 		self.test_ids = None
 		self.test_cases = []
@@ -512,6 +510,12 @@ class TestCases:
 	
 	
 	def to_csv(self):
+	
+		if self.out is None:
+			if self.append:
+				self.out = open(self.out_path, "a")
+			else:
+				self.out = open(self.out_path, "w")
 		
 		s = ""
 		if self.header:

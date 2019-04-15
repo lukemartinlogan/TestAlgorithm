@@ -6,15 +6,14 @@ from Visualize import *
 
 def visualize():
 	df = load_results("./results.csv")
-	view_tests(df, building="SB", floor=1, day=(2019, 2, 13), bin_strategy=3, save_path="./SB-01-results.html", results=(0, 1000))
-	view_tests(df, building="SB", floor=2, day=(2019, 3, 8), bin_strategy=3, save_path="./SB-02-R-resultsNewBins.html", portrait=False, results=(0, 1000))
+	view_tests(df, building="SB", floor=1, day=None, bin_strategy=3, save_path="./SB_01_R.html", results=(0, 1000))
 	
 def test_alg():
 
 	#Open the test cases for a certain building
 	print("Opening test cases")
-	cases = TestCases(out="results.csv")
-	cases.open_test_data(building="SB", floor=1)
+	cases = TestCases(out="sim_results.csv")
+	cases.open_test_data(path="SimulatedData.csv", building="SB")
 	
 	#Run the original bins over the new test data
 	print("Testing original bin strategy")
