@@ -2,6 +2,7 @@
 """
 For a certain test position, what does the distribution
 of signals look like?
+	- My guess is normal distribution
 """
 
 import os, shutil
@@ -16,7 +17,8 @@ def ModelTestPositions(building="SB", floor=None, out_qq=None, out_dist_df=None)
 	"""
 	This function will calculate the mean/standard deviation of RSSI for each
 	beacon at every test position and show how well a normal distribution
-	models the rssis.
+	models the rssis. It will do this by computing the p-value for the
+	shapiro test for normality and by plotting a QQ-plot.
 	
 	Inputs:
 		building: The building where tests occurred.
@@ -132,7 +134,9 @@ def SimulateTestPosition(building="SB", floor=None, interval = 5, period=.5, cas
 	
 	"""
 	This function will simulate the RSSIs received from
-	nearby beacons at a certain test position.
+	nearby beacons at a certain test position. This will
+	produce a synthetic data set that should resemble the
+	true data.
 	
 	Input:
 		building: The building with which the simulation is performed
