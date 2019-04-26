@@ -416,7 +416,7 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def open_test_data(self, path = "database.csv", building = None, floor = None, sample=None):
+	def open_test_data(self, path = "database.csv", building = None, floor = None, sample=None, interval=None):
 	
 		"""
 		This function will load the test data for algorithm analysis.
@@ -425,15 +425,26 @@ class TestCases:
 			path: the location of the test data
 			building: the building we are interested in
 			floor: the floor of that building we are interested in
+			sample: select a random sample of the test data
+			interval: select only test cases for a certain interval
 		"""
 	
 		#Open the CSV of test data
 		self.test_data = pd.read_csv(path)
+		
+		#Select test data from this building
 		if building is not None:
 			building_code = BuildingStrToCode[building]
 			self.test_data = self.test_data[self.test_data["t_building"] == building_code]
+			
+		#Select test data from this floor of the building
 		if floor is not None:
 			self.test_data = self.test_data[self.test_data["t_floor"] == floor]
+		
+		#Select test data taken for this interval
+		if interval is not None:
+			self.test_data = self.test_data[self.test_data["interval"] == interval]
+		
 		
 		#Get the test case ids
 		self.test_ids = self.test_data["testid"].drop_duplicates()
@@ -458,6 +469,12 @@ class TestCases:
 	
 	
 	def test_algorithm(self, loc_alg = 2, floor_alg = 1, bin_strategy = 1, top_n = 3):
+	
+		"""
+		This function will estimate the indoor location of a user
+		at the test positions defined in the test data.
+		"""
+	
 		for case in self.test_cases:
 			case.set_location_algorithm(loc_alg)
 			case.set_floor_algorithm(floor_alg)
@@ -471,6 +488,15 @@ class TestCases:
 
 	
 	def optimize_bins(self, loc_alg=2, floor_alg=1, top_n=3, num_guesses = 1000):
+	
+		"""
+		This function will optimize the bins for a certain
+		set of test data.
+		
+		It randomly guesses the bin size and recomputes
+		the error produced by the algorithm using this
+		bin strategy.
+		"""
 	
 		min_err = np.inf
 		min_bin = None
@@ -505,11 +531,16 @@ class TestCases:
 			
 			sys.stdout.write(str((i+1)/num_guesses) + "\r")
 		
-		print(min_err)
-		print(min_bin)
+		print("Minimum error: " + str(min_err))
+		print("Bin strategy: ", str(min_bin))
 	
 	
 	def to_csv(self):
+	
+		"""
+		This function will output the result of the indoor location
+		algorithm.
+		"""
 	
 		if self.out is None:
 			if self.append:

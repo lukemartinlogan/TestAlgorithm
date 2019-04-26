@@ -1,6 +1,7 @@
 
 import pandas as pd
 from TestData import *
+import datetime
 
 
 def load_results(path):
@@ -38,7 +39,7 @@ def get_img_path(building, floor, portrait=False):
 	
 	
 def view_tests(
-	df, tests=None, building="SB", floor=2, day=None, 
+	df, tests=None, building="SB", floor=2, days=None, 
 	loc_algorithm=2, floor_algorithm=1, bin_strategy=1, top_n=3,
 	results=(0, 10), portrait=False, save_path=None
 ):
@@ -55,7 +56,7 @@ def view_tests(
 		tests:				a pandas dataframe of the test data (including beacon positions)
 		building: 			the building the tests occurred in
 		floor: 				the floor of the building the tests occurred on
-		day: 				the day at which tests were made (Year, Month, Day)
+		days: 				the range of days at which tests were made (Year, Month, Day)
 		loc_algorithm: 		the algorithm used to estimate xy position
 		floor_algorithm: 	the algorithm used to estimate the floor
 		bin_strategy:		the binning strategy used for converting RSSI to distance
@@ -81,10 +82,10 @@ def view_tests(
 		(df["top_n"] == top_n)
 	]
 	
-	if day is not None:
-		df["timestamp"] = pd.to_datetime(df["timestamp"])
-		day_start = str(day[0]) + "-" + str(day[1]) + "-" + str(day[2]) + " 00:00:00"
-		day_end = str(day[0]) + "-" + str(day[1]) + "-" + str(day[2]) + " 23:59:59"
+	if days is not None:
+		pd.to_datetime(df["timestamp"])
+		day_start = str(datetime.date(days[0][0], days[0][1], days[0][2]))
+		day_end = str(datetime.date(days[1][0], days[1][1], days[1][2]))
 		df = df[(df['timestamp'] >= day_start) & (df['timestamp'] <= day_end)]
 	
 	#Make sure we select a range of results within our query
