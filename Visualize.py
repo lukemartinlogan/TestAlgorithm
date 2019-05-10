@@ -39,8 +39,8 @@ def get_img_path(building, floor, portrait=False):
 	
 	
 def view_tests(
-	df, tests=None, building="SB", floor=2, days=None, 
-	loc_algorithm=2, floor_algorithm=1, bin_strategy=1, top_n=3,
+	df, tests=None, building="SB", floor=2, days=None, interval=5,
+	loc_alg=2, floor_algorithm=1, bin_strategy=1, top_n=3,
 	results=(0, 10), portrait=False, save_path=None
 ):
 	
@@ -57,7 +57,7 @@ def view_tests(
 		building: 			the building the tests occurred in
 		floor: 				the floor of the building the tests occurred on
 		days: 				the range of days at which tests were made (Year, Month, Day)
-		loc_algorithm: 		the algorithm used to estimate xy position
+		loc_alg: 			the algorithm used to estimate xy position
 		floor_algorithm: 	the algorithm used to estimate the floor
 		bin_strategy:		the binning strategy used for converting RSSI to distance
 		top_n: 				the number of beacons factored when estimating xy position
@@ -75,8 +75,8 @@ def view_tests(
 	df = df[
 		(df["building_true"] == code) & 
 		(df["floor_true"] == floor) & 
-		(df["interval"] == 5) & 
-		(df["loc_alg"] == loc_algorithm) &
+		(df["interval"] == interval) & 
+		(df["loc_alg"] == loc_alg) &
 		(df["floor_alg"] == floor_algorithm) &
 		(df["bin_strat"] == bin_strategy) &
 		(df["top_n"] == top_n)

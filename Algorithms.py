@@ -3,40 +3,43 @@ import lmfit, math, numpy as np
 from collections import Counter
 
 def loc_model1(params, x, y, prox):
+	
     x0 = params['x0']
     y0 = params['y0']
-    t = (x - x0)**2 + (y - y0)**2
-    t = (t - prox)/prox
+    t = (x - x0)**2 + (y - y0)**2 - prox
+    t = t**2/prox**2
 	
-    return t
+    return np.sqrt(t)
 
 	
 def loc_model2(params, x, y, prox):
 
     x0 = params['x0']
     y0 = params['y0']
-    t = np.sqrt((x - x0)**2 + (y - y0)**2)
-    t = (prox - t)/prox**2
+    t = np.sqrt((x - x0)**2 + (y - y0)**2) - prox
+    t = t**2/prox**2
 	
-    return t
+    return np.sqrt(t)
 
 	
 def loc_model3(params, x, y, prox):
+	
     x0 = params['x0']
     y0 = params['y0']
     t = np.sqrt((x - x0)**2 + (y - y0)**2)
-    t = t/prox**2
+    t = t**2/prox**2
 	
-    return t
+    return np.sqrt(t)
 
 	
 def loc_model4(params, x, y, prox):
+	
     x0 = params['x0']
     y0 = params['y0']
     t = (x - x0)**2 + (y - y0)**2
     t = t/prox**2
 	
-    return t
+    return np.sqrt(t)
 	
 	
 def find_floor_simple(floor, building_id):
@@ -49,27 +52,45 @@ def find_floor_simple(floor, building_id):
     # getting the 1 most common keys, gets a list of tuples(key, count) return the first tuple's key   
     return c.most_common(1)[0][0]
 
+	
+def find_floor_fancy(floor, proximity, building_id):
+    zipped = list(zip(floor, proximity))
+    
+    # floor = sum(floor/proximity) / sum(1/proximity)
+    t = sum(map(lambda bt: bt[0] * 1.0 / bt[1], zipped))
+    b = sum(map(lambda bt: 1.0 / bt[1], zipped))
+    flr = int(round(t / b))
+    # the most occuring building id.
+    bldg = Counter(building_id).most_common(1)[0][0] 
+    
+    return flr, bldg
+
 
 loc_algorithms = [
-	0,
-	loc_model1,
-	loc_model2,
-	loc_model3,
-	loc_model4
+	0, 
+	(1, loc_model1),
+	(2, loc_model2),
+	(3, loc_model3),
+	(4, loc_model4)
 ]
 
 floor_algorithms = [
-	0,
-	find_floor_simple
+	0, 
+	(1, find_floor_simple),
+	(2, find_floor_fancy)
 ]
 
 bin_strategies = [
-	0,
-	[(-70, 15), (-60, 7), (-50, 3), (0, 2)],	#Very old bins
-	[(-70, 9), (-60, 5), (-50, 2), (0, 1)],		#Old bins
-	[(-143, 12), (-83, 9), (-51, 3), (0, 1)],	#New bins (intervals=all)
-	[(-142, 9), (-89, 7), (-37, 2), (0, 1)],	#New bins (interval=5sec)
-	[(-139, 12), (-87, 11), (-27, 4), (0, 1)]	#New bins (interval=10sec)
+	0, 
+	(1, [(-70, 15), (-60, 7), (-50, 3), (0, 2)]),	#Very old bins
+	(2, [(-70, 9), (-60, 5), (-50, 2), (0, 1)]),	#Old bins
+	(3, [(-143, 12), (-83, 9), (-51, 3), (0, 1)]),	#New bins (intervals=all)
+	(4, [(-142, 9), (-89, 7), (-37, 2), (0, 1)]),	#New bins (interval=5sec)
+	(5, [(-139, 12), (-87, 11), (-27, 4), (0, 1)]),	#New bins (interval=10sec)
+	(6, [(-96, 6), (-80, 5), (-67, 2), (0, 1)]),	#New bins (interval = 5sec)
+	(7, [(-110, 20), (-85, 10), (-53, 2), (0, 1)])	#New bins (interval=10sec)
 ]
+
+
 
 

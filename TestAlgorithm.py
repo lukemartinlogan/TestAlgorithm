@@ -131,42 +131,42 @@ class TestCase:
 			self.beacons.append(IBeacon(df[ (df["b_major"] == b["b_major"]) & (df["b_minor"] == b["b_minor"]) ]))
 	
 	
-	def set_location_algorithm(self, id):
+	def set_location_algorithm(self, loc_algorithm):
 	
 		"""
 		This function sets the algorithm being used
 		in this test case to estimate position.
 		
 		Inputs:
-			id: The algorithm identifier
+			bin_strategy: a tuple of the following form: (loc_algorithm_model)
 		"""
 	
-		self.loc_algorithm = id
+		self.loc_algorithm = loc_algorithm
 	
 	
-	def set_floor_algorithm(self, id):
+	def set_floor_algorithm(self, floor_algorithm):
 		"""
 		This function sets the algorithm being used
 		to estimate the floor the user is on
 		
 		Inputs:
-			id: The floor algorithm identifier
+			floor_algorithm: a tuple of the following form: (id, floor_algorithm_model)
 		"""
 		
-		self.floor_algorithm = id
+		self.floor_algorithm = floor_algorithm
 	
 	
-	def set_bin_strategy(self, id):
+	def set_bin_strategy(self, bin_strategy):
 	
 		"""
 		This function sets the binning strategy for
 		estimating the distance we are from a beacon.
 		
 		Inputs:
-			id: The bin identifier
+			bin_strategy: a tuple of the following form: (id, bins)
 		"""
 	
-		self.bin_strategy = id
+		self.bin_strategy = bin_strategy
 	
 	
 	def set_top_n(self, n):
@@ -187,13 +187,13 @@ class TestCase:
 	def estimate_location(self):
 		
 		#Get the location algorithm
-		loc_algorithm = loc_algorithms[self.loc_algorithm]
+		loc_algorithm = self.loc_algorithm[1]
 		
 		#Get the floor algorithm
-		floor_algorithm = floor_algorithms[self.floor_algorithm]
+		floor_algorithm = self.floor_algorithm[1]
 		
 		#Get the binning strategy
-		bins = bin_strategies[self.bin_strategy]
+		bins = self.bin_strategy[1]
 
 		#Acquire the positions and signal strengths of the beacons
 		(buildings, floors, xs, ys, rssis) = self.getNearestBeaconsAvgMwToDbm()
@@ -338,26 +338,7 @@ class TestCase:
 	
 		return self.iteration.next()
 		
-	
-	def __str__(self):
-		string = ""
-		string += "Test ID: " + str(self.test_id) + "\n"
-		string += "\tBuilding: " + str(self.building) + "\n"
-		string += "\tFloor: " + str(self.floor_true) + "\n"
-		string += "\tPosition: (" + str(self.x_true) + ", " + str(self.y_true) + ")\n"
-		string += "\tInterval: " + str(self.interval) + "\n"
-		string += "\tTop N Beacons: " + str(self.top_n) + "\n"
-		string += "\tBEACONS:\n"
-		for beacon in self.beacons:
-			string += str(beacon)
-		string += "\n"
-		string += "Floor Estimate: " + str(self.floor_est) + "\n"
-		string += "Position Estimate: (" + str(self.x_est) + ", " + str(self.y_est) + ")\n"
-		string += "Error: " + str(self.error) + "\n"
-		
-		return string
 
-		
 	def to_csv_record(self):
 	
 		"""
@@ -373,9 +354,9 @@ class TestCase:
 		s += str(self.testid) + ","
 		s += str(self.timestamp) + ","
 		s += str(self.interval) + ","
-		s += str(self.loc_algorithm) + ","
-		s += str(self.floor_algorithm) + ","
-		s += str(self.bin_strategy) + ","
+		s += str(self.loc_algorithm[0]) + ","
+		s += str(self.floor_algorithm[0]) + ","
+		s += str(self.bin_strategy[0]) + ","
 		s += str(self.top_n) + ","
 		s += str(self.building_true) + ","
 		s += str(self.floor_true) + ","
@@ -403,6 +384,16 @@ with.
 class TestCases:
 	
 	def __init__(self, out = "results.csv", append = False):
+	
+		"""
+		This will initialize the variables used in this
+		object.
+		
+		Inputs:
+			out: The location to save test results to
+			append: Whether or not the results file should be overwritten
+		"""
+	
 		self.out_path = out
 		self.append = append
 		self.out = None
@@ -460,7 +451,7 @@ class TestCases:
 	def reset(self):
 	
 		"""
-		Resets the error metrics.
+		Resets the test results.
 		"""
 	
 		self.net_xy_error = 0
@@ -468,13 +459,20 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def test_algorithm(self, loc_alg = 2, floor_alg = 1, bin_strategy = 1, top_n = 3):
+	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3):
 	
 		"""
 		This function will estimate the indoor location of a user
 		at the test positions defined in the test data.
+		
+		Inputs:
+			loc_alg: A tuple of the following form: (id, loc_algorithm_model)
+			floor_alg: A tuple of the following form: (id, floor_algorithm_model)
+			bin_strategy: A tuple of the following form: (id, bins)
+			top_n: The number of beacons to consider when making location estimates
 		"""
 	
+		self.reset()
 		for case in self.test_cases:
 			case.set_location_algorithm(loc_alg)
 			case.set_floor_algorithm(floor_alg)
@@ -485,54 +483,6 @@ class TestCases:
 			self.net_xy_error += case.xy_error
 			self.net_floor_error += case.floor_error
 			self.net_building_error += case.building_error
-
-	
-	def optimize_bins(self, loc_alg=2, floor_alg=1, top_n=3, num_guesses = 1000):
-	
-		"""
-		This function will optimize the bins for a certain
-		set of test data.
-		
-		It randomly guesses the bin size and recomputes
-		the error produced by the algorithm using this
-		bin strategy.
-		"""
-	
-		min_err = np.inf
-		min_bin = None
-		
-		for i in range(0, num_guesses):
-		
-			#r values are changes in rssi between the bins
-			r2 = random.randint(-70, -10)
-			r3 = random.randint(-70, -10)
-			r4 = random.randint(-70, -10)
-			
-			#d values are changes in distance between the bins
-			d1 = random.randint(1, 10)
-			d2 = random.randint(1, 10)
-			d3 = random.randint(1, 10)
-			d4 = random.randint(1, 10)
-		
-			#This guesses the bin
-			bin_strategies[-1] = [
-				(r2 + r3 + r4, d1+d2+d3+d4),
-				(r2 + r3, d1+d2+d3),
-				(r2, d1+d2),
-				(0, d1)
-			]
-			
-			#Test the algorithm with this new strategy
-			self.reset()
-			self.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=len(bin_strategies)-1, top_n=top_n)
-			if self.net_xy_error < min_err:
-				min_bin = bin_strategies[-1]
-				min_err = self.net_xy_error
-			
-			sys.stdout.write(str((i+1)/num_guesses) + "\r")
-		
-		print("Minimum error: " + str(min_err))
-		print("Bin strategy: ", str(min_bin))
 	
 	
 	def to_csv(self):
