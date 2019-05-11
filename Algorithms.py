@@ -27,7 +27,7 @@ def loc_model3(params, x, y, prox):
     x0 = params['x0']
     y0 = params['y0']
     t = np.sqrt((x - x0)**2 + (y - y0)**2)
-    t = t**2/prox**2
+    t = t/prox**2
 	
     return np.sqrt(t)
 
@@ -87,9 +87,8 @@ bin_strategies = [
 	(3, [(-143, 12), (-83, 9), (-51, 3), (0, 1)]),	#New bins (intervals=all)
 	(4, [(-142, 9), (-89, 7), (-37, 2), (0, 1)]),	#New bins (interval=5sec)
 	(5, [(-139, 12), (-87, 11), (-27, 4), (0, 1)]),	#New bins (interval=10sec)
-	(6, [(-96, 6), (-80, 5), (-67, 2), (0, 1)]),	#New bins (interval = 5sec)
-	(7, [(-110, 20), (-85, 10), (-53, 2), (0, 1)])	#New bins (interval=10sec)
-	
+	(6, [[-103, 9], [-82, 4.2], [-40, 2.2], [0, 1.1]]),		#New bins (interval = 5sec)
+	(7, [[-92, 7.6], [-80, 5.4], [-50, 2.4], [0, 1.2]])		#New bins (interval=10sec)
 ]
 
 

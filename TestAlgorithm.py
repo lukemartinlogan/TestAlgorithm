@@ -440,6 +440,8 @@ class TestCases:
 		#Get the test case ids
 		self.test_ids = self.test_data["testid"].drop_duplicates()
 		if sample is not None:
+			if sample > len(self.test_ids):
+				sample = len(self.test_ids)
 			self.test_ids = self.test_ids.sample(n=sample, axis=0)
 		
 		#Iterate over each test case id

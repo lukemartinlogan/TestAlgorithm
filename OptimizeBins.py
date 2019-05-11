@@ -159,13 +159,13 @@ class BinOptimizer:
 				
 				#Smaller
 				if prob < 1/3:
-					if bins1.rssi[i] <= -10/.8:
-						bins.rssi[i] = bins1.rssi[i]*.8
+					if bins1.rssi[i] <= -10/.75:
+						bins.rssi[i] = bins1.rssi[i]*.75
 				
 				#Larger
 				elif prob < 2/3:
-					if bins2.rssi[i] >= -70/1.2:
-						bins.rssi[i] = bins2.rssi[i]*1.2
+					if bins2.rssi[i] >= -70/1.25:
+						bins.rssi[i] = bins2.rssi[i]*1.25
 				
 				#Average
 				else:
@@ -179,13 +179,13 @@ class BinOptimizer:
 				
 				#Smaller
 				if prob < 1/3:
-					if bins1.dist[i] >= 1/.8:
-						bins.dist[i] = bins1.dist[i]*.8
+					if bins1.dist[i] >= 1/.75:
+						bins.dist[i] = bins1.dist[i]*.75
 				
 				#Larger
 				elif prob < 2/3:
-					if bins2.dist[i] <= 10/1.2:
-						bins.dist[i] = bins2.dist[i]*1.2
+					if bins2.dist[i] <= 10/1.25:
+						bins.dist[i] = bins2.dist[i]*1.25
 				
 				#Average
 				else:
@@ -211,7 +211,7 @@ class BinOptimizer:
 			if prob < .2:
 				for i in range(1, num_bins):
 					prob = random.random()
-					if prob < .1:
+					if prob < .2:
 						bins.rssi[i] = random.randint(-70, -10)
 			
 			#Replace some distance bins
@@ -219,7 +219,7 @@ class BinOptimizer:
 			if prob < .2:
 				for i in range(num_bins):
 					prob = random.random()
-					if prob < .1:
+					if prob < .2:
 						bins.dist[i] = random.randint(1, 10)
 
 		
@@ -228,7 +228,7 @@ class BinOptimizer:
 		for bins in pop:
 			if bins.score < self.error:
 				self.error = bins.score
-				self.bins = bins.bins 
+				self.bins = bins.bins
 	
 	
 	def optimize(self, loc_alg, floor_alg, top_n=3, num_bins = 4, pop_size = 50, num_generations = 0):
@@ -259,6 +259,7 @@ class BinOptimizer:
 		print()
 		
 		#Evolve population
+		prior_score = np.inf
 		for i in range(num_generations):
 			print("Generation " + str(i+1) + "/" + str(num_generations))
 			pop = self.selection(pop)

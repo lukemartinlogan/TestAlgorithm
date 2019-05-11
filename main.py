@@ -24,32 +24,25 @@ def main_test_sim():
 
 def main_optimize_bins():
 
-	#Open the test cases for a certain building
-	print("Opening test cases")
+	#Creating bin optimizer
 	bins = BinOptimizer()
-	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5, sample=100)
-	
-	#Simple optimization
-	print("Optimizing Bins - Simple")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 5000, num_generations=0)
-	print(bins)
-		
-	#Genetic optimization
-	print("Optimizing Bins - Genetic")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 50, num_generations=100)
-	print(bins)
-	
-	exit()
-	
-	
 
-	#Open the test cases for a certain building
-	print("Opening test cases")
+	#Open the test cases for a certain building (interval=10sec)
+	print("Opening test cases - 10sec")
 	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
 	
-	#Run the new bins over the new test data
+	#Genetic optimization
 	print("Optimizing Bins")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 50, num_generations=5)
+	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 10, num_generations=100)
+	print(bins)
+
+	#Open the test cases for a certain building (interval = 5sec)
+	print("Opening test cases - 5sec")
+	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	
+	#Genetic optimization
+	print("Optimizing Bins")
+	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 10, num_generations=100)
 	print(bins)
 	
 
@@ -60,8 +53,8 @@ def main_visualize():
 	df = load_results("Datasets//results_SB_5s_6.csv")
 	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=6, save_path="./SB01_5s_6.html", interval=5, results=(0, 100))
 	
-	df = load_results("Datasets//results_SB_10s_6.csv")
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=6, save_path="./SB01_10s_6.html", interval=10, results=(0, 100))
+	df = load_results("Datasets//results_SB_10s_7.csv")
+	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=7, save_path="./SB01_10s_7.html", interval=10, results=(0, 100))
 	
 	
 	
@@ -72,8 +65,8 @@ def main_visualize():
 	df = load_results("Datasets//results_SB_5s_6.csv")
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=6, save_path="./SB02_5s_6.html", interval=5, results=(0, 100))
 	
-	df = load_results("Datasets//results_SB_10s_6.csv")
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=6, save_path="./SB02_10s_6.html", interval=10, results=(0, 100))
+	df = load_results("Datasets//results_SB_10s_7.csv")
+	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=7, save_path="./SB02_10s_7.html", interval=10, results=(0, 100))
 	
 
 def main_test_alg():
