@@ -67,6 +67,7 @@ class BinOptimizer:
 		using the bin widths.
 		"""
 		
+		pop = pop.copy()
 		for bins in pop:
 			bins[2] = [ [bins[0][0], bins[1][0]] ]
 			for i in range(1, num_bins):
