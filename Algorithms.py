@@ -89,6 +89,7 @@ bin_strategies = [
 	(5, [(-139, 12), (-87, 11), (-27, 4), (0, 1)]),	#New bins (interval=10sec)
 	(6, [(-96, 6), (-80, 5), (-67, 2), (0, 1)]),	#New bins (interval = 5sec)
 	(7, [(-110, 20), (-85, 10), (-53, 2), (0, 1)])	#New bins (interval=10sec)
+	
 ]
 
 

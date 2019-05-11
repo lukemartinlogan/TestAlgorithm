@@ -12,6 +12,44 @@ A genetic algorithm for finding the optimal bins
 sizes.
 """
 
+class Bins:
+	
+	def __init__(self, num_bins):
+	
+		"""
+		Keeps track of RSSI to distance
+		mappings.
+		"""
+		
+		self.num_bins = num_bins
+		self.rssi = [0] + [random.randint(-70, -10) for i in range(self.num_bins-1)]
+		self.dist = [random.randint(1, 10) for i in range(num_bins)]
+		self.bins = []
+		self.score = np.inf
+	
+	
+	def compute_bins(self):
+	
+		"""
+		This function will compute the bins
+		using the bin widths.
+		"""
+		
+		rssi = 0
+		dist = 0
+		self.bins = []
+		
+		for i in range(self.num_bins):
+			
+			rssi += self.rssi[i]
+			dist += self.dist[i]
+			self.bins.insert(0, [rssi, dist])
+		
+	
+	def __str__(self):
+		
+		return str(self.score)
+		
 
 class BinOptimizer:
 
@@ -39,43 +77,25 @@ class BinOptimizer:
 		"chromosomes".
 		"""
 		
-		pop = [None]*pop_size
+		pop = []
 		
 		for i in range(pop_size):
+			pop.append(Bins(num_bins))
 		
-			#RSSI bin widths
-			rssi = [0] + [random.randint(-70, -10) for i in range(num_bins-1)]
-			
-			#Distance bin widths
-			distance = [random.randint(1, 10) for i in range(num_bins)]
-		
-			#Save bin width guesses
-			pop[i] = [
-				rssi,		#RSSI bin widths
-				distance,	#Distance bin widths
-				[],			#Bin strategy
-				np.inf, 	#Score of this bin strategy
-			]
-			
 		return pop
 		
 		
-	def compute_bins(self, pop, num_bins):
-
+	def compute_bins(self, pop):
+	
 		"""
 		This function will compute the bins
 		using the bin widths.
 		"""
 		
-		pop = pop.copy()
 		for bins in pop:
-			bins[2] = [ [bins[0][0], bins[1][0]] ]
-			for i in range(1, num_bins):
-				bins[0][i] += bins[0][i-1]
-				bins[1][i] += bins[1][i-1]
-				bins[2].append([bins[0][i], bins[1][i]])
-	
+			bins.compute_bins()
 		
+	
 	def fitness_scores(self, pop, loc_alg, floor_alg, top_n):
 	
 		"""
@@ -86,11 +106,12 @@ class BinOptimizer:
 		"""
 		
 		#Test the algorithm with this new strategy
-		for i in range(len(pop)):
+		for i,bins in enumerate(pop):
+			sys.stdout.write(str(i/len(pop)) + "        \r")
+			sys.stdout.flush()
 			self.cases.reset()
-			self.cases.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=(0, pop[i][2]), top_n=top_n)
-			pop[i][3] = self.cases.net_xy_error
-			print(pop[i][2])
+			self.cases.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=(0, bins.bins), top_n=top_n)
+			bins.score = self.cases.net_xy_error
 		print()
 	
 	
@@ -99,16 +120,16 @@ class BinOptimizer:
 		"""
 		Selects a subset of the current population of
 		chromosomes to evolve from. It will select either
-		two genes or the top 10% of genes.
+		two genes or the top 20% of genes.
 		"""
 		
 		#Sort population by fitness
-		pop.sort(key = lambda bins : bins[3])
+		pop.sort(key = lambda bins : bins.score)
 		
-		#Select the top 10%
-		if len(pop) * .1 >= 2:
-			return pop[0:int(len(pop)*.1)]
-		
+		#Select the top 20%
+		if len(pop) * .2 >= 2:
+			return pop[0:int(len(pop)*.2)]
+				
 		#Select the top two
 		return pop[0:2]
 
@@ -123,27 +144,56 @@ class BinOptimizer:
 		
 		new_pop = pop.copy()
 		
-		for i in range(pop_size - len(new_pop)):
+		for i in range(pop_size - len(pop)):
 			
 			#Select two random chromosomes
 			bins1 = pop[random.randrange(0, len(pop))]
 			bins2 = pop[random.randrange(0, len(pop))]
-			bins = bins1.copy()
+			bins = Bins(num_bins)
 			
-			#Change bin widths
-			for bin_type in range(2):
-				for bin in range(num_bins):
-					prob = random.random()
-					if prob < .05:
-						print(bins1[bin_type][bin])
-						print(bins2[bin_type][bin])
-						bins[bin_type][bin] = (bins1[bin_type][bin] + bins2[bin_type][bin])/2
-						print(bins[bin_type][bin])
-						print()
-					
+			#Merge the rssi bins
+			for i in range(1, num_bins):
+				
+				#Generate probability
+				prob = random.random()
+				
+				#Smaller
+				if prob < 1/3:
+					if bins1.rssi[i] <= -10/.8:
+						bins.rssi[i] = bins1.rssi[i]*.8
+				
+				#Larger
+				elif prob < 2/3:
+					if bins2.rssi[i] >= -70/1.2:
+						bins.rssi[i] = bins2.rssi[i]*1.2
+				
+				#Average
+				else:
+					bins.rssi[i] = (bins1.rssi[i] + bins2.rssi[i])/2
+			
+			#Merge the distance bins
+			for i in range(num_bins):
+				
+				#Generate probability
+				prob = random.random()
+				
+				#Smaller
+				if prob < 1/3:
+					if bins1.dist[i] >= 1/.8:
+						bins.dist[i] = bins1.dist[i]*.8
+				
+				#Larger
+				elif prob < 2/3:
+					if bins2.dist[i] <= 10/1.2:
+						bins.dist[i] = bins2.dist[i]*1.2
+				
+				#Average
+				else:
+					bins.dist[i] = (bins1.dist[i] + bins2.dist[i])/2
+			
 			#Add the new bin strategy to the population
 			new_pop.append(bins)
-			
+		
 		return new_pop
 	
 	
@@ -154,40 +204,41 @@ class BinOptimizer:
 		some of the bins in the population.
 		"""
 		
-		for bins in pop:
+		for bins in pop[2:]:
 			
-			#Generate probability
+			#Replace some rssi bins
 			prob = random.random()
-			
-			#Replace some bins
-			if prob < .05:
-				for i in range(num_bins):
-					
-					#Generate probability
+			if prob < .2:
+				for i in range(1, num_bins):
 					prob = random.random()
-					
-					#Change the bin widths
-					if prob < .05:
-						bins[0][i] = random.randint(-70, -10)
-						bins[1][i] = random.randint(1, 10)
+					if prob < .1:
+						bins.rssi[i] = random.randint(-70, -10)
+			
+			#Replace some distance bins
+			prob = random.random()
+			if prob < .2:
+				for i in range(num_bins):
+					prob = random.random()
+					if prob < .1:
+						bins.dist[i] = random.randint(1, 10)
 
 		
 	def get_fittest(self, pop):
 		
 		for bins in pop:
-			if bins[3] < self.error:
-				self.error = bins[3]
-				self.bins = bins[2]
+			if bins.score < self.error:
+				self.error = bins.score
+				self.bins = bins.bins 
 	
 	
-	def optimize(self, loc_alg, floor_alg, top_n=3, num_bins = 4, pop_size = 50, num_generations = 100):
+	def optimize(self, loc_alg, floor_alg, top_n=3, num_bins = 4, pop_size = 50, num_generations = 0):
 	
 		"""
 		A genetic algorithm for finding the optimal bin
 		sizes for a given set of test data. 
 		
-		loc_alg: a tuple of the following form: (id, loc_algorithm_model)
-		floor_alg: a tuple of the following form: (id, floor_algorithm_model)
+		loc_alg: A tuple of the following form: (id, loc_algorithm_model)
+		floor_alg: A tuple of the following form: (id, floor_algorithm_model)
 		top_n: The number of beacons to consider when computing location
 		num_bins: The number of bins per step function
 		pop_size: The number of bins to evolve
@@ -201,71 +252,26 @@ class BinOptimizer:
 		
 		#Create the initial population
 		pop = self.initial_population(pop_size, num_bins)
-		self.compute_bins(pop, num_bins)
+		self.compute_bins(pop)
+		
+		print("Generation " + str(0) + "/" + str(num_generations))
 		self.fitness_scores(pop, loc_alg, floor_alg, top_n)
+		print()
 		
 		#Evolve population
 		for i in range(num_generations):
-			sys.stdout.write(str((i+1)/num_generations) + "\r")
+			print("Generation " + str(i+1) + "/" + str(num_generations))
 			pop = self.selection(pop)
 			pop = self.crossover(pop, pop_size, num_bins)
 			self.mutate(pop, num_bins)
-			self.compute_bins(pop, num_bins)
+			self.compute_bins(pop)
 			self.fitness_scores(pop, loc_alg, floor_alg, top_n)
+			print()
 		
 		#Get the most fit bin size
 		self.get_fittest(pop)
-		
-		
-	def optimize_simple(self, loc_alg=2, floor_alg=1, top_n=3, num_guesses = 200):
-		
-			"""
-			This function will optimize the bins for a certain
-			set of test data.
-			
-			It randomly guesses the bin size and recomputes
-			the error produced by the algorithm using this
-			bin strategy.
-			"""
-			
-			#Reset optimizer metadata
-			cases = self.cases
-			self.error = np.inf
-			self.bins = None
-			cases.reset()
-			
-			#Randomly guess bins
-			for i in range(num_guesses):
-			
-				#r values are changes in rssi between the bins
-				r2 = random.randint(-70, -10)
-				r3 = random.randint(-70, -10)
-				r4 = random.randint(-70, -10)
-				
-				#d values are changes in distance between the bins
-				d1 = random.randint(1, 10)
-				d2 = random.randint(1, 10)
-				d3 = random.randint(1, 10)
-				d4 = random.randint(1, 10)
-			
-				#This guesses the bin
-				bins = [
-					(r2 + r3 + r4, d1+d2+d3+d4),
-					(r2 + r3, d1+d2+d3),
-					(r2, d1+d2),
-					(0, d1)
-				]
-				
-				#Test the algorithm with this new strategy
-				cases.reset()
-				cases.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=(0, bins), top_n=top_n)
-				if cases.net_xy_error < self.error:
-					self.bins = bins
-					self.error = cases.net_xy_error
-				
-				sys.stdout.write(str((i+1)/num_guesses) + "\r")
-			
-			
+	
+	
 	def __str__(self):
 
 		string = ""

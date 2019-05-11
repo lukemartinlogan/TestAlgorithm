@@ -27,13 +27,17 @@ def main_optimize_bins():
 	#Open the test cases for a certain building
 	print("Opening test cases")
 	bins = BinOptimizer()
-	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5, sample=100)
 	
-	#Run the new bins over the new test data
-	print("Optimizing Bins")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 5, num_generations=5)
+	#Simple optimization
+	print("Optimizing Bins - Simple")
+	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 5000, num_generations=0)
 	print(bins)
-	
+		
+	#Genetic optimization
+	print("Optimizing Bins - Genetic")
+	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 50, num_generations=100)
+	print(bins)
 	
 	exit()
 	
@@ -45,7 +49,7 @@ def main_optimize_bins():
 	
 	#Run the new bins over the new test data
 	print("Optimizing Bins")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, num_guesses = 500)
+	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 50, num_generations=5)
 	print(bins)
 	
 
