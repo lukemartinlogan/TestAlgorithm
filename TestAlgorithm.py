@@ -224,7 +224,7 @@ class TestCase:
 		y0 = result.params['y0'].value
 		
 		#Estimate floor
-		flr, bldg = floor_algorithm(floors, buildings)
+		flr, bldg = floor_algorithm(floors, proximities, buildings)
 		
 		#Calculate errors
 		self.setTestResults(x0, y0, flr, bldg)
@@ -461,7 +461,7 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3):
+	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=False):
 	
 		"""
 		This function will estimate the indoor location of a user
@@ -472,6 +472,7 @@ class TestCases:
 			floor_alg: A tuple of the following form: (id, floor_algorithm_model)
 			bin_strategy: A tuple of the following form: (id, bins)
 			top_n: The number of beacons to consider when making location estimates
+			to_csv: Whether or not to save the results to the CSV file
 		"""
 	
 		self.reset()
@@ -485,6 +486,9 @@ class TestCases:
 			self.net_xy_error += case.xy_error
 			self.net_floor_error += case.floor_error
 			self.net_building_error += case.building_error
+			
+		if to_csv:
+			self.to_csv()
 	
 	
 	def to_csv(self):
