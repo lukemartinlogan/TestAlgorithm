@@ -49,7 +49,7 @@ def GetBuildingName(code):
 		return "Building"
 
 		
-def download_test_data1(out = "database.csv"):
+def download_test_data1(out = "Datasets/database.csv"):
 	
 		"""
 		This function will download test data from the "test application"

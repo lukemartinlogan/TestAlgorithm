@@ -226,6 +226,10 @@ class TestCase:
 		#Estimate floor
 		flr, bldg = floor_algorithm(floors, proximities, buildings)
 		
+		#print(list(zip(floors, rssis)))
+		#print(str(flr) + " " + str(self.floor_true))
+		#print()
+		
 		#Calculate errors
 		self.setTestResults(x0, y0, flr, bldg)
 	
@@ -285,7 +289,7 @@ class TestCase:
 		Return:
 			A numpy array of distances
 		"""
-	
+		
 		prox = []
 		for rssi in rssis:
 			for (sig, dst) in bins:
@@ -316,8 +320,8 @@ class TestCase:
 		self.xy_error = ((self.x_true - self.x_est)**2 + (self.y_true - self.y_est)**2)**.5
 		self.floor_error = abs(floor_est - self.floor_true)
 		self.building_error = building_est != self.building_true
-			
-	
+		
+		
 	def __iter__(self):
 	
 		"""
@@ -383,7 +387,7 @@ with.
 
 class TestCases:
 	
-	def __init__(self, out = "results.csv", append = False):
+	def __init__(self, out = "Datasets/results.csv", append = False):
 	
 		"""
 		This will initialize the variables used in this
@@ -407,14 +411,14 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def open_test_data(self, path = "database.csv", building = None, floor = None, sample=None, interval=None):
+	def open_test_data(self, path = "Datasets/database.csv", building = None, floor = None, sample=None, interval=None):
 	
 		"""
 		This function will load the test data for algorithm analysis.
 		
 		Inputs:
 			path: the location of the test data
-			building: the building we are interested in
+			building: the building we are interested in (string)
 			floor: the floor of that building we are interested in
 			sample: select a random sample of the test data
 			interval: select only test cases for a certain interval
@@ -461,7 +465,7 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=False):
+	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=True):
 	
 		"""
 		This function will estimate the indoor location of a user
