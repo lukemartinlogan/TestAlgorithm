@@ -22,7 +22,7 @@ class Bins:
 		"""
 		
 		self.num_bins = num_bins
-		self.rssi = [0] + [random.randint(-70, -10) for i in range(self.num_bins-1)]
+		self.rssi = [0] + [random.randint(-128, -10) for i in range(self.num_bins-1)]
 		self.dist = [random.randint(1, 10) for i in range(num_bins)]
 		self.bins = []
 		self.score = np.inf
@@ -110,7 +110,8 @@ class BinOptimizer:
 			sys.stdout.write(str(i/len(pop)) + "        \r")
 			sys.stdout.flush()
 			self.cases.reset()
-			self.cases.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=(0, bins.bins), top_n=top_n)
+			bin_strategies[-1] = bins.bins
+			self.cases.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=-1, top_n=top_n)
 			bins.score = self.cases.net_xy_error
 		print()
 	
@@ -260,7 +261,7 @@ class BinOptimizer:
 		
 		#Evolve population
 		prior_score = np.inf
-		for i in range(num_generations):
+		for i in range(num_generations-1):
 			print("Generation " + str(i+1) + "/" + str(num_generations))
 			pop = self.selection(pop)
 			pop = self.crossover(pop, pop_size, num_bins)

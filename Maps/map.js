@@ -9,7 +9,7 @@ $(document).ready(function() {
 	svg.attr('height', '100vh');
 });
 
-function render_test_case(testid, t_x, t_y, e_x, e_y, error, portrait) {
+function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 	
 	//Render positions in either portrait or landscape mode
 	if (portrait) {
@@ -66,7 +66,12 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, portrait) {
 		.attr("cy", em_y)
 		.attr("data-html", "true")
 		.attr("data-toggle", "tooltip")
-		.attr("title", "Case: " + testid + "<br />Est.x: " +  e_x.toFixed(4) + "<br />Est.y: " +  e_y.toFixed(4) + "<br />Est.error: " +  error.toFixed(4))
+		.attr("title", 
+			"Case: " + testid + 
+			"<br />Est.x: " +  e_x.toFixed(4) + 
+			"<br />Est.y: " +  e_y.toFixed(4) + 
+			"<br />Est.error: " +  error.toFixed(4) + 
+			"<br />Est.date: " +  date)
 		.on('mouseover', function() {
 			d3.select(this).transition()
 				.duration(300)

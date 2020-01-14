@@ -52,141 +52,105 @@ def error_hist(error, out="figure.png", title="figure"):
 	plt.close()
 
 
-def CompareBinStrategies1():
+def CompareBinStrategies(
+	bin_strat1, bin_strat2, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, 
+	hist1_out="Visualizations/ErrorHist1.png",  hist2_out="Visualizations/ErrorHist2.png",
+	hist1_title="Distribution of Error 1",  hist2_title="Distribution of Error 2",
+	dataset="Datasets/results.csv"
+):
 	
 	"""
-	This function will test if there is
-	a significant difference between the
-	binning strategies for an interval of
-	5 seconds.
+	Test if there is a significant difference
+	between two binning strategies in a particular
+	building.
 	"""
 	
-	int5 = pd.read_csv("Datasets/results.csv")
+	res = pd.read_csv(dataset)
 	
-	#Open dataframe for 5 seconds/old bins
-	int5_old = int5[
-		(int5["loc_alg"] == 2) & 
-		(int5["bin_strat"] == 2) & 
-		(int5["building_true"] == 31) & 
-		(int5["interval"]==10)  &
-		(int5["xy_error"]<=17)
+	#Open dataframe for strategy 1
+	res1= res[
+		(res["loc_alg"] == loc_alg) & 
+		(res["bin_strat"] == bin_strat1) & 
+		(res["building_true"] == BuildingStrToCode[building]) & 
+		(res["interval"] == interval)  &
+		(res["top_n"] == top_n)
 	]
 	
-	#Open dataframe for 5 seconds/new bins
-	int5_new = int5[
-		(int5["loc_alg"] == 2) & 
-		(int5["bin_strat"] == 7) & 
-		(int5["building_true"] == 31) & 
-		(int5["interval"]==10) &
-		(int5["xy_error"]<=17)
+	#Open dataframe for strategy 2
+	res2 = res[
+		(res["loc_alg"] == loc_alg) & 
+		(res["bin_strat"] == bin_strat2) & 
+		(res["building_true"] == BuildingStrToCode[building]) & 
+		(res["interval"] == interval)  &
+		(res["top_n"] == top_n)
 	]
 	
-	err1 = int5_old["xy_error"]
-	err2 = int5_new["xy_error"]
+	#Get error distributions
+	err1 = res1["xy_error"]
+	err2 = res2["xy_error"]
 	
 	#Error statistics
 	error_stats(err1)
 	error_stats(err2)
 	
 	#Show error histograms
-	#error_hist(err1)
-	#error_hist(err2)
-	
-	#Show paired t tests
-	paired_error_ttest(err1, err2)
-
-def CompareBinStrategies2():
-	
-	"""
-	This function will test if there is
-	a significant difference between the
-	binning strategies for an interval of
-	5 seconds.
-	"""
-	
-	int10 = pd.read_csv("Datasets/results_SB_10s.csv")
-	
-	#Open dataframe for 10 seconds/old bins
-	int10_old = int10[
-		(int10["loc_alg"] == 2) & 
-		(int10["bin_strat"] == 2) & 
-		(int10["building_true"] == 31) & 
-		(int10["interval"]==10) #&
-		#(int10["xy_error"]<=17)
-	]
-	
-	#Open dataframe for 10 seconds/new bins
-	int10_new = int10[
-		(int10["loc_alg"] == 2) & 
-		(int10["bin_strat"] == 7) & 
-		(int10["building_true"] == 31) & 
-		(int10["interval"]==10) &
-		(int10["xy_error"]<=17)
-	]
-	
-	err1 = int10_old["xy_error"]
-	err2 = int10_new["xy_error"]
-	
-	#Error statistics
-	error_stats(err1)
-	error_stats(err2)
-	
-	#Show error histograms
-	error_hist(err1, "Visualizations/SB_err10s_old.png", "Distribution of Error (10s Scan, Unoptimized)")
-	error_hist(err2, "Visualizations/SB_err10s_new.png", "Distribution of Error (10s Scan, Optimized)")
+	error_hist(err1, out=hist1_out, title=hist1_title)
+	error_hist(err2, out=hist2_out, title=hist2_title)
 	
 	#Show paired t tests
 	#paired_error_ttest(err1, err2)
 
-def CompareScanningPeriods():
+def CompareScanningPeriods(
+	int1, int2, bin_strat=1, loc_alg=2, floor_alg=1, top_n=3, building="SB",
+	hist1_out="Visualizations/ErrorHist1.png",  hist2_out="Visualizations/ErrorHist2.png",
+	hist1_title="Distribution of Error 1",  hist2_title="Distribution of Error 2",
+	dataset="Datasets/results.csv"
+):
 
 	"""
-	This function will test if there is a
-	significant difference between the
-	test distributions.
+	Test if there is a significant difference
+	between two scanning periods for a
+	particular building and bin strategy.
 	"""
 	
-	#Open dataframe for 5/10 seconds
-	int5 = pd.read_csv("Datasets/results_SB_5s.csv")
-	int10 = pd.read_csv("Datasets/results_SB_10s.csv")
+	res = pd.read_csv(dataset)
 	
-	#Filter 5s
-	int5 = int5[
-		(int5["loc_alg"] == 2) & 
-		(int5["bin_strat"] == 6) & 
-		(int5["building_true"] == 31) & 
-		(int5["interval"]==5) &
-		(int5["xy_error"]<=17)
+	#Open dataframe for first interval
+	res1= res[
+		(res["loc_alg"] == loc_alg) & 
+		(res["bin_strat"] == bin_strat) & 
+		(res["building_true"] == BuildingStrToCode[building]) & 
+		(res["interval"] == int1)  &
+		(res["top_n"] == top_n)  &
+		(res["xy_error"]<=17)
 	]
 	
-	#Filter 10s
-	int10 = int10[
-		(int10["loc_alg"] == 2) & 
-		(int10["bin_strat"] == 7) & 
-		(int10["building_true"] == 31) & 
-		(int10["interval"]==10) &
-		(int10["xy_error"]<=17)
+	#Open dataframe for second interval
+	res2 = res[
+		(res["loc_alg"] == loc_alg) & 
+		(res["bin_strat"] == bin_strat) & 
+		(res["building_true"] == BuildingStrToCode[building]) & 
+		(res["interval"] == int2) &
+		(res["top_n"] == top_n) &
+		(res["xy_error"]<=17)
 	]
 	
-	#Use 10 second bin strategy
-	err1 = int5["xy_error"]
-	err2 = int10["xy_error"]
+	#Get error distributions
+	err1 = res1["xy_error"]
+	err2 = res2["xy_error"]
 	
-	#Compute error statistics
+	#Error statistics
 	error_stats(err1)
 	error_stats(err2)
 	
 	#Show error histograms
-	#error_hist(err1, "Visualizations/SB_err_5s.png", "Distribution of Error (5s Scan)")
-	#error_hist(err2, "Visualizations/SB_err10s.png", "Distribution of Error (10s Scan)")
-
-def main():
-
-	CompareBinStrategies2() 
+	error_hist(err1, out=hist1_out, title=hist1_title)
+	error_hist(err2, out=hist2_out, title=hist2_title)
 	
-if __name__ == "__main__":
-	main()
-	
+	#Show paired t tests
+	#paired_error_ttest(err1, err2)
+	#paired_error_ttest(err1, err2)
+
 	
 	
 	

@@ -127,33 +127,37 @@ class TestCase:
 		self.building_error = 0
 		
 		beacons = df[["b_major", "b_minor"]].drop_duplicates()
-		for index, b in beacons.iterrows():
-			self.beacons.append(IBeacon(df[ (df["b_major"] == b["b_major"]) & (df["b_minor"] == b["b_minor"]) ]))
+		for index, b in beacons.iterrows(): 
+			self.beacons.append(
+				IBeacon(df[ 
+					(df["b_major"] == b["b_major"]) & 
+					(df["b_minor"] == b["b_minor"])
+				]))
 	
 	
-	def set_location_algorithm(self, loc_algorithm):
+	def set_location_algorithm(self, loc_alg):
 	
 		"""
 		This function sets the algorithm being used
 		in this test case to estimate position.
 		
 		Inputs:
-			bin_strategy: a tuple of the following form: (loc_algorithm_model)
+			loc_alg: An id in the loc_algorithm dictionary in Algorithms.py
 		"""
+		
+		self.loc_algorithm = (loc_alg, loc_algorithms[loc_alg])
 	
-		self.loc_algorithm = loc_algorithm
 	
-	
-	def set_floor_algorithm(self, floor_algorithm):
+	def set_floor_algorithm(self, floor_alg):
 		"""
 		This function sets the algorithm being used
 		to estimate the floor the user is on
 		
 		Inputs:
-			floor_algorithm: a tuple of the following form: (id, floor_algorithm_model)
+			floor_alg: An id in the floor_algorithms dictionary in Algorithms.py
 		"""
 		
-		self.floor_algorithm = floor_algorithm
+		self.floor_algorithm = (floor_alg, floor_algorithms[floor_alg])
 	
 	
 	def set_bin_strategy(self, bin_strategy):
@@ -163,10 +167,10 @@ class TestCase:
 		estimating the distance we are from a beacon.
 		
 		Inputs:
-			bin_strategy: a tuple of the following form: (id, bins)
+			bin_strategy: An id in the bin_strategies dictionary in Algorithms.py
 		"""
-	
-		self.bin_strategy = bin_strategy
+		
+		self.bin_strategy = (bin_strategy, bin_strategies[bin_strategy])
 	
 	
 	def set_top_n(self, n):
@@ -420,7 +424,7 @@ class TestCases:
 			path: the location of the test data
 			building: the building we are interested in (string)
 			floor: the floor of that building we are interested in
-			sample: select a random sample of the test data
+			sample: select a random sample of the test data (this  is a number)
 			interval: select only test cases for a certain interval
 		"""
 	
@@ -442,7 +446,7 @@ class TestCases:
 		
 		
 		#Get the test case ids
-		self.test_ids = self.test_data["testid"].drop_duplicates()
+		self.test_ids = self.test_data[["testid", "t_x", "t_y", "t_floor", "t_building"]].drop_duplicates()
 		if sample is not None:
 			if sample > len(self.test_ids):
 				sample = len(self.test_ids)
@@ -450,10 +454,16 @@ class TestCases:
 		
 		#Iterate over each test case id
 		i = 0
-		for id in self.test_ids:
-			self.test_cases.append(TestCase(self.test_data[self.test_data["testid"] == id]))
-	
-	
+		for index, id in self.test_ids.iterrows():
+			self.test_cases.append(
+				TestCase(self.test_data[
+					(self.test_data["testid"] == id["testid"]) &
+					(self.test_data["t_x"] == id["t_x"]) &
+					(self.test_data["t_y"] == id["t_y"]) &
+					(self.test_data["t_floor"] == id["t_floor"]) &
+					(self.test_data["t_building"] == id["t_building"])
+				]))
+		
 	def reset(self):
 	
 		"""
@@ -472,13 +482,13 @@ class TestCases:
 		at the test positions defined in the test data.
 		
 		Inputs:
-			loc_alg: A tuple of the following form: (id, loc_algorithm_model)
-			floor_alg: A tuple of the following form: (id, floor_algorithm_model)
-			bin_strategy: A tuple of the following form: (id, bins)
+			loc_alg: An index into the loc_algorithms array in Algorithms.py 
+			floor_alg: An index into the floor_algorithms array in Algorithms.py 
+			bin_strategy: An index into the bin_strategies array in Algorithms.py
 			top_n: The number of beacons to consider when making location estimates
 			to_csv: Whether or not to save the results to the CSV file
 		"""
-	
+		
 		self.reset()
 		for case in self.test_cases:
 			case.set_location_algorithm(loc_alg)

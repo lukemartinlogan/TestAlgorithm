@@ -1,8 +1,14 @@
 
+"""
+This file contains a loose collection of test cases
+I ran during the semester.
+"""
+
 from TestData import *
 from TestAlgorithm import *
 from Visualize import *
 from OptimizeBins import *
+from AnalyzeAlgorithm import *
 import pandas as pd
 
 def main_test_sim():
@@ -22,115 +28,65 @@ def main_test_sim():
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 6)
 	cases.to_csv()
 
-
 def main_optimize_bins():
 
 	#Creating bin optimizer
 	bins = BinOptimizer()
-
+	
 	#Open the test cases for a certain building (interval=10sec)
 	print("Opening test cases - 10sec")
 	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
 	
 	#Genetic optimization
 	print("Optimizing Bins")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 20, num_generations=100)
+	bins.optimize(loc_alg=2, floor_alg=1, top_n=3, num_bins=6, pop_size = 10, num_generations=10)
 	print(bins)
 
-	#Open the test cases for a certain building (interval = 5sec)
-	print("Opening test cases - 5sec")
-	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+def main_test_alg():
+
+	#Get the location estimates for the two bin strategies
+	print("Opening test cases -10sec")
+	cases = TestCases(out="Datasets/results2.csv")
+	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 7, to_csv = True)
+	#cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 9, to_csv = True)
 	
-	#Genetic optimization
-	print("Optimizing Bins")
-	bins.optimize(loc_alg=loc_algorithms[2], floor_alg=floor_algorithms[1], top_n=3, pop_size = 20, num_generations=100)
-	print(bins)
-	
+def main_compare_bins():
+	CompareBinStrategies(
+		bin_strat1=2, bin_strat2=7, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, 
+		hist1_out="Visualizations/ErrorHist_SB_BinStrat2_10s.png",  
+		hist2_out="Visualizations/ErrorHist_SB_BinStrat7_10s.png",
+		hist1_title="Distribution of Error (10s scan, unoptimized)",  
+		hist2_title="Distribution of Error (10s scan, optimized)",
+		dataset="Datasets/results2.csv") 
 
 def main_visualize():
 	
-	df = load_results("Datasets/results_SB_5s.csv")
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=2, save_path="Visualizations/SB01_5s_2.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=4, save_path="Visualizations/SB01_5s_4.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=6, save_path="Visualizations/SB01_5s_6.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=2, save_path="Visualizations/SB02_5s_2.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=4, save_path="Visualizations/SB02_5s_4.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=6, save_path="Visualizations/SB02_5s_6.html", interval=5, results=(0, 100))
-		
-	df = load_results("Datasets/results_SB_10s.csv")
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=2, save_path="Visualizations/SB01_10s_2.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=5, save_path="Visualizations/SB01_10s_5.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=7, save_path="Visualizations/SB01_10s_7.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=2, save_path="Visualizations/SB02_10s_2.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=5, save_path="Visualizations/SB02_10s_5.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=[(2019, 2, 1), (2019, 3, 29)], bin_strategy=7, save_path="Visualizations/SB02_10s_7.html", interval=10, results=(0, 100))
+	df = load_results("Datasets/results2.csv")
+	days = [(2019, 1, 1), (2019, 4, 29)]
 	
+	"""
+	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=2, save_path="Visualizations/SB01_5s_2.html", interval=5, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=6, save_path="Visualizations/SB01_5s_6.html", interval=5, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=8, save_path="Visualizations/SB01_5s_8.html", interval=5, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=2, save_path="Visualizations/SB02_5s_2.html", interval=5, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=6, save_path="Visualizations/SB02_5s_6.html", interval=5, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=8, save_path="Visualizations/SB02_5s_8.html", interval=5, results=(0, 100))
+	"""
 	
-def main_visualizeApril3():
-
-	df = load_results("Datasets//results_SB_5s.csv")
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=[(2019, 4, 1), (2019, 4, 29)], bin_strategy=4, save_path="Visualizations/SB02_5s.html", interval=5, results=(0, 100))
-	
-
-def main_test_alg2_interval_bins():
-
-	#Open the test cases for a certain building (5sec)
-	print("Opening test cases - 5sec")
-	cases = TestCases(out="Datasets/results_SB_5s.csv")
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[2], to_csv = True)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[4], to_csv = True)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[6], to_csv = True)
-	
-	
-	#Open the test cases for a certain building (5sec)
-	print("Opening test cases - 10sec")
-	cases = TestCases(out="Datasets/results_SB_10s.csv")
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[2], to_csv = True)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[5], to_csv = True)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[7], to_csv = True)
-
-
-def main_test_alg123():
-
-	#Open the test cases for a certain building (5sec)
-	print("Opening test cases - 10sec")
-	cases = TestCases(out="Datasets/results_SB_5s.csv")
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
-	cases.test_algorithm(loc_alg = loc_algorithms[1], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[6])
-	print(cases.net_xy_error)
-	cases.test_algorithm(loc_alg = loc_algorithms[2], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[6])
-	print(cases.net_xy_error)
-	cases.test_algorithm(loc_alg = loc_algorithms[3], floor_alg = floor_algorithms[1], bin_strategy = bin_strategies[6])
-	print(cases.net_xy_error)
-
-
-def main_optimize_algorithm_bins():
-
-	#Creating bin optimizer
-	bins = BinOptimizer()
-	
-	print("Opening test cases - 10sec")
-	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
-	
-	print("Optimizing Bins - Alg 1")
-	bins.optimize(loc_alg=loc_algorithms[1], floor_alg=floor_algorithms[1], top_n=3, pop_size = 50, num_generations=100)
-	print(bins)
-	
-	print("Optimizing Bins - Alg 3")
-	bins.optimize(loc_alg=loc_algorithms[3], floor_alg=floor_algorithms[1], top_n=3, pop_size = 50, num_generations=100)
-	print(bins)
+	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=2, save_path="Visualizations/SB01_10s_2.html", interval=10, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=7, save_path="Visualizations/SB01_10s_7.html", interval=10, results=(0, 100))
+	#view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=9, save_path="Visualizations/SB01_10s_9.html", interval=10, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=2, save_path="Visualizations/SB02_10s_2.html", interval=10, results=(0, 100))
+	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=7, save_path="Visualizations/SB02_10s_7.html", interval=10, results=(0, 100))
+	#view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=9, save_path="Visualizations/SB02_10s_9.html", interval=10, results=(0, 100))
 
 def main():
-	#main_optimize_bins()
-	#main_test_alg2_interval_bins()
+	main_optimize_bins()
+	#main_test_alg()
+	#main_compare_bins()
 	#main_visualize()
-	#main_optimize_algorithm_bins()
-	#main_test_alg123()
-	#main_compare_algorithms()
-	
-	floor_test()
 
 if __name__ == "__main__":
 	main()

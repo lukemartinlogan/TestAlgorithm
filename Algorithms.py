@@ -56,29 +56,28 @@ def find_floor_fancy(floor, proximity, building_id):
     return flr, bldg
 
 
-loc_algorithms = [
-	0, 
-	(1, loc_model1),
-	(2, loc_model2),
-	(3, loc_model3)
-]
+loc_algorithms = {
+	1: loc_model1,
+	2: loc_model2,
+	3: loc_model3
+}
 
-floor_algorithms = [
-	0, 
-	(1, find_floor_simple),
-	(2, find_floor_fancy)
-]
+floor_algorithms = {
+	1: find_floor_simple,
+	2: find_floor_fancy
+}
 
-bin_strategies = [
-	0, 
-	(1, [(-70, 15), (-60, 7), (-50, 3), (0, 2)]),					#Very old bins
-	(2, [(-70, 9), (-60, 5), (-50, 2), (0, 1)]),					#Old bins
-	(3, [(-143, 12), (-83, 9), (-51, 3), (0, 1)]),					#New bins (intervals=all)
-	(4, [(-142, 9), (-89, 7), (-37, 2), (0, 1)]),					#New bins (interval=5sec)
-	(5, [(-139, 12), (-87, 11), (-27, 4), (0, 1)]),					#New bins (interval=10sec)
-	(6, [[-103, 9], [-82, 4.2], [-40, 2.2], [0, 1.1]]),				#New bins (interval = 5sec, used currently)
-	(7, [[-92, 7.6], [-80, 5.4], [-50, 2.4], [0, 1.2]]),			#New bins (interval=10sec, used currently)
-]
+bin_strategies = {
+	1: [(-70, 15), (-60, 7), (-50, 3), (0, 2)],				#Very old bins
+	2: [(-70, 9), (-60, 5), (-50, 2), (0, 1)],				#Old bins
+	3: [(-80, 15), (-70, 7), (-60, 3), (0,1)],				#Professor's test bins
+	
+	6: [[-103, 9], [-82, 4.2], [-40, 2.2], [0, 1.1]],		#New bins (interval = 5sec, used currently)
+	7: [[-92, 7.6], [-80, 5.4], [-50, 2.4], [0, 1.2]],		#New bins (interval=10sec, used currently)
+	
+	8: [[-135, 7], [-87, 4], [0, 2]],						#New bins (interval=5sec)
+	9: [[-213.5625, 9.171875], [-186.0, 7.671875], [-116.0, 6.171875], [-80.0, 3.171875], [0, 1.171875]]	#New bins (interval=10sec)
+}
 
 
 

@@ -41,7 +41,7 @@ def get_img_path(building, floor, portrait=False):
 def view_tests(
 	df, tests=None, building="SB", floor=2, days=None, interval=5,
 	loc_alg=2, floor_algorithm=1, bin_strategy=1, top_n=3,
-	results=(0, 10), portrait=False, save_path=None
+	results=(0, 10), xy_error=0, portrait=False, save_path=None
 ):
 	
 	"""
@@ -62,6 +62,7 @@ def view_tests(
 		bin_strategy:		the binning strategy used for converting RSSI to distance
 		top_n: 				the number of beacons factored when estimating xy position
 		results: 			the range of results to display from the dataframe
+		xy_error: 			display only error greater than or equal to this value
 		portrait:			whether to use the portrait or landscape form of the building map
 		save_path: 			the path to save the image to
 	"""
@@ -79,6 +80,7 @@ def view_tests(
 		(df["loc_alg"] == loc_alg) &
 		(df["floor_alg"] == floor_algorithm) &
 		(df["bin_strat"] == bin_strategy) &
+		(df["xy_error"] >= xy_error) &
 		(df["top_n"] == top_n)
 	]
 	
@@ -119,6 +121,7 @@ def view_tests(
 		img += str(df.loc[idx, "x_est"]) + ","
 		img += str(df.loc[idx, "y_est"]) + ","
 		img += str(df.loc[idx, "xy_error"]) + ","
+		img += "\"" + str(df.loc[idx, "timestamp"]) + "\"" + ","
 		img += portrait
 		img += ")\n"
 	
