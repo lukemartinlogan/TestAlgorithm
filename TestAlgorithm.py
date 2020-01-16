@@ -408,7 +408,7 @@ class TestCases:
 		self.header = not append
 		self.test_data = None
 		self.test_ids = None
-		self.test_cases = []
+		self.test_cases = None
 		
 		self.net_xy_error = 0
 		self.net_floor_error = 0
@@ -454,6 +454,7 @@ class TestCases:
 		
 		#Iterate over each test case id
 		i = 0
+		self.test_cases = []
 		for index, id in self.test_ids.iterrows():
 			self.test_cases.append(
 				TestCase(self.test_data[

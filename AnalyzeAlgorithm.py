@@ -51,6 +51,22 @@ def error_hist(error, out="figure.png", title="figure"):
 	plt.savefig(out)
 	plt.close()
 
+def ViewStats(df, bin_strat, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10):
+	
+	"""
+	Viewing stats about particular test environment.
+	"""
+	
+	res1= df[
+		(df["loc_alg"] == loc_alg) & 
+		(df["bin_strat"] == bin_strat) & 
+		(df["building_true"] == BuildingStrToCode[building]) & 
+		(df["interval"] == interval)  &
+		(df["top_n"] == top_n)
+	]
+	err1 = res1["xy_error"]
+	error_stats(err1)
+	
 
 def CompareBinStrategies(
 	bin_strat1, bin_strat2, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, 

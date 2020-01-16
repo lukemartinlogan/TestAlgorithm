@@ -34,57 +34,101 @@ def main_optimize_bins():
 	bins = BinOptimizer()
 	
 	#Open the test cases for a certain building (interval=10sec)
-	print("Opening test cases - 10sec")
-	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
+	#print("Opening test cases - 10sec")
+	#bins.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
+	
+	#Genetic optimization
+	#print("Optimizing Bins")
+	#bins.optimize(loc_alg=2, floor_alg=1, top_n=3, num_bins=5, pop_size = 10, num_generations=10)
+	#print(bins)
+	
+	
+	#Open the test cases for a certain building (interval=5sec)
+	print("Opening test cases - 5sec")
+	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
 	
 	#Genetic optimization
 	print("Optimizing Bins")
-	bins.optimize(loc_alg=2, floor_alg=1, top_n=3, num_bins=6, pop_size = 10, num_generations=10)
+	bins.optimize(loc_alg=2, floor_alg=1, top_n=3, num_bins=4, pop_size = 100, num_generations=1)
 	print(bins)
 
 def main_test_alg():
 
-	#Get the location estimates for the two bin strategies
+	cases = TestCases(out="Datasets/results.csv")
+	
+	#Get the location estimates for the bin strategies (5s)
+	print("Opening test cases -5sec")
+	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 6, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 8, to_csv = True)
+	
+	#Get the location estimates for the bin strategies (10s)
 	print("Opening test cases -10sec")
-	cases = TestCases(out="Datasets/results2.csv")
 	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 7, to_csv = True)
-	#cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 9, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 9, to_csv = True)
+
+def main_view_stats():
+	df = pd.read_csv("Datasets/results.csv")
 	
-def main_compare_bins():
+	print("Stats for 5s interval, strategy 2")
+	ViewStats(bin_strat=2, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	
+	#print("Stats for 5s interval, strategy 3")
+	#ViewStats(bin_strat=3, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	
+	print("Stats for 5s interval, strategy 6")
+	ViewStats(bin_strat=6, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	
+	print("Stats for 10s interval, strategy 2")
+	ViewStats(bin_strat=2, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+	
+	#print("Stats for 10s interval, strategy 3")
+	#ViewStats(bin_strat=3, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+	
+	print("Stats for 10s interval, strategy 7")
+	ViewStats(bin_strat=7, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+
+def main_compare_bins(): 
+	CompareBinStrategies(
+		bin_strat1=2, bin_strat2=6, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, 
+		hist1_out="Visualizations/ErrorHist_SB_BinStrat2_5s.png",  
+		hist2_out="Visualizations/ErrorHist_SB_BinStrat6_5s.png",
+		hist1_title="Distribution of Error (5s scan, unoptimized)",  
+		hist2_title="Distribution of Error (5s scan, optimized)",
+		dataset="Datasets/results.csv")
+	
 	CompareBinStrategies(
 		bin_strat1=2, bin_strat2=7, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, 
 		hist1_out="Visualizations/ErrorHist_SB_BinStrat2_10s.png",  
 		hist2_out="Visualizations/ErrorHist_SB_BinStrat7_10s.png",
 		hist1_title="Distribution of Error (10s scan, unoptimized)",  
 		hist2_title="Distribution of Error (10s scan, optimized)",
-		dataset="Datasets/results2.csv") 
+		dataset="Datasets/results.csv")
 
 def main_visualize():
 	
-	df = load_results("Datasets/results2.csv")
+	df = load_results("Datasets/results.csv")
 	days = [(2019, 1, 1), (2019, 4, 29)]
 	
-	"""
 	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=2, save_path="Visualizations/SB01_5s_2.html", interval=5, results=(0, 100))
 	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=6, save_path="Visualizations/SB01_5s_6.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=8, save_path="Visualizations/SB01_5s_8.html", interval=5, results=(0, 100))
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=2, save_path="Visualizations/SB02_5s_2.html", interval=5, results=(0, 100))
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=6, save_path="Visualizations/SB02_5s_6.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=8, save_path="Visualizations/SB02_5s_8.html", interval=5, results=(0, 100))
-	"""
 	
 	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=2, save_path="Visualizations/SB01_10s_2.html", interval=10, results=(0, 100))
 	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=7, save_path="Visualizations/SB01_10s_7.html", interval=10, results=(0, 100))
-	#view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=9, save_path="Visualizations/SB01_10s_9.html", interval=10, results=(0, 100))
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=2, save_path="Visualizations/SB02_10s_2.html", interval=10, results=(0, 100))
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=7, save_path="Visualizations/SB02_10s_7.html", interval=10, results=(0, 100))
-	#view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=9, save_path="Visualizations/SB02_10s_9.html", interval=10, results=(0, 100))
-
+	
 def main():
-	main_optimize_bins()
+	#main_optimize_bins()
 	#main_test_alg()
+	main_view_stats()
 	#main_compare_bins()
 	#main_visualize()
 
