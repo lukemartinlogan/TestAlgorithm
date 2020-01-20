@@ -14,8 +14,8 @@ import pandas as pd
 
 def main_signal_stats():
 	cases = TestCases()
-	cases.open_test_data(path="Datasets/database.csv", building="SB")
-	ViewSignalStats(cases, hist_title="Signal Strength in SB", hist_out="Visualizations/signal_strengths.png")
+	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	ViewSignalStats(cases, hist_title="Signal Strengths in SB", hist_out="Visualizations/signal_strengths.png")
 	
 	
 def main_optimize_bins():
@@ -23,23 +23,13 @@ def main_optimize_bins():
 	#Creating bin optimizer
 	bins = BinOptimizer()
 	
-	#Open the test cases for a certain building (interval=10sec)
-	#print("Opening test cases - 10sec")
-	#bins.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
-	
-	#Genetic optimization
-	#print("Optimizing Bins")
-	#bins.optimize(loc_alg=2, floor_alg=1, top_n=3, num_bins=5, pop_size = 10, num_generations=10)
-	#print(bins)
-	
-	
 	#Open the test cases for a certain building (interval=5sec)
 	print("Opening test cases - 5sec")
 	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
 	
-	#Genetic optimization
+	#Optimize
 	print("Optimizing Bins")
-	bins.optimize(loc_alg=2, floor_alg=1, top_n=3, num_bins=4, pop_size = 100, num_generations=1)
+	
 	print(bins)
 
 def main_test_alg():

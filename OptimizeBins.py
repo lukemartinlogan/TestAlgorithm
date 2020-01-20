@@ -3,6 +3,7 @@ import sys
 import math, numpy as np
 import random
 import pandas as pd
+from numba import njit, prange
 from Algorithms import *
 from TestData import *
 from TestAlgorithm import *
@@ -19,6 +20,57 @@ class Bins:
 		"""
 		Keeps track of RSSI to distance
 		mappings.
+		
+		num_bins: The number of bins to create
+		bin_min: The minimum signal strength to consider
+		bin_max: The maximum signal strength to consider
+		"""
+		
+		self.num_bins = num_bins
+		self.bins = None
+		self.dist = None
+		self.rssi = None
+	
+	def set_bins(self, bins):
+		self.bins = bins
+		self.num_bins = len(bins)
+	
+	def rand_bin_rssis(self, fix_rssi_width=False, max_rssi=-65, rssi_width_range=(10, 30)):
+		
+		"""
+		Randomly generate the rssi mapping while keeping distances the same
+		
+		[(r1+r2+r3+r4, d4), (r1+r2+r3, d3), (r1+r2, d2), (r1, d1)
+		"""
+		
+		self.rssi = [max_rssi] + [-random.randint(rssi_width_range) for i in range(self.num_bins-1)]
+		self.bins = []
+		self.score = np.inf
+		
+		rssi = 0
+		dist = 0
+		self.bins = []
+		for i in range(self.num_bins): 
+			rssi += self.rssi[i]
+			dist += self.dist[i]
+			self.bins.insert(0, [rssi, dist])
+		
+		
+	def rand_bin_dists(self, fix_dist_width=False, min_dist=1, dist_width_range=(1, 10)):
+		
+		"""
+		Randomly generate the distance mapping while keeping RSSIs the same
+		"""
+		
+				
+	def rand_bin(
+		self, num_bins, fix_dist_width=False, fix_rssi_width=False, 
+		max_rssi=-65, rssi_width_range=(10,30),
+		min_dist=1, dist_width_range=(1,10)
+	):
+		
+		"""
+		Randomly generate a bin
 		"""
 		
 		self.num_bins = num_bins
@@ -26,25 +78,15 @@ class Bins:
 		self.dist = [random.randint(1, 10) for i in range(num_bins)]
 		self.bins = []
 		self.score = np.inf
-	
-	
-	def compute_bins(self):
-	
-		"""
-		This function will compute the bins
-		using the bin widths.
-		"""
 		
 		rssi = 0
 		dist = 0
 		self.bins = []
-		
 		for i in range(self.num_bins):
 			
 			rssi += self.rssi[i]
 			dist += self.dist[i]
 			self.bins.insert(0, [rssi, dist])
-		
 	
 	def __str__(self):
 		
@@ -64,216 +106,83 @@ class BinOptimizer:
 		
 		self.cases = TestCases()
 		self.cases.open_test_data(path, building, floor, sample, interval)
-
-		
-	def initial_population(self, pop_size, num_bins):
+	
+	def optimize_fixed_rssi(
+		self, bins, loc_alg, floor_alg, top_n=3,
+		min_dist = 1, max_dist = 15,
+		fix_dist_width = False,
+		num_guesses = 50, max_iter=0, tol=.001
+	):
 		
 		"""
-		Randomly select a set of binning
-		strategies and creates their
-		initial scores.
+		Determines the optimal binning strategy for a given dataset.
+		Fixes RSSI and varies distances.
 		
-		Bin strategies are considered
-		"chromosomes".
+		bins: The initial bin guess
+		min_dist: The minimum distance a user can be standing from a beacon
+		max_dist: The maximum distance a user can be standing from a beacon
+		fix_rssi_width: Whether or not to create different bin widths for RSSI mappings
+		num_guesses: The number of distance mappings to make
+		max_iter: The number of iterations to make in the gradient descent
+		tol: The minimum difference between two error measurements to stop iterating
 		"""
 		
-		pop = []
-		
-		for i in range(pop_size):
-			pop.append(Bins(num_bins))
-		
-		return pop
-		
-		
-	def compute_bins(self, pop):
+		return
 	
+	def optimize_fixed_dist(
+		self, bins, loc_alg, floor_alg, top_n=3,
+		min_rssi = -110, max_rssi = -65,
+		fix_rssi_width=False,
+		num_guesses = 50, max_iter=0, tol=.001
+	):
 		"""
-		This function will compute the bins
-		using the bin widths.
+		Determines the optimal binning strategy for a given dataset.
+		Fixes dist and varies RSSI.
+		
+		bins: The initial bin guess
+		min_dist: The minimum distance a user can be standing from a beacon
+		max_dist: The maximum distance a user can be standing from a beacon
+		fix_rssi_width: Whether or not to create different bin widths for RSSI mappings
+		num_guesses: The number of RSSI mappings to make
+		max_iter: The number of iterations to make in the gradient descent
+		tol: The minimum difference between two error measurements to stop iterating
 		"""
-		
-		for bins in pop:
-			bins.compute_bins()
-		
 	
-	def fitness_scores(self, pop, loc_alg, floor_alg, top_n):
+		return
 	
-		"""
-		Computes the fitness of each bin in the current
-		population. Fitness is defined to be the total
-		error in location estimates produced by this
-		bin size.
-		"""
-		
-		#Test the algorithm with this new strategy
-		for i,bins in enumerate(pop):
-			sys.stdout.write(str(i/len(pop)) + "        \r")
-			sys.stdout.flush()
-			self.cases.reset()
-			bin_strategies[-1] = bins.bins
-			self.cases.test_algorithm(loc_alg=loc_alg, floor_alg=floor_alg, bin_strategy=-1, top_n=top_n)
-			bins.score = self.cases.net_xy_error
-		print()
-	
-	
-	def selection(self, pop):
-	
-		"""
-		Selects a subset of the current population of
-		chromosomes to evolve from. It will select either
-		two genes or the top 20% of genes.
-		"""
-		
-		#Sort population by fitness
-		pop.sort(key = lambda bins : bins.score)
-		
-		#Select the top 20%
-		if len(pop) * .2 >= 2:
-			return pop[0:int(len(pop)*.2)]
-				
-		#Select the top two
-		return pop[0:2]
-
-	
-	def crossover(self, pop, pop_size, num_bins):
-	
-		"""
-		Combines different bins using the
-		currently best bin strategies to
-		form a new population.
-		"""
-		
-		new_pop = pop.copy()
-		
-		for i in range(pop_size - len(pop)):
-			
-			#Select two random chromosomes
-			bins1 = pop[random.randrange(0, len(pop))]
-			bins2 = pop[random.randrange(0, len(pop))]
-			bins = Bins(num_bins)
-			
-			#Merge the rssi bins
-			for i in range(1, num_bins):
-				
-				#Generate probability
-				prob = random.random()
-				
-				#Smaller
-				if prob < 1/3:
-					if bins1.rssi[i] <= -10/.75:
-						bins.rssi[i] = bins1.rssi[i]*.75
-				
-				#Larger
-				elif prob < 2/3:
-					if bins2.rssi[i] >= -70/1.25:
-						bins.rssi[i] = bins2.rssi[i]*1.25
-				
-				#Average
-				else:
-					bins.rssi[i] = (bins1.rssi[i] + bins2.rssi[i])/2
-			
-			#Merge the distance bins
-			for i in range(num_bins):
-				
-				#Generate probability
-				prob = random.random()
-				
-				#Smaller
-				if prob < 1/3:
-					if bins1.dist[i] >= 1/.75:
-						bins.dist[i] = bins1.dist[i]*.75
-				
-				#Larger
-				elif prob < 2/3:
-					if bins2.dist[i] <= 10/1.25:
-						bins.dist[i] = bins2.dist[i]*1.25
-				
-				#Average
-				else:
-					bins.dist[i] = (bins1.dist[i] + bins2.dist[i])/2
-			
-			#Add the new bin strategy to the population
-			new_pop.append(bins)
-		
-		return new_pop
-	
-	
-	def mutate(self, pop, num_bins):
+	def optimize_full(
+		self, loc_alg, floor_alg, top_n=3, num_bins = 4,
+		max_rssi = -65,
+		min_dist = 1, max_dist = 15,
+		fix_dist_width=False,
+		fix_rssi_width=False,
+		num_start_guesses=50, num_part_guesses=10, max_iter=0, tol=.001
+	):
 		
 		"""
-		This function will randomly change
-		some of the bins in the population.
+		Determines the optimal binning strategy for a given dataset.
+		Varies all of the bin widths.
+		
+		loc_alg: The location algorithm ID in the loc_algorithms dict in Algorithms.py
+		floor_alg: The floor algorithm ID in the floor_algorithms dict in Algorithms.py
+		top_n: The number of signal strengths to consider in the location computation
+		num_bins: The number of bins to optimize for
+		min_rssi: The minimum possible RSSI
+		max_rssi: The maximum possible RSSI
+		min_dist: The minimum distance a user can be standing from a beacon
+		max_dist: The maximum distance a user can be standing from a beacon
+		fix_dist_width: Whether or not to create different bin widths for distance mappings
+		fix_rssi_width: Whether or not to create different bin widths for RSSI mappings
+		num_start_guesses: The number of places to start the 
+		num_part_guesses: The number of places to start in the partial optimizers
+		max_iter: The number of iterations to make in the gradient descent
+		tol: The minimum difference between two error measurements to stop iterating
 		"""
 		
-		for bins in pop[2:]:
-			
-			#Replace some rssi bins
-			prob = random.random()
-			if prob < .2:
-				for i in range(1, num_bins):
-					prob = random.random()
-					if prob < .2:
-						bins.rssi[i] = random.randint(-70, -10)
-			
-			#Replace some distance bins
-			prob = random.random()
-			if prob < .2:
-				for i in range(num_bins):
-					prob = random.random()
-					if prob < .2:
-						bins.dist[i] = random.randint(1, 10)
-
-		
-	def get_fittest(self, pop):
-		
-		for bins in pop:
-			if bins.score < self.error:
-				self.error = bins.score
-				self.bins = bins.bins
-	
-	
-	def optimize(self, loc_alg, floor_alg, top_n=3, num_bins = 4, pop_size = 50, num_generations = 0):
-	
-		"""
-		A genetic algorithm for finding the optimal bin
-		sizes for a given set of test data. 
-		
-		loc_alg: A tuple of the following form: (id, loc_algorithm_model)
-		floor_alg: A tuple of the following form: (id, floor_algorithm_model)
-		top_n: The number of beacons to consider when computing location
-		num_bins: The number of bins per step function
-		pop_size: The number of bins to evolve
-		num_generations: The maximum number of times evolution occurs
-		"""
-		
-		#Reset optimizer metadata
-		self.error = np.inf
-		self.bins = None
-		self.cases.reset()
-		
-		#Create the initial population
-		pop = self.initial_population(pop_size, num_bins)
-		self.compute_bins(pop)
-		
-		print("Generation " + str(0) + "/" + str(num_generations))
-		self.fitness_scores(pop, loc_alg, floor_alg, top_n)
-		print()
-		
-		#Evolve population
-		prior_score = np.inf
-		for i in range(num_generations-1):
-			print("Generation " + str(i+1) + "/" + str(num_generations))
-			pop = self.selection(pop)
-			pop = self.crossover(pop, pop_size, num_bins)
-			self.mutate(pop, num_bins)
-			self.compute_bins(pop)
-			self.fitness_scores(pop, loc_alg, floor_alg, top_n)
-			print()
-		
-		#Get the most fit bin size
-		self.get_fittest(pop)
-	
-	
+		#Generate initial bin guesses
+    
+		return
+    
 	def __str__(self):
 
 		string = ""

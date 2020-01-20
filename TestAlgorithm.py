@@ -9,6 +9,7 @@ import sys
 import lmfit, math, numpy as np
 import random
 import pandas as pd
+from numba import njit, prange
 from Algorithms import *
 from TestData import *
 
@@ -209,10 +210,6 @@ class TestCase:
 		#Estimate floor
 		flr, bldg = floor_algorithm(floors, proximities, buildings)
 		
-		#print(list(zip(floors, rssis)))
-		#print(str(flr) + " " + str(self.floor_true))
-		#print()
-		
 		#Calculate errors
 		self.setTestResults(x0, y0, flr, bldg)
 	
@@ -276,7 +273,7 @@ class TestCase:
 		prox = []
 		for rssi in rssis:
 			for (sig, dst) in bins:
-				if(rssi < sig):
+				if(rssi > sig):
 					prox.append(dst)
 					break
 		return np.array(prox)
@@ -454,7 +451,7 @@ class TestCases:
 		self.net_floor_error = 0
 		self.net_building_error = False
 	
-	
+	@jit(nopython=True, parallel=True)
 	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=True):
 	
 		"""
@@ -470,7 +467,8 @@ class TestCases:
 		"""
 		
 		self.reset()
-		for case in self.test_cases:
+		for i in prange(len(self.test_cases)):
+			case = self.test_cases[i]
 			case.set_location_algorithm(loc_alg)
 			case.set_floor_algorithm(floor_alg)
 			case.set_bin_strategy(bin_strategy)
