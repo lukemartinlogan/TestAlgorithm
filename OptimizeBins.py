@@ -22,7 +22,7 @@ class Bins:
 		"""
 		
 		self.num_bins = num_bins
-		self.rssi = [0] + [random.randint(-128, -10) for i in range(self.num_bins-1)]
+		self.rssi = [0] + [random.randint(-70, -10) for i in range(self.num_bins-1)]
 		self.dist = [random.randint(1, 10) for i in range(num_bins)]
 		self.bins = []
 		self.score = np.inf

@@ -11,23 +11,6 @@ from OptimizeBins import *
 from AnalyzeAlgorithm import *
 import pandas as pd
 
-def main_test_sim():
-	
-	#Open the test cases for a certain building
-	print("Opening test cases")
-	cases = TestCases(out="sim_results.csv")
-	cases.open_test_data(path="SimulatedData.csv", building="SB")
-	
-	#Run the original bins over the new test data
-	print("Testing original bin strategy")
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2)
-	cases.to_csv()
-	
-	#Run the new bins over the new test data
-	print("Testing new bin strategy")
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 6)
-	cases.to_csv()
-
 def main_optimize_bins():
 
 	#Creating bin optimizer
