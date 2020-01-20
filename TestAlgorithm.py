@@ -41,32 +41,13 @@ class IBeacon:
 		self.floor = int(unique["b_floor"])
 		self.x = float(unique["b_x"])
 		self.y = float(unique["b_y"])
-		self.rssis = []
-		self.dbm_sum = 0
-		self.mw_sum = 0
-		self.dbm_avg = 0
-		self.mw_avg = 0
-		self.mw_to_dbm_avg = 0
-		
-		for index, row in df.iterrows():
-			self.add_rssi(row["rssi"])
-		
-	
-	def add_rssi(self, rssi):
-	
-		"""
-		This function will add an rssi to the beacon.
-		It will also compute the different averages.
-		"""
-	
-		self.rssis.append(rssi)
-		self.dbm_sum += rssi
-		self.mw_sum += 10**(rssi/10)
+		self.rssis = np.array(df["rssi"])
+		self.dbm_sum = self.rssis.sum()
+		self.mw_sum = (10**(self.rssis/10)).sum()
 		self.dbm_avg = self.dbm_sum/len(self.rssis)
 		self.mw_avg = self.mw_sum/len(self.rssis)
 		self.mw_to_dbm_avg = 10*np.log10(self.mw_avg)
-	
-	
+		
 	def __str__(self):
 		string = "\t\tID: " + str(self.major) + ", " + str(self.minor) + "\n";
 		string += "\t\t\t"
@@ -98,8 +79,6 @@ class TestCase:
 		"""
 		
 		unique = df[["testid", "t_building", "t_floor", "t_x", "t_y", "interval"]].drop_duplicates().iloc[0]
-		#if(len(unique.index) > 1):
-		#	return
 		
 		self.loc_algorithm = 1
 		self.floor_algorithm = 1

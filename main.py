@@ -9,8 +9,15 @@ from TestAlgorithm import *
 from Visualize import *
 from OptimizeBins import *
 from AnalyzeAlgorithm import *
+from AnalyzeSignals import *
 import pandas as pd
 
+def main_signal_stats():
+	cases = TestCases()
+	cases.open_test_data(path="Datasets/database.csv", building="SB")
+	ViewSignalStats(cases, hist_title="Signal Strength in SB", hist_out="Visualizations/signal_strengths.png")
+	
+	
 def main_optimize_bins():
 
 	#Creating bin optimizer
@@ -109,9 +116,10 @@ def main_visualize():
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=7, save_path="Visualizations/SB02_10s_7.html", interval=10, results=(0, 100))
 	
 def main():
+	main_signal_stats()
 	#main_optimize_bins()
 	#main_test_alg()
-	main_view_stats()
+	#main_view_stats()
 	#main_compare_bins()
 	#main_visualize()
 
