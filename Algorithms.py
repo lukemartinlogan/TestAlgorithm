@@ -71,10 +71,13 @@ bin_strategies = {
 	1: [(-70, 15), (-60, 7), (-50, 3), (0, 2)],				#Very old bins
 	2: [(-70, 9), (-60, 5), (-50, 2), (0, 1)],				#Old bins
 	
-	3: [(-100, 9), (-80, 5), (-60, 2.5)],					#My guess for bins (10s)
+	3: [(-90, 10), (-75, 5), (-60, 2.5)],					#My guess for bins (10s)
 	
 	6: [[-103, 9], [-82, 4.2], [-40, 2.2], [0, 1.1]],		#New bins (interval = 5sec, used currently)
 	7: [[-92, 7.6], [-80, 5.4], [-50, 2.4], [0, 1.2]],		#New bins (interval=10sec, used currently)
+	
+	8: [[-100, 9.5], [-80, 5.0], [-60, 2], [0, 1]],			#New bins (interval = 5sec)
+	9: [[-96, 9.5], [-78, 5.0], [-60, 2]],					#New bins (interval=10sec)
 }
 
 

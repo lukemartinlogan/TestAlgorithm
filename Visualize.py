@@ -95,8 +95,7 @@ def view_tests(
 		results = (0, len(df) - 1)
 	elif results[1] > len(df):
 		results = (results[0], len(df)-1)
-	print(results)
-		
+	
 	#Convert the portrait boolean to a string
 	if portrait:
 		portrait = "true"

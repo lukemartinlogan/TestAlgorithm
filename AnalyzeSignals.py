@@ -47,7 +47,6 @@ def ViewSignalStats(cases, hist_title="Signal Distribution", hist_out="sigdist.p
 	sig = []
 	for case in cases.test_cases:
 		rssis = case.getNearestBeaconsAvgMwToDbm()[4]
-		print(len(rssis))
 		sig += rssis
 	
 	#Compute stats
