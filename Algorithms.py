@@ -70,7 +70,8 @@ floor_algorithms = {
 bin_strategies = {
 	1: [(-70, 15), (-60, 7), (-50, 3), (0, 2)],				#Very old bins
 	2: [(-70, 9), (-60, 5), (-50, 2), (0, 1)],				#Old bins
-	3: [(-80, 15), (-70, 7), (-60, 3), (0,1)],				#Professor's test bins
+	
+	3: [(-100, 9), (-80, 5), (-60, 2.5)],					#My guess for bins (10s)
 	
 	6: [[-103, 9], [-82, 4.2], [-40, 2.2], [0, 1.1]],		#New bins (interval = 5sec, used currently)
 	7: [[-92, 7.6], [-80, 5.4], [-50, 2.4], [0, 1.2]],		#New bins (interval=10sec, used currently)

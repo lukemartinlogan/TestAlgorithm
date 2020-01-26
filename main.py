@@ -17,19 +17,56 @@ def main_signal_stats():
 	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
 	ViewSignalStats(cases, hist_title="Signal Strengths in SB", hist_out="Visualizations/signal_strengths.png")
 	
-	
 def main_optimize_bins():
 
 	#Creating bin optimizer
 	bins = BinOptimizer()
 	
-	#Open the test cases for a certain building (interval=5sec)
+	#Open test data for 5sec interval
 	print("Opening test cases - 5sec")
-	bins.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	cases = TestCases()
+	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
 	
-	#Optimize
-	print("Optimizing Bins")
+	#Error produced by our current strategy
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 6, to_csv = False)
+	print("TEST BINS: " + str(bin_strategies[6]))
+	print("Error: " + str(cases.net_xy_error))
 	
+	#Error produced by my initial guess
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = False)
+	print("TEST BINS: " + str(bin_strategies[3]))
+	print("Error: " + str(cases.net_xy_error))
+	
+
+	#Optimize - Fixed RSSI
+	print("Optimizing Bins - Fixed RSSI")
+	bins.set_cases(cases)
+	bins.optimize_fixed_rssi(
+		bins=3, loc_alg=2, floor_alg=1, top_n=3,
+		min_dist = 1, dist_width_range = (1,10),
+		fix_dist_width = False,
+		num_guesses = 100)
+	print(bins)
+	
+	#Optimize - Fixed DIST
+	print("Optimizing Bins - Fixed Distances")
+	bins.set_cases(cases)
+	bins.optimize_fixed_dist(
+		bins=3, loc_alg=2, floor_alg=1, top_n=3,
+		max_rssi = -60, rssi_width_range = (10, 30),
+		fix_rssi_width = True,
+		num_guesses = 100)
+	print(bins)
+	
+	#Optimize - Varied Both
+	print("Optimizing Bins - Both")
+	bins.set_cases(cases)
+	bins.optimize_full(
+		bins=3, loc_alg=2, floor_alg=1, top_n=3,
+		max_rssi = -60, rssi_width_range = (10, 30),
+		min_dist = 1, dist_width_range = (1,10),
+		fix_dist_width = False, fix_rssi_width = True,
+		num_guesses = 100)
 	print(bins)
 
 def main_test_alg():
@@ -42,7 +79,6 @@ def main_test_alg():
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 6, to_csv = True)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 8, to_csv = True)
 	
 	#Get the location estimates for the bin strategies (10s)
 	print("Opening test cases -10sec")
@@ -50,7 +86,6 @@ def main_test_alg():
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 2, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 7, to_csv = True)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 9, to_csv = True)
 
 def main_view_stats():
 	df = pd.read_csv("Datasets/results.csv")
@@ -106,8 +141,8 @@ def main_visualize():
 	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=7, save_path="Visualizations/SB02_10s_7.html", interval=10, results=(0, 100))
 	
 def main():
-	main_signal_stats()
-	#main_optimize_bins()
+	#main_signal_stats()
+	main_optimize_bins()
 	#main_test_alg()
 	#main_view_stats()
 	#main_compare_bins()

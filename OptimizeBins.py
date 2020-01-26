@@ -3,119 +3,110 @@ import sys
 import math, numpy as np
 import random
 import pandas as pd
-from numba import njit, prange
+from progressbar import ProgressBar
 from Algorithms import *
 from TestData import *
 from TestAlgorithm import *
 
-"""
-A genetic algorithm for finding the optimal bins
-sizes.
-"""
-
-class Bins:
+def rand_bin_rssis(bins, fix_rssi_width=False, max_rssi=-65, rssi_width_range=(10, 30)):
 	
-	def __init__(self, num_bins):
+	"""
+	Randomly generate the rssi mapping while keeping distances the same
 	
-		"""
-		Keeps track of RSSI to distance
-		mappings.
-		
-		num_bins: The number of bins to create
-		bin_min: The minimum signal strength to consider
-		bin_max: The maximum signal strength to consider
-		"""
-		
-		self.num_bins = num_bins
-		self.bins = None
-		self.dist = None
-		self.rssi = None
+	[(r1+r2+r3+r4, d4), (r1+r2+r3, d3), (r1+r2, d2), (r1, d1)]
+	"""
 	
-	def set_bins(self, bins):
-		self.bins = bins
-		self.num_bins = len(bins)
+	num_bins = len(bins)
+	if fix_rssi_width:
+		rssi_widths = [max_rssi] + [-random.randint(rssi_width_range[0], rssi_width_range[1])]*(num_bins-1)
+	else:
+		rssi_widths = [max_rssi] + [-random.randint(rssi_width_range[0], rssi_width_range[1]) for i in range(num_bins-1)]
 	
-	def rand_bin_rssis(self, fix_rssi_width=False, max_rssi=-65, rssi_width_range=(10, 30)):
-		
-		"""
-		Randomly generate the rssi mapping while keeping distances the same
-		
-		[(r1+r2+r3+r4, d4), (r1+r2+r3, d3), (r1+r2, d2), (r1, d1)
-		"""
-		
-		self.rssi = [max_rssi] + [-random.randint(rssi_width_range) for i in range(self.num_bins-1)]
-		self.bins = []
-		self.score = np.inf
-		
-		rssi = 0
-		dist = 0
-		self.bins = []
-		for i in range(self.num_bins): 
-			rssi += self.rssi[i]
-			dist += self.dist[i]
-			self.bins.insert(0, [rssi, dist])
-		
-		
-	def rand_bin_dists(self, fix_dist_width=False, min_dist=1, dist_width_range=(1, 10)):
-		
-		"""
-		Randomly generate the distance mapping while keeping RSSIs the same
-		"""
-		
-				
-	def rand_bin(
-		self, num_bins, fix_dist_width=False, fix_rssi_width=False, 
-		max_rssi=-65, rssi_width_range=(10,30),
-		min_dist=1, dist_width_range=(1,10)
-	):
-		
-		"""
-		Randomly generate a bin
-		"""
-		
-		self.num_bins = num_bins
-		self.rssi = [0] + [random.randint(-70, -10) for i in range(self.num_bins-1)]
-		self.dist = [random.randint(1, 10) for i in range(num_bins)]
-		self.bins = []
-		self.score = np.inf
-		
-		rssi = 0
-		dist = 0
-		self.bins = []
-		for i in range(self.num_bins):
-			
-			rssi += self.rssi[i]
-			dist += self.dist[i]
-			self.bins.insert(0, [rssi, dist])
+	rssi = 0
+	dist = 0
+	new_bins = []
+	for i in range(num_bins): 
+		rssi += rssi_widths[i]
+		dist = bins[num_bins - i - 1][1]
+		new_bins.insert(0, [rssi, dist])
 	
-	def __str__(self):
+	return new_bins
 		
-		return str(self.score)
-		
+def rand_bin_dists(bins, fix_dist_width=False, min_dist=1, dist_width_range=(1, 10)):
+	
+	"""
+	Randomly generate the distance mapping while keeping RSSIs the same
+	"""
+	
+	num_bins = len(bins)
+	if fix_dist_width:
+		dist_widths = [min_dist] + [random.randint(dist_width_range[0]*2, dist_width_range[1])/2]*(num_bins - 1)
+	else:
+		dist_widths = [min_dist] + [random.randint(dist_width_range[0]*2, dist_width_range[1])/2 for i in range(num_bins-1)]
+	
+	rssi = 0
+	dist = 0
+	new_bins = []
+	for i in range(num_bins): 
+		rssi = bins[num_bins - i - 1][0]
+		dist += dist_widths[i]
+		new_bins.insert(0, [rssi, dist])
+	
+	return new_bins
+	
+def rand_bin(
+	num_bins, fix_dist_width=False, fix_rssi_width=False, 
+	max_rssi=-65, rssi_width_range=(10,30),
+	min_dist=1, dist_width_range=(1,10)
+):
+	
+	"""
+	Randomly generate a bin strategy
+	"""
+	
+	if fix_rssi_width:
+		rssi_widths = [max_rssi] + [-random.randint(rssi_width_range[0], rssi_width_range[1])]*(num_bins-1)
+	else:
+		rssi_widths = [max_rssi] + [-random.randint(rssi_width_range[0], rssi_width_range[1]) for i in range(num_bins-1)]
+	if fix_dist_width:
+		dist_widths = [min_dist] + [random.randint(dist_width_range[0]*2, dist_width_range[1]*2)/2]*(num_bins - 1)
+	else:
+		dist_widths = [min_dist] + [random.randint(dist_width_range[0]*2, dist_width_range[1]*2)/2 for i in range(num_bins-1)]
+	
+	rssi = 0
+	dist = 0
+	new_bins = []
+	for i in range(num_bins): 
+		rssi += rssi_widths[i]
+		dist += dist_widths[i]
+		new_bins.insert(0, [rssi, dist])
+	
+	return new_bins
 
 class BinOptimizer:
 
-	def __init__(self):
+	def __init__(self, cases = None):
 		
 		self.bins = None
-		self.error = 0
-		self.cases = None
-
+		self.error = np.inf
+		self.cases = cases
 	
-	def open_test_data(self, path = "database.csv", building = None, floor = None, sample=None, interval=None):
-		
-		self.cases = TestCases()
-		self.cases.open_test_data(path, building, floor, sample, interval)
+	def set_cases(self, cases):
+		self.cases = cases
+	
+	def reset(self):
+		self.bins = None
+		self.error = np.inf
 	
 	def optimize_fixed_rssi(
 		self, bins, loc_alg, floor_alg, top_n=3,
-		min_dist = 1, max_dist = 15,
+		min_dist = 1, dist_width_range = (1,10),
 		fix_dist_width = False,
 		num_guesses = 50, max_iter=0, tol=.001
 	):
 		
 		"""
-		Determines the optimal binning strategy for a given dataset.
+		Finds the best distances for the given RSSI bins
 		Fixes RSSI and varies distances.
 		
 		bins: The initial bin guess
@@ -127,11 +118,19 @@ class BinOptimizer:
 		tol: The minimum difference between two error measurements to stop iterating
 		"""
 		
-		return
+		pbar = ProgressBar() 
+		bins = bin_strategies[bins]
+		for i in pbar(range(num_guesses)):
+			bin_strategies[-1] = bins
+			self.cases.test_algorithm(loc_alg, floor_alg, -1, top_n, to_csv=False)
+			if self.cases.net_xy_error < self.error: 
+				self.bins = bins
+				self.error = self.cases.net_xy_error
+			bins = rand_bin_dists(bins, fix_dist_width, min_dist, dist_width_range) 
 	
 	def optimize_fixed_dist(
 		self, bins, loc_alg, floor_alg, top_n=3,
-		min_rssi = -110, max_rssi = -65,
+		max_rssi = -65, rssi_width_range = (10,30),
 		fix_rssi_width=False,
 		num_guesses = 50, max_iter=0, tol=.001
 	):
@@ -147,41 +146,42 @@ class BinOptimizer:
 		max_iter: The number of iterations to make in the gradient descent
 		tol: The minimum difference between two error measurements to stop iterating
 		"""
-	
-		return
-	
-	def optimize_full(
-		self, loc_alg, floor_alg, top_n=3, num_bins = 4,
-		max_rssi = -65,
-		min_dist = 1, max_dist = 15,
-		fix_dist_width=False,
-		fix_rssi_width=False,
-		num_start_guesses=50, num_part_guesses=10, max_iter=0, tol=.001
-	):
 		
+		bins = bin_strategies[bins]
+		pbar = ProgressBar()
+		for i in pbar(range(num_guesses)):
+			bin_strategies[-1] = bins
+			self.cases.test_algorithm(loc_alg, floor_alg, -1, top_n, to_csv=False)
+			if self.cases.net_xy_error < self.error:
+				self.bins = bins
+				self.error = self.cases.net_xy_error
+			bins = rand_bin_rssis(bins, fix_rssi_width, max_rssi, rssi_width_range)
+    
+	def optimize_full(
+		self, bins, loc_alg, floor_alg, top_n=3,
+		max_rssi = -65, rssi_width_range = (10,30),
+		min_dist = 1, dist_width_range = (1,10),
+		fix_dist_width = False, fix_rssi_width=False,
+		num_guesses = 50, max_iter=0, tol=.001
+	):
 		"""
 		Determines the optimal binning strategy for a given dataset.
-		Varies all of the bin widths.
+		Varies dist and rssi.
 		
-		loc_alg: The location algorithm ID in the loc_algorithms dict in Algorithms.py
-		floor_alg: The floor algorithm ID in the floor_algorithms dict in Algorithms.py
-		top_n: The number of signal strengths to consider in the location computation
-		num_bins: The number of bins to optimize for
-		min_rssi: The minimum possible RSSI
-		max_rssi: The maximum possible RSSI
-		min_dist: The minimum distance a user can be standing from a beacon
-		max_dist: The maximum distance a user can be standing from a beacon
-		fix_dist_width: Whether or not to create different bin widths for distance mappings
-		fix_rssi_width: Whether or not to create different bin widths for RSSI mappings
-		num_start_guesses: The number of places to start the 
-		num_part_guesses: The number of places to start in the partial optimizers
-		max_iter: The number of iterations to make in the gradient descent
-		tol: The minimum difference between two error measurements to stop iterating
 		"""
 		
-		#Generate initial bin guesses
-    
-		return
+		bins = bin_strategies[bins]
+		pbar = ProgressBar()
+		for i in pbar(range(num_guesses)):
+			bin_strategies[-1] = bins
+			self.cases.test_algorithm(loc_alg, floor_alg, -1, top_n, to_csv=False)
+			if self.cases.net_xy_error < self.error:
+				self.bins = bins
+				self.error = self.cases.net_xy_error
+			bins = rand_bin(
+				len(bins), fix_dist_width, fix_rssi_width, 
+				max_rssi, rssi_width_range,
+				min_dist, dist_width_range)
     
 	def __str__(self):
 

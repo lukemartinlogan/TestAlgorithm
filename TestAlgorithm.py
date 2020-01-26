@@ -9,7 +9,7 @@ import sys
 import lmfit, math, numpy as np
 import random
 import pandas as pd
-from numba import njit, prange
+from progressbar import ProgressBar
 from Algorithms import *
 from TestData import *
 
@@ -273,7 +273,7 @@ class TestCase:
 		prox = []
 		for rssi in rssis:
 			for (sig, dst) in bins:
-				if(rssi > sig):
+				if(rssi < sig):
 					prox.append(dst)
 					break
 		return np.array(prox)
@@ -390,7 +390,6 @@ class TestCases:
 		self.net_floor_error = 0
 		self.net_building_error = False
 	
-	
 	def open_test_data(self, path = "Datasets/database.csv", building = None, floor = None, sample=None, interval=None):
 	
 		"""
@@ -440,7 +439,7 @@ class TestCases:
 					(self.test_data["t_floor"] == id["t_floor"]) &
 					(self.test_data["t_building"] == id["t_building"])
 				]))
-		
+	
 	def reset(self):
 	
 		"""
@@ -451,7 +450,6 @@ class TestCases:
 		self.net_floor_error = 0
 		self.net_building_error = False
 	
-	@jit(nopython=True, parallel=True)
 	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=True):
 	
 		"""
@@ -466,22 +464,20 @@ class TestCases:
 			to_csv: Whether or not to save the results to the CSV file
 		"""
 		
+		results = []
 		self.reset()
-		for i in prange(len(self.test_cases)):
-			case = self.test_cases[i]
+		for case in self.test_cases:
 			case.set_location_algorithm(loc_alg)
 			case.set_floor_algorithm(floor_alg)
 			case.set_bin_strategy(bin_strategy)
 			case.set_top_n(top_n)
 			case.estimate_location()
-			
 			self.net_xy_error += case.xy_error
 			self.net_floor_error += case.floor_error
 			self.net_building_error += case.building_error
-			
+		
 		if to_csv:
-			self.to_csv()
-	
+			self.to_csv()	
 	
 	def to_csv(self):
 	
