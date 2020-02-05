@@ -49,7 +49,7 @@ def GetBuildingName(code):
 		return "Building"
 
 		
-def download_test_data1(out = "Datasets/database.csv"):
+def download_test_data1(out = "Datasets/full_database.csv"):
 	
 		"""
 		This function will download test data from the "test application"
@@ -127,7 +127,7 @@ def download_test_data1(out = "Datasets/database.csv"):
 		
 		#Save this dataframe as a CSV
 		tests = tests.dropna(axis=0, subset=["b_x", "b_y"])
-		tests.to_csv(out)
+		tests.to_csv(out, index=False)
 		
 		
 		

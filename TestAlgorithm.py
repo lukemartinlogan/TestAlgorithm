@@ -38,7 +38,7 @@ class IBeacon:
 		self.major = str(unique["b_major"])
 		self.minor = str(unique["b_minor"])
 		self.key = self.major + self.minor
-		self.building = str(unique["t_building"])
+		self.building = int(unique["t_building"])
 		self.floor = int(unique["b_floor"])
 		self.x = float(unique["b_x"])
 		self.y = float(unique["b_y"])
@@ -48,16 +48,6 @@ class IBeacon:
 		self.dbm_avg = self.dbm_sum/len(self.rssis)
 		self.mw_avg = self.mw_sum/len(self.rssis)
 		self.mw_to_dbm_avg = 10*np.log10(self.mw_avg)
-		
-	def __str__(self):
-		string = "\t\tID: " + str(self.major) + ", " + str(self.minor) + "\n";
-		string += "\t\t\t"
-		for x in self.rssis:
-			string += str(x) + " "
-		string += "\n"
-		string += "\t\t\tAVG: " + str(self.mw_to_dbm_avg)
-		string += "\n"
-		return string
 
 
 """
@@ -300,30 +290,9 @@ class TestCase:
 		self.xy_error = ((self.x_true - self.x_est)**2 + (self.y_true - self.y_est)**2)**.5
 		self.floor_error = abs(floor_est - self.floor_true)
 		self.building_error = building_est != self.building_true
-		
-		
-	def __iter__(self):
-	
-		"""
-		This will initialize an iteration
-		of all beacons over this object.
-		"""
-	
-		self.iteration = iter(self.beacons)
-		return self
 	
 	
-	def __next__(self):
-	
-		"""
-		This will acquire the next beacon
-		in an iteration.
-		"""
-	
-		return self.iteration.next()
-		
-
-	def to_csv_record(self):
+	def get_record(self):
 	
 		"""
 		This function will convert a test case to a record of the following form:
@@ -334,27 +303,28 @@ class TestCase:
 		[building_error][floor_error][xy_error]
 		"""
 		
-		s = ""
-		s += str(self.testid) + ","
-		s += str(self.timestamp) + ","
-		s += str(self.interval) + ","
-		s += str(self.loc_algorithm[0]) + ","
-		s += str(self.floor_algorithm[0]) + ","
-		s += str(self.bin_strategy[0]) + ","
-		s += str(self.top_n) + ","
-		s += str(self.building_true) + ","
-		s += str(self.floor_true) + ","
-		s += str(self.x_true) + ","
-		s += str(self.y_true) + ","
-		s += str(self.building_est) + ","
-		s += str(self.floor_est) + ","
-		s += str(self.x_est) + ","
-		s += str(self.y_est) + ","
-		s += str(self.building_error) + ","
-		s += str(self.floor_error) + ","
-		s += str(self.xy_error)
+		record = {
+			"testid": self.testid,
+			"timestamp": self.timestamp,
+			"interval": self.interval,
+			"loc_alg": self.loc_algorithm[0],
+			"floor_alg": self.floor_algorithm[0],
+			"bin_strat": self.bin_strategy[0],
+			"top_n": self.top_n,
+			"building_true": self.building_true,
+			"floor_true": self.floor_true,
+			"x_true": self.x_true,
+			"y_true": self.y_true,
+			"building_est": self.building_est,
+			"floor_est": self.floor_est,
+			"x_est": self.x_est,
+			"y_est": self.y_est,
+			"building_error": self.building_error,
+			"floor_error": self.floor_error,
+			"xy_error": self.xy_error
+		}
 		
-		return s
+		return record
 				
 
 """
@@ -380,8 +350,6 @@ class TestCases:
 	
 		self.out_path = out
 		self.append = append
-		self.out = None
-		self.header = not append
 		self.test_data = None
 		self.test_ids = None
 		self.test_cases = None
@@ -390,13 +358,16 @@ class TestCases:
 		self.net_floor_error = 0
 		self.net_building_error = False
 	
-	def open_test_data(self, path = "Datasets/database.csv", building = None, floor = None, sample=None, interval=None):
+	
+	def open_test_data(self, database = "Datasets/database.csv", results = None, building = None, floor = None, sample=None, interval=None):
 	
 		"""
 		This function will load the test data for algorithm analysis.
+		It will also load the results of a previous analysis if given.
 		
 		Inputs:
-			path: the location of the test data
+			database: the location of the test data
+			results: the path to the previous analysis
 			building: the building we are interested in (string)
 			floor: the floor of that building we are interested in
 			sample: select a random sample of the test data (this  is a number)
@@ -404,7 +375,7 @@ class TestCases:
 		"""
 	
 		#Open the CSV of test data
-		self.test_data = pd.read_csv(path)
+		self.test_data = pd.read_csv(database)
 		
 		#Select test data from this building
 		if building is not None:
@@ -427,18 +398,92 @@ class TestCases:
 				sample = len(self.test_ids)
 			self.test_ids = self.test_ids.sample(n=sample, axis=0)
 		
-		#Iterate over each test case id
+		#Get data for each unique test case
 		i = 0
-		self.test_cases = []
+		self.test_cases = {}
 		for index, id in self.test_ids.iterrows():
-			self.test_cases.append(
-				TestCase(self.test_data[
+			key = str(id["testid"]) + str(id["t_x"]) + str(id["t_y"]) + str(id["t_floor"]) + str(id["t_building"])
+			self.test_cases[key] = TestCase(
+				self.test_data[
 					(self.test_data["testid"] == id["testid"]) &
 					(self.test_data["t_x"] == id["t_x"]) &
 					(self.test_data["t_y"] == id["t_y"]) &
 					(self.test_data["t_floor"] == id["t_floor"]) &
 					(self.test_data["t_building"] == id["t_building"])
-				]))
+				]
+			)
+		
+		#Load results for the test cases
+		if results:
+			self.open_results(results)
+	
+	
+	def open_test_cases(self, cases, database = "Datasets/database.csv", results = None):
+		
+		"""
+		This function will load a subset of test cases for algorithm analysis
+		
+		Inputs:
+			cases: a list of test IDs
+			database: the location of the test data
+			results: the path to the previous analysis
+		"""
+		
+		self.test_data = pd.read_csv(database)
+		cases = dict(zip(cases, [None]*len(cases)))
+		
+		#Get the test case ids
+		self.test_ids = self.test_data[["testid", "t_x", "t_y", "t_floor", "t_building"]].drop_duplicates()
+			
+		#Get data for each unique test case
+		i = 0
+		self.test_cases = {}
+		for index, id in self.test_ids.iterrows():
+			if id["testid"] not in cases:
+				continue
+			key = str(id["testid"]) + str(id["t_x"]) + str(id["t_y"]) + str(id["t_floor"]) + str(id["t_building"])
+			self.test_cases[key] = TestCase(
+				self.test_data[
+					(self.test_data["testid"] == id["testid"]) &
+					(self.test_data["t_x"] == id["t_x"]) &
+					(self.test_data["t_y"] == id["t_y"]) &
+					(self.test_data["t_floor"] == id["t_floor"]) &
+					(self.test_data["t_building"] == id["t_building"])
+				]
+			)
+		
+		#Load results for the test cases
+		if results:
+			self.open_results(results)
+	
+	
+	def open_results(self, results):
+		
+		"""
+		This function will load the results from a previous analysis.
+		You MUST have called open_test_data or open_test_cases before this.
+		
+		Inputs:
+			results: the path to the previous analysis
+		"""
+		
+		results = pd.read_csv(results)
+		for index, id in results.iterrows():
+			#Get case
+			key = str(id["testid"]) + str(id["x_true"]) + str(id["y_true"]) + str(id["floor_true"]) + str(id["building_true"])
+			if key not in self.test_cases.keys():
+				continue
+			case = self.test_cases[key]
+			
+			#Load results
+			case.building_est = id["building_est"]
+			case.floor_est = id["floor_est"]
+			case.x_est = id["x_est"]
+			case.y_est = id["y_est"]
+			case.building_error = id["building_error"]
+			case.floor_error = id["floor_error"]
+			case.xy_error = id["xy_error"]
+	
 	
 	def reset(self):
 	
@@ -449,6 +494,7 @@ class TestCases:
 		self.net_xy_error = 0
 		self.net_floor_error = 0
 		self.net_building_error = False
+	
 	
 	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=True):
 	
@@ -464,9 +510,8 @@ class TestCases:
 			to_csv: Whether or not to save the results to the CSV file
 		"""
 		
-		results = []
 		self.reset()
-		for case in self.test_cases:
+		for case in self.test_cases.values():
 			case.set_location_algorithm(loc_alg)
 			case.set_floor_algorithm(floor_alg)
 			case.set_bin_strategy(bin_strategy)
@@ -479,6 +524,7 @@ class TestCases:
 		if to_csv:
 			self.to_csv()	
 	
+	
 	def to_csv(self):
 	
 		"""
@@ -486,25 +532,28 @@ class TestCases:
 		algorithm.
 		"""
 	
-		if self.out is None:
-			if self.append:
-				self.out = open(self.out_path, "a")
-			else:
-				self.out = open(self.out_path, "w")
+		col = [
+			"testid", "timestamp", "interval", "loc_alg", "floor_alg", "bin_strat", "top_n",
+			"building_true", "floor_true", "x_true", "y_true",
+			"building_est", "floor_est", "x_est", "y_est",
+			"building_error", "floor_error", "xy_error"
+		]
 		
-		s = ""
-		if self.header:
-			s += "testid,timestamp,interval,loc_alg,floor_alg,bin_strat,top_n,"
-			s += "building_true,floor_true,x_true,y_true,"
-			s += "building_est,floor_est,x_est,y_est,"
-			s += "building_error,floor_error,xy_error" + "\n"
-			self.header = False
+		#Pack test results
+		self.df = pd.DataFrame(columns=col)
+		for case in self.test_cases.values():
+			self.df = self.df.append(case.get_record(), ignore_index=True)
 		
-		for case in self.test_cases:
-			s += case.to_csv_record() + "\n"
+		#Commit results
+		if self.append and os.path.exists(self.out_path):
+			self.df.to_csv(self.out_path, mode='a', header=False, index=False)	
+		else:
+			self.df.to_csv(self.out_path, mode='w', header=True, index=False)
 		
-		self.out.write(s)
-
-
 
 	
+	
+
+
+
+

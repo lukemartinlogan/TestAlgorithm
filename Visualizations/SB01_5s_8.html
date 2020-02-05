@@ -397,6 +397,53 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		.attr("stroke", "black");
 }
 
+function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, portrait) {
+	
+	//Render positions in either portrait or landscape mode
+	if (portrait) {
+		tm_x = mapX(b_x)
+		tm_y = mapY(b_y)
+	} else {
+		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(b_x)
+		tm_x = mapY(b_y)
+	}
+	
+	var group = d3.select('svg').append('g').attr('class', 'tests');
+	
+	//The width of the beacon circles
+	b_r = 50
+	z_r = 100	//The radius of the tester and estimation circles when hovering over them
+
+	//Render tester position
+	group.append('circle')
+		.attr("cx", tm_x)
+		.attr("cy", tm_y)
+		.attr("data-html", "true")
+		.attr("data-toggle", "tooltip")
+		.attr("title", "Beacon.major: " + b_major + "<br />Beacon.minor: " + b_minor + "<br />Beacon.building: " +  b_building + "<br />Beacon.floor: " +  b_floor + "<br />Beacon.x: " +  b_x.toFixed(4) + "<br />Beacon.y: " +  b_y.toFixed(4) + "<br />Beacon.rssi: " +  rssi.toFixed(4))
+		.on('mouseover', function() {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", z_r);
+			$(this).tooltip();
+			$(this).tooltip('show');
+		})
+		.on('mouseout', function () {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", b_r);
+		})
+		.style("fill", "blue")
+		.style("fill-opacity", "0.6")
+		.style("stroke", "black")
+		.style("stroke-dasharray", "80, 50")
+		.style("stroke-width", "8")
+		.transition()
+		.duration(300)
+		.attr("r", 50)
+		.attr("transform", "rotate(180deg)");
+}
+
 function mapX (x) {
 	const origin = d3.select('.origin').filter('path').node().getBBox();
 	const originTop = d3.select('.originTop').filter('path').node().getBBox();
@@ -474,5 +521,15 @@ render_test_case("Test64675",9.354245,27.596269,9.482577167094414,27.96669009614
 render_test_case("Test10551",9.354245,27.596269,9.482577164624187,27.966690097186948,0.39202159853547547,"2019-02-13 23:07:14",false)
 render_test_case("Test88477",14.862687,18.142986999999998,18.756317114122428,17.74748159642247,3.91366579945964,"2019-02-20 22:55:02",false)
 render_test_case("Test1254",14.862687,18.142986999999998,9.19623100496843,20.34158899710261,6.078040332647753,"2019-02-20 23:11:58",false)
+render_beacon(1000.0,511.0,"SB",1.0,7.757860905176678,43.34756805360252,0,false)
+render_beacon(1000.0,552.0,"SB",1.0,8.252173096444572,26.40365753174737,0,false)
+render_beacon(1000.0,575.0,"SB",1.0,29.50762144674296,28.859295811423607,0,false)
+render_beacon(1000.0,539.0,"SB",1.0,10.476580637792203,7.495236031035186,0,false)
+render_beacon(1000.0,524.0,"SB",1.0,7.263547820361415,33.15666546422749,0,false)
+render_beacon(1000.0,541.0,"SB",1.0,29.260466244656378,9.09139753922206,0,false)
+render_beacon(1000.0,594.0,"SB",1.0,29.384043845699672,43.5931325918023,0,false)
+render_beacon(1000.0,573.0,"SB",1.0,29.50762144674296,52.3106532787198,0,false)
+render_beacon(1000.0,514.0,"SB",1.0,7.757860905176678,59.80035305021886,0,false)
+render_beacon(1000.0,531.0,"SB",1.0,26.04743432077296,66.67614347374641,0,false)
 </script>
 </html>

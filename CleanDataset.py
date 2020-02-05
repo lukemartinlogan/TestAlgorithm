@@ -23,41 +23,44 @@ def test_algorithm():
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 7, to_csv = True)
 
 def visualize_erronous_points():
-	df = load_results("Datasets/results_to_clean.csv")
+	df = load_results("Datasets/results.csv")
 	
-	days=[(2019, 4, 1), (2019, 4, 29)]
+	days=[(2019, 1, 1), (2019, 4, 29)]
 	
+	"""
 	view_tests(
 		df, building="SB", loc_alg=2, floor=1, 
 		days=days, 
-		bin_strategy=6, save_path="Visualizations/SB01_5s_BinStrat6.html", 
+		bin_strategy=6, save_path="Visualizations/SB01_5s_3.html", 
 		interval=5,
-		xy_error=0,
-		results=(0, 100))
-	
-	view_tests(
-		df, building="SB", loc_alg=2, floor=2, 
-		days=days, 
-		bin_strategy=6, save_path="Visualizations/SB02_5s_BinStrat6.html", 
-		interval=5, 
-		xy_error=0,
+		xy_error=7,
 		results=(0, 100))
 		
 	view_tests(
 		df, building="SB", loc_alg=2, floor=1, 
 		days=days, 
-		bin_strategy=7, save_path="Visualizations/SB01_10s_BinStrat7.html", 
+		bin_strategy=6, save_path="Visualizations/SB01_5s_3.html", 
+		interval=5,
+		xy_error=7,
+		results=(0, 100))
+	"""
+	view_tests(
+		df, building="SB", loc_alg=2, floor=1, 
+		days=days, 
+		bin_strategy=3, save_path="Visualizations/SB01_10s_3.html", 
 		interval=10,
 		xy_error=0,
 		results=(0, 100))
-		
+	"""
 	view_tests(
 		df, building="SB", loc_alg=2, floor=2, 
 		days=days, 
-		bin_strategy=7, save_path="Visualizations/SB02_10s_BinStrat7.html", 
+		bin_strategy=3, save_path="Visualizations/SB02_10s_3.html", 
 		interval=10, 
-		xy_error=0,
+		xy_error=6,
 		results=(0, 100))
+		"""
+	
 
 def remove_test(df, testid): 
 	return df[df["testid"] != testid]
@@ -105,12 +108,12 @@ def remove_invalid_tests():
 	day_end = str(datetime.date(2019, 4, 5))
 	df = df[(df['timestamp'] <= day_start) | (df['timestamp'] >= day_end)]
 	
-	df.to_csv("Datasets/database.csv")
+	df.to_csv("Datasets/database.csv", index=False)
 
 def main():
 	#test_algorithm()
-	#visualize_erronous_points()
-	remove_invalid_tests()
+	visualize_erronous_points()
+	#remove_invalid_tests()
 
 if __name__ == "__main__":
 	main()

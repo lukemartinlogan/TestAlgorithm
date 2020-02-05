@@ -12,9 +12,12 @@ from AnalyzeAlgorithm import *
 from AnalyzeSignals import *
 import pandas as pd
 
+def main_download_database():
+	download_test_data1(out="Datasets/full_database.csv")
+
 def main_signal_stats():
 	cases = TestCases()
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=5)
 	ViewSignalStats(cases, hist_title="Signal Strengths in SB", hist_out="Visualizations/signal_strengths.png")
 	
 def main_optimize_bins():
@@ -25,7 +28,7 @@ def main_optimize_bins():
 	#Open test data for 5sec interval
 	print("Opening test cases - 5sec")
 	cases = TestCases()
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=5)
 	
 	"""
 	#Optimize - Fixed RSSI
@@ -53,7 +56,7 @@ def main_optimize_bins():
 	#Open test data for 10sec interval
 	print("Opening test cases - 10sec")
 	cases = TestCases()
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
+	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=10)
 	
 	"""
 	#Optimize - Fixed RSSI
@@ -80,17 +83,17 @@ def main_optimize_bins():
 
 def main_test_alg():
 
-	cases = TestCases(out="Datasets/results.csv")
+	cases = TestCases(out="Datasets/results.csv", append=True)
 	
 	#Get the location estimates for the bin strategies (5s)
 	print("Opening test cases -5sec")
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=5)
+	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=5)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 8, to_csv = True)
 	
 	#Get the location estimates for the bin strategies (10s)
 	print("Opening test cases -10sec")
-	cases.open_test_data(path="Datasets/database.csv", building="SB", interval=10)
+	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=10)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 9, to_csv = True)
 
@@ -123,25 +126,34 @@ def main_view_stats():
 
 def main_visualize():
 	
-	df = load_results("Datasets/results.csv")
+	results = pd.read_csv("Datasets/results.csv")
+	database = pd.read_csv("Datasets/database.csv")
+	
 	days = [(2019, 1, 1), (2019, 4, 29)]
 	
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_5s_3.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=8, save_path="Visualizations/SB01_5s_8.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=3, save_path="Visualizations/SB02_5s_3.html", interval=5, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=6, save_path="Visualizations/SB02_5s_8.html", interval=5, results=(0, 100))
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_5s_3.html", interval=5, num_results=100)
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=8, save_path="Visualizations/SB01_5s_8.html", interval=5, num_results=100)
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=3, save_path="Visualizations/SB02_5s_3.html", interval=5, num_results=100)
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=6, save_path="Visualizations/SB02_5s_8.html", interval=5, num_results=100)
 	
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_10s_3.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=9, save_path="Visualizations/SB01_10s_9.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=3, save_path="Visualizations/SB02_10s_3.html", interval=10, results=(0, 100))
-	view_tests(df, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=9, save_path="Visualizations/SB02_10s_9.html", interval=10, results=(0, 100))
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_10s_3.html", interval=10, num_results=100)
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=9, save_path="Visualizations/SB01_10s_9.html", interval=10, num_results=100)
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=3, save_path="Visualizations/SB02_10s_3.html", interval=10, num_results=100)
+	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=9, save_path="Visualizations/SB02_10s_9.html", interval=10, num_results=100)
+
+def main_visualize_outliers():
+	cases = TestCases()
+	cases.open_test_cases(cases=["Test83075"], database="Datasets/database.csv", results="Datasets/results.csv")
+	view_test_cases(cases,  building="SB", floor=1, top_n=4, portrait=False, save_path="Visualizations/outliers.html")
+	return
 	
 def main():
-	main_signal_stats()
+	#main_signal_stats()
 	#main_optimize_bins()
 	#main_test_alg()
 	#main_view_stats()
 	#main_visualize()
+	main_visualize_outliers()
 
 if __name__ == "__main__":
 	main()

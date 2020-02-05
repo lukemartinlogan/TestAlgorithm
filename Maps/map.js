@@ -104,6 +104,53 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		.attr("stroke", "black");
 }
 
+function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, portrait) {
+	
+	//Render positions in either portrait or landscape mode
+	if (portrait) {
+		tm_x = mapX(b_x)
+		tm_y = mapY(b_y)
+	} else {
+		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(b_x)
+		tm_x = mapY(b_y)
+	}
+	
+	var group = d3.select('svg').append('g').attr('class', 'tests');
+	
+	//The width of the beacon circles
+	b_r = 50
+	z_r = 100	//The radius of the tester and estimation circles when hovering over them
+
+	//Render tester position
+	group.append('circle')
+		.attr("cx", tm_x)
+		.attr("cy", tm_y)
+		.attr("data-html", "true")
+		.attr("data-toggle", "tooltip")
+		.attr("title", "Beacon.major: " + b_major + "<br />Beacon.minor: " + b_minor + "<br />Beacon.building: " +  b_building + "<br />Beacon.floor: " +  b_floor + "<br />Beacon.x: " +  b_x.toFixed(4) + "<br />Beacon.y: " +  b_y.toFixed(4) + "<br />Beacon.rssi: " +  rssi.toFixed(4))
+		.on('mouseover', function() {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", z_r);
+			$(this).tooltip();
+			$(this).tooltip('show');
+		})
+		.on('mouseout', function () {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", b_r);
+		})
+		.style("fill", "blue")
+		.style("fill-opacity", "0.6")
+		.style("stroke", "black")
+		.style("stroke-dasharray", "80, 50")
+		.style("stroke-width", "8")
+		.transition()
+		.duration(300)
+		.attr("r", 50)
+		.attr("transform", "rotate(180deg)");
+}
+
 function mapX (x) {
 	const origin = d3.select('.origin').filter('path').node().getBBox();
 	const originTop = d3.select('.originTop').filter('path').node().getBBox();
