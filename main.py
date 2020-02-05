@@ -137,8 +137,8 @@ def main_visualize_testpos():
 	view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_positions.html")
 	
 	#SBO2 Test Positions
-	cases.open_test_cases(cases=["Test1254", "Test20212", "Test70194", "Test62785", "Test90517", "Test13177", "Test3018", "Test31255", "Test54993", "Test46098", "Test83075", "Test10551"], database="Datasets/database.csv")
-	view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_positions.html")
+	#cases.open_test_cases(cases=["Test1254", "Test20212", "Test70194", "Test62785", "Test90517", "Test13177", "Test3018", "Test31255", "Test54993", "Test46098", "Test83075", "Test10551"], database="Datasets/database.csv")
+	#view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_positions.html")
 
 def main_find_outliers():
 
