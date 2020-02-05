@@ -359,7 +359,11 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def open_test_data(self, database = "Datasets/database.csv", results = None, building = None, floor = None, sample=None, interval=None):
+	def open_test_data(
+		self, database = "Datasets/database.csv", results = None, 
+		building = None, floor = None, sample=None, 
+		interval=None, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
+		):
 	
 		"""
 		This function will load the test data for algorithm analysis.
@@ -372,6 +376,10 @@ class TestCases:
 			floor: the floor of that building we are interested in
 			sample: select a random sample of the test data (this  is a number)
 			interval: select only test cases for a certain interval
+			loc_alg: The location algorithm used to get results
+			floor_alg: The floor algorithm used to get results
+			bin_strategy: The binning strategy used to get results
+			top_n: The number of beacons used to get results
 		"""
 	
 		#Open the CSV of test data
@@ -415,10 +423,13 @@ class TestCases:
 		
 		#Load results for the test cases
 		if results:
-			self.open_results(results)
+			self.open_results(results, interval, loc_alg, floor_alg, bin_strategy, top_n)
 	
 	
-	def open_test_cases(self, cases, database = "Datasets/database.csv", results = None):
+	def open_test_cases(
+		self, cases, database = "Datasets/database.csv", results=None, 
+		interval=10, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
+	):
 		
 		"""
 		This function will load a subset of test cases for algorithm analysis
@@ -427,6 +438,11 @@ class TestCases:
 			cases: a list of test IDs
 			database: the location of the test data
 			results: the path to the previous analysis
+			interval: The scanning period used to get results
+			loc_alg: The location algorithm used to get results
+			floor_alg: The floor algorithm used to get results
+			bin_strategy: The binning strategy used to get results
+			top_n: The number of beacons used to get results
 		"""
 		
 		self.test_data = pd.read_csv(database)
@@ -434,7 +450,7 @@ class TestCases:
 		
 		#Get the test case ids
 		self.test_ids = self.test_data[["testid", "t_x", "t_y", "t_floor", "t_building"]].drop_duplicates()
-			
+		
 		#Get data for each unique test case
 		i = 0
 		self.test_cases = {}
@@ -454,10 +470,10 @@ class TestCases:
 		
 		#Load results for the test cases
 		if results:
-			self.open_results(results)
+			self.open_results(results, interval, loc_alg, floor_alg, bin_strategy, top_n)
 	
 	
-	def open_results(self, results):
+	def open_results(self, results, interval=10, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3):
 		
 		"""
 		This function will load the results from a previous analysis.
@@ -465,9 +481,21 @@ class TestCases:
 		
 		Inputs:
 			results: the path to the previous analysis
+			interval: The scanning period used to get results
+			loc_alg: The location algorithm used to get results
+			floor_alg: The floor algorithm used to get results
+			bin_strategy: The binning strategy used to get results
+			top_n: The number of beacons used to get results
 		"""
 		
 		results = pd.read_csv(results)
+		results = results[
+			(results["interval"] == interval) &
+			(results["loc_alg"] == loc_alg) &
+			(results["floor_alg"] == floor_alg) &
+			(results["bin_strat"] == bin_strategy) &
+			(results["top_n"] == top_n)
+		]
 		for index, id in results.iterrows():
 			#Get case
 			key = str(id["testid"]) + str(id["x_true"]) + str(id["y_true"]) + str(id["floor_true"]) + str(id["building_true"])

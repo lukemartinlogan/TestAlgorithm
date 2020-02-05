@@ -141,10 +141,28 @@ def main_visualize():
 	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=3, save_path="Visualizations/SB02_10s_3.html", interval=10, num_results=100)
 	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=9, save_path="Visualizations/SB02_10s_9.html", interval=10, num_results=100)
 
-def main_visualize_outliers():
+def main_find_outliers():
+
+	results = pd.read_csv("Datasets/results.csv")
+	database = pd.read_csv("Datasets/database.csv")
+	
+	days=[(2019, 1, 1), (2019, 4, 29)]
+	
+	view_tests(
+		results=results, database=database, building="SB", loc_alg=2, floor=1, 
+		days=days, 
+		bin_strategy=3, save_path="Visualizations/SB01_10s_3_outliers.html", 
+		interval=10,
+		xy_error=7,
+		num_results=100)
+
+def main_visualize_outlier():
 	cases = TestCases()
-	cases.open_test_cases(cases=["Test83075"], database="Datasets/database.csv", results="Datasets/results.csv")
-	view_test_cases(cases,  building="SB", floor=1, top_n=4, portrait=False, save_path="Visualizations/outliers.html")
+	cases.open_test_cases(
+		cases=["Test7045"], database="Datasets/database.csv", results="Datasets/results.csv",
+		interval=10, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
+	)
+	view_test_cases(cases,  building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/outliers.html")
 	return
 	
 def main():
@@ -153,7 +171,8 @@ def main():
 	#main_test_alg()
 	#main_view_stats()
 	#main_visualize()
-	main_visualize_outliers()
+	#main_find_outliers()
+	main_visualize_outlier()
 
 if __name__ == "__main__":
 	main()
