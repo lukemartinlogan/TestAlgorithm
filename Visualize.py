@@ -21,8 +21,77 @@ def get_img_path(building, floor, portrait=False):
 	else:
 		return "./Maps/{}-{:02d}-R.html".format(building, floor)
 
+def view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, days=None, save_path=None):
+	
+	"""
+	Visualize the testing positions
+	"""
+	
+	#Get the html we will be modifying
+	img_file = open(get_img_path(building, floor, portrait))
+	img = img_file.read()
+	
+	#Get the file with the map javascript data
+	map_file = open("./Maps/map.js")
+	map = map_file.read()
+	img += map
+		
+	#Start the javascript
+	img += "<script>\n"
+	
+	#Convert the portrait boolean to Javascript boolean
+	if portrait:
+		portrait = "true"
+	else:
+		portrait = "false"
+	
+	#Get building code
+	code = BuildingStrToCode[building]
+	
+	#Draw test positions	
+	for case in cases.test_cases.values():
+		img += "render_test_pos("
+		img += "\"" + str(case.testid) + "\"" + ","
+		img += str(case.x_true) + ","
+		img += str(case.y_true) + ","
+		img += portrait
+		img += ")\n"
+	
+	#Draw beacon positions
+	database = cases.test_data
+	database = database[
+		(database["t_building"] == code) & 
+		(database["b_floor"] == floor) 
+	]
+	if days is not None:
+		pd.to_datetime(database["timestamp"])
+		day_start = str(datetime.date(days[0][0], days[0][1], days[0][2]))
+		day_end = str(datetime.date(days[1][0], days[1][1], days[1][2]))
+		database = database[(database['timestamp'] >= day_start) & (database['timestamp'] <= day_end)]
+	beacons = database[["b_major", "b_minor", "t_building", "b_floor", "b_x", "b_y"]].drop_duplicates()
+	for idx, b in beacons.iterrows():
+		img += "render_beacon("
+		img += str(b["b_major"]) + ","
+		img += str(b["b_minor"]) + ","
+		img += "\"" + str(BuildingCodeToStr[b["t_building"]]) + "\"" + ","
+		img += str(b["b_floor"]) + ","
+		img += str(b["b_x"]) + ","
+		img += str(b["b_y"]) + ","
+		img += "0" + ","
+		img += portrait
+		img += ")\n"
+		
+	#End the javascript
+	img += "</script>\n"
+	
+	#End the html file
+	img += "</html>"
+	save = open(save_path, "w")
+	save.write(img)
+	return
+	
 def view_tests(
-	results=None, database=None, building="SB", floor=2, days=None, interval=5,
+	results=None, database=None, building="SB", floor=1, days=None, interval=5,
 	loc_alg=2, floor_algorithm=1, bin_strategy=1, top_n=3,
 	num_results=10, xy_error=0, portrait=False, save_path=None
 ):
@@ -68,9 +137,11 @@ def view_tests(
 	else:
 		portrait = "false"
 	
+	#Get building code
+	code = BuildingStrToCode[building]
+	
 	if results is not None:
 		#Get the result we will displaying
-		code = BuildingStrToCode[building]
 		results = results[
 			(results["building_true"] == code) & 
 			(results["floor_true"] == floor) & 
@@ -104,7 +175,7 @@ def view_tests(
 	
 	#Display bluetooth beacons on floor
 	if database is not None:
-		beacons = database[
+		database = database[
 			(database["t_building"] == code) & 
 			(database["b_floor"] == floor) &
 			(database["interval"] == interval)
@@ -114,7 +185,7 @@ def view_tests(
 			day_start = str(datetime.date(days[0][0], days[0][1], days[0][2]))
 			day_end = str(datetime.date(days[1][0], days[1][1], days[1][2]))
 			database = database[(database['timestamp'] >= day_start) & (database['timestamp'] <= day_end)]
-		beacons = beacons[["b_major", "b_minor", "t_building", "b_floor", "b_x", "b_y"]].drop_duplicates()
+		beacons = database[["b_major", "b_minor", "t_building", "b_floor", "b_x", "b_y"]].drop_duplicates()
 		for idx, b in beacons.iterrows():
 			img += "render_beacon("
 			img += str(b["b_major"]) + ","
@@ -135,9 +206,7 @@ def view_tests(
 	save = open(save_path, "w")
 	save.write(img)
 
-def view_test_cases(
-	cases, building="SB", floor=2, top_n=3, portrait=False,save_path=None
-):
+def view_test_cases(cases, building="SB", floor=1, top_n=3, portrait=False, save_path=None):
 	"""
 	Visualize the results of particular test cases.
 	The difference between this and view_tests is that we can
@@ -174,7 +243,7 @@ def view_test_cases(
 		img += portrait
 		img += ")\n"
 		
-		case.beacons.sort(reverse = True, key = case.avgMwToDbm)
+		case.beacons.sort(reverse = True, key = case.rank_beacons)
 		beacons = case.beacons[0:top_n]
 		for b in beacons:
 			img += "render_beacon("

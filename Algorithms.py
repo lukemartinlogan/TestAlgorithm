@@ -78,6 +78,9 @@ bin_strategies = {
 	
 	8: [[-100, 9.5], [-80, 5.0], [-60, 2], [0, 1]],			#New bins (interval = 5sec)
 	9: [[-96, 9.5], [-78, 5.0], [-60, 2]],					#New bins (interval=10sec)
+	
+	10: [[-100, 9.5], [-80, 5.0], [-60, 2], [0, 1]],		#New bins (interval = 5sec)
+	11: [[-96, 9.5], [-78, 5.0], [-60, 2]],					#New bins (interval=10sec)
 }
 
 

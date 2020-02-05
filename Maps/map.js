@@ -104,6 +104,53 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		.attr("stroke", "black");
 }
 
+function render_test_pos(testid, t_x, t_y, portrait) {
+	
+	//Render positions in either portrait or landscape mode
+	if (portrait) {
+		tm_x = mapX(t_x)
+		tm_y = mapY(t_y)
+	} else {
+		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(t_x)
+		tm_x = mapY(t_y)
+	}
+	
+	var group = d3.select('svg').append('g').attr('class', 'tests');
+	
+	//The width of the tester and estimation circles
+	t_r = 50
+	z_r = 100	//The radius of the tester and estimation circles when hovering over them
+
+	//Render tester position
+	group.append('circle')
+		.attr("cx", tm_x)
+		.attr("cy", tm_y)
+		.attr("data-html", "true")
+		.attr("data-toggle", "tooltip")
+		.attr("title", "Case: " + testid + "<br />Tester.x: " +  t_x.toFixed(4) + "<br />Tester.y: " +  t_y.toFixed(4))
+		.on('mouseover', function() {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", z_r);
+			$(this).tooltip();
+			$(this).tooltip('show');
+		})
+		.on('mouseout', function () {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", t_r);
+		})
+		.style("fill", "green")
+		.style("fill-opacity", "0.6")
+		.style("stroke", "black")
+		.style("stroke-dasharray", "80, 50")
+		.style("stroke-width", "8")
+		.transition()
+		.duration(300)
+		.attr("r", 50)
+		.attr("transform", "rotate(180deg)");
+}
+
 function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, portrait) {
 	
 	//Render positions in either portrait or landscape mode

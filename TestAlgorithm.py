@@ -49,11 +49,26 @@ class IBeacon:
 		self.mw_avg = self.mw_sum/len(self.rssis)
 		self.mw_to_dbm_avg = 10*np.log10(self.mw_avg)
 
-
+	def __str__(self):
+		string = ""
+		string += "MAJOR: " + str(self.major) + "\n"
+		string += "MINOR: " + str(self.minor) + "\n"
+		string += "RSSIS: " + str(self.rssis) + "\n"
+		string += "AVG: " + str(self.mw_to_dbm_avg) + "\n"
+		return string
 """
 ------------------------------------------
 This object will be used to represent 
 individual test cases.
+------------------------------------------
+"""
+
+
+"""
+------------------------------------------
+This object will be a single test case.
+It contains a set of bluetooth beacons
+and their respective RSSIs.
 ------------------------------------------
 """
 
@@ -204,7 +219,7 @@ class TestCase:
 		self.setTestResults(x0, y0, flr, bldg)
 	
 	
-	def avgMwToDbm(self, beacon):
+	def rank_beacons(self, beacon):
 	
 		"""
 		This is a callback function.
@@ -216,7 +231,7 @@ class TestCase:
 			This function will return the average of RSSI after converting
 			to dBm.
 		"""
-	
+		
 		return beacon.mw_to_dbm_avg
 	
 		
@@ -228,7 +243,7 @@ class TestCase:
 		and then converting from power to dbm.
 		"""
 		
-		self.beacons.sort(reverse = True, key = self.avgMwToDbm)
+		self.beacons.sort(reverse = True, key = self.rank_beacons)
 		subset = self.beacons[0:self.top_n]
 		
 		buildings = []
@@ -337,7 +352,7 @@ with.
 
 class TestCases:
 	
-	def __init__(self, out = "Datasets/results.csv", append = False):
+	def __init__(self, out = "Datasets/results.csv"):
 	
 		"""
 		This will initialize the variables used in this
@@ -345,14 +360,13 @@ class TestCases:
 		
 		Inputs:
 			out: The location to save test results to
-			append: Whether or not the results file should be overwritten
 		"""
-	
+		
 		self.out_path = out
-		self.append = append
 		self.test_data = None
 		self.test_ids = None
 		self.test_cases = None
+		self.called_to_csv = False
 		
 		self.net_xy_error = 0
 		self.net_floor_error = 0
@@ -524,7 +538,7 @@ class TestCases:
 		self.net_building_error = False
 	
 	
-	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=True):
+	def test_algorithm(self, loc_alg, floor_alg, bin_strategy, top_n = 3, to_csv=True, reset_csv=False):
 	
 		"""
 		This function will estimate the indoor location of a user
@@ -550,16 +564,20 @@ class TestCases:
 			self.net_building_error += case.building_error
 		
 		if to_csv:
-			self.to_csv()	
+			self.to_csv(reset_csv)	
 	
 	
-	def to_csv(self):
+	def to_csv(self, reset=False):
 	
 		"""
 		This function will output the result of the indoor location
 		algorithm.
 		"""
-	
+		
+		if reset:
+			if os.path.exists(self.out_path):
+				os.remove(self.out_path)
+		
 		col = [
 			"testid", "timestamp", "interval", "loc_alg", "floor_alg", "bin_strat", "top_n",
 			"building_true", "floor_true", "x_true", "y_true",
@@ -573,7 +591,7 @@ class TestCases:
 			self.df = self.df.append(case.get_record(), ignore_index=True)
 		
 		#Commit results
-		if self.append and os.path.exists(self.out_path):
+		if os.path.exists(self.out_path):
 			self.df.to_csv(self.out_path, mode='a', header=False, index=False)	
 		else:
 			self.df.to_csv(self.out_path, mode='w', header=True, index=False)
