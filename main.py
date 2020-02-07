@@ -65,14 +65,14 @@ def main_test_alg():
 	#Get the location estimates for the bin strategies (5s)
 	print("Opening test cases -5sec")
 	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=5)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True, reset_csv = True)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 10, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, top_n=3, to_csv = True, reset_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 10, top_n=3, to_csv = True)
 	
 	#Get the location estimates for the bin strategies (10s)
 	print("Opening test cases -10sec")
 	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=10)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, to_csv = True)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 11, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, top_n=3, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 11, top_n=3, to_csv = True)
 
 def main_view_stats():
 	df = pd.read_csv("Datasets/results.csv")
@@ -106,7 +106,7 @@ def main_visualize():
 	results = pd.read_csv("Datasets/results.csv")
 	database = pd.read_csv("Datasets/full_database.csv")
 	
-	days = [(2019, 1, 1), (2019, 3, 14)]
+	days = [(2019, 2, 1), (2019, 2, 28)]
 	
 	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_5s_3.html", interval=5, num_results=100)
 	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=10, save_path="Visualizations/SB01_5s_10.html", interval=5, num_results=100)
@@ -122,7 +122,7 @@ def main_visualize_beacons():
 	
 	database = pd.read_csv("Datasets/full_database.csv")
 	
-	days = [(2019, 1, 1), (2019, 3, 14)]
+	days = [(2019, 1, 1), (2019, 3, 29)]
 	
 	view_tests(results=None, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_beacons.html", interval=5, num_results=100)
 	view_tests(results=None, database=database, building="SB", loc_alg=2, floor=2, days=days, bin_strategy=3, save_path="Visualizations/SB02_beacons.html", interval=5, num_results=100)
@@ -133,13 +133,31 @@ def main_visualize_testpos():
 	
 	#SBO1 Test Positions
 	cases = TestCases()
-	cases.open_test_cases(cases=["Test1254", "Test20212", "Test70194", "Test62785", "Test90517", "Test13177", "Test3018", "Test31255", "Test54993", "Test46098", "Test83075", "Test10551"], database="Datasets/database.csv")
+	cases.open_test_cases(
+		cases=[
+			"Test57096", "Test57613", "Test71012", "Test81299", "Test44031", 
+			"Test63717", "Test99541", "Test13099", "Test94635", "Test88339", 
+			"Test50868", "Test5987"
+		],
+		database="Datasets/database.csv", 
+		results="Datasets/results.csv",
+		bin_strategy=3
+	)
 	view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_positions.html")
+	view_test_cases(cases, building="SB", floor=1, top_n=3, all_beac=True, portrait=False, save_path="Visualizations/SB01_est-unoptimized.html")
 	
-	#SBO2 Test Positions
-	#cases.open_test_cases(cases=["Test1254", "Test20212", "Test70194", "Test62785", "Test90517", "Test13177", "Test3018", "Test31255", "Test54993", "Test46098", "Test83075", "Test10551"], database="Datasets/database.csv")
-	#view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_positions.html")
-
+	cases.open_test_cases(
+		cases=[
+			"Test57096", "Test57613", "Test71012", "Test81299", "Test44031", 
+			"Test63717", "Test99541", "Test13099", "Test94635", "Test88339", 
+			"Test50868", "Test5987"
+		],
+		database="Datasets/database.csv", 
+		results="Datasets/results.csv",
+		bin_strategy=11
+	)
+	view_test_cases(cases, building="SB", floor=1, top_n=3, all_beac=True, portrait=False, save_path="Visualizations/SB01_est-optimized.html")
+	
 def main_find_outliers():
 
 	results = pd.read_csv("Datasets/results.csv")
@@ -150,26 +168,46 @@ def main_find_outliers():
 	view_tests(
 		results=results, database=database, building="SB", loc_alg=2, floor=1, 
 		days=days, 
+		bin_strategy=3, save_path="Visualizations/SB01_5s_3_outliers.html", 
+		interval=5,
+		xy_error=7,
+		num_results=100)
+	
+	"""
+	view_tests(
+		results=results, database=database, building="SB", loc_alg=2, floor=1, 
+		days=days, 
 		bin_strategy=3, save_path="Visualizations/SB01_10s_3_outliers.html", 
 		interval=10,
 		xy_error=7,
 		num_results=100)
+	"""
 
 def main_visualize_outlier():
 	cases = TestCases()
+	#"""
 	cases.open_test_cases(
 		#cases=["Test50868"], database="Datasets/database.csv", results="Datasets/results.csv", 
-		#cases=["Test86285"], database="Datasets/database.csv", results="Datasets/results.csv",
-		#cases=["Test6393"], database="Datasets/database.csv", results="Datasets/results.csv",
-		cases=["Test88339"], database="Datasets/database.csv", results="Datasets/results.csv",
+		cases=["Test86285"], database="Datasets/database.csv", results="Datasets/results.csv",
+		#cases=["Test23777"], database="Datasets/database.csv", results="Datasets/results.csv",
 		interval=10, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
 	)
+	#"""
+	
+	"""
+	cases.open_test_cases(
+		cases=["Test83075"], database="Datasets/database.csv", results="Datasets/results.csv",
+		interval=5, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
+	)
+	"""
+	
 	view_test_cases(cases,  building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/outliers.html")
 	for case in cases.test_cases.values():
 		for b in case.beacons:
 			print(str(b))
 	return
 	
+
 def main():
 	#main_signal_stats()
 	#main_optimize_bins()
@@ -178,7 +216,6 @@ def main():
 	#main_visualize()
 	#main_visualize_beacons()
 	main_visualize_testpos()
-	#main_visualize_testpos()
 	#main_find_outliers()
 	#main_visualize_outlier()
 

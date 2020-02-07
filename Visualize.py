@@ -206,7 +206,8 @@ def view_tests(
 	save = open(save_path, "w")
 	save.write(img)
 
-def view_test_cases(cases, building="SB", floor=1, top_n=3, portrait=False, save_path=None):
+def view_test_cases(cases, building="SB", floor=1, top_n=3, all_beac=False, days=None, portrait=False, save_path=None):
+	
 	"""
 	Visualize the results of particular test cases.
 	The difference between this and view_tests is that we can
@@ -221,7 +222,7 @@ def view_test_cases(cases, building="SB", floor=1, top_n=3, portrait=False, save
 	map_file = open("./Maps/map.js")
 	map = map_file.read()
 	img += map
-		
+	
 	#Start the javascript
 	img += "<script>\n"
 	
@@ -231,31 +232,72 @@ def view_test_cases(cases, building="SB", floor=1, top_n=3, portrait=False, save
 	else:
 		portrait = "false"
 	
-	for case in cases.test_cases.values():
-		img += "render_test_case("
-		img += "\"" + str(case.testid) + "\"" + ","
-		img += str(case.x_true) + ","
-		img += str(case.y_true) + ","
-		img += str(case.x_est) + ","
-		img += str(case.y_est) + ","
-		img += str(case.xy_error) + ","
-		img += "\"" + str(case.timestamp) + "\"" + ","
-		img += portrait
-		img += ")\n"
+	#Get building code
+	code = BuildingStrToCode[building]
 		
-		case.beacons.sort(reverse = True, key = case.rank_beacons)
-		beacons = case.beacons[0:top_n]
-		for b in beacons:
-			img += "render_beacon("
-			img += str(b.major) + ","
-			img += str(b.minor) + ","
-			img += "\"" + str(BuildingCodeToStr[b.building]) + "\"" + ","
-			img += str(b.floor) + ","
-			img += str(b.x) + ","
-			img += str(b.y) + ","
-			img += str(b.mw_to_dbm_avg) + ","
+	if all_beac:
+		database = cases.test_data
+		database = database[
+			(database["t_building"] == code) & 
+			(database["b_floor"] == floor)
+		]
+		if days is not None:
+			pd.to_datetime(database["timestamp"])
+			day_start = str(datetime.date(days[0][0], days[0][1], days[0][2]))
+			day_end = str(datetime.date(days[1][0], days[1][1], days[1][2]))
+			database = database[(database['timestamp'] >= day_start) & (database['timestamp'] <= day_end)]
+		beacons = database[["b_major", "b_minor", "t_building", "b_floor", "b_x", "b_y"]].drop_duplicates()
+		
+		for case in cases.test_cases.values():
+			img += "render_test_case("
+			img += "\"" + str(case.testid) + "\"" + ","
+			img += str(case.x_true) + ","
+			img += str(case.y_true) + ","
+			img += str(case.x_est) + ","
+			img += str(case.y_est) + ","
+			img += str(case.xy_error) + ","
+			img += "\"" + str(case.timestamp) + "\"" + ","
 			img += portrait
-			img += ")\n" 
+			img += ")\n"
+		for idx, b in beacons.iterrows():
+			img += "render_beacon("
+			img += str(b["b_major"]) + ","
+			img += str(b["b_minor"]) + ","
+			img += "\"" + str(BuildingCodeToStr[b["t_building"]]) + "\"" + ","
+			img += str(b["b_floor"]) + ","
+			img += str(b["b_x"]) + ","
+			img += str(b["b_y"]) + ","
+			img += "0" + ","
+			img += portrait
+			img += ")\n"
+		
+	
+	else:
+		for case in cases.test_cases.values():
+			img += "render_test_case("
+			img += "\"" + str(case.testid) + "\"" + ","
+			img += str(case.x_true) + ","
+			img += str(case.y_true) + ","
+			img += str(case.x_est) + ","
+			img += str(case.y_est) + ","
+			img += str(case.xy_error) + ","
+			img += "\"" + str(case.timestamp) + "\"" + ","
+			img += portrait
+			img += ")\n"
+			
+			case.beacons.sort(reverse = True, key = case.rank_beacons)
+			beacons = case.beacons[0:top_n]
+			for b in beacons:
+				img += "render_beacon("
+				img += str(b.major) + ","
+				img += str(b.minor) + ","
+				img += "\"" + str(BuildingCodeToStr[b.building]) + "\"" + ","
+				img += str(b.floor) + ","
+				img += str(b.x) + ","
+				img += str(b.y) + ","
+				img += str(b.mw_to_dbm_avg) + ","
+				img += portrait
+				img += ")\n" 
 	
 	#End the javascript
 	img += "</script>\n"

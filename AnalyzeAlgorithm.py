@@ -44,7 +44,7 @@ def error_hist(error, out="figure.png", title="figure"):
 	for the results of the algorithm.
 	"""
 	
-	n, bins, patches = plt.hist(error, facecolor='blue')
+	n, bins, patches = plt.hist(error, facecolor='blue', range=(0, 14), bins=10)
 	plt.xlabel("Error (meters)")
 	plt.ylabel("Count")
 	plt.title(title)

@@ -397,6 +397,53 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		.attr("stroke", "black");
 }
 
+function render_test_pos(testid, t_x, t_y, portrait) {
+	
+	//Render positions in either portrait or landscape mode
+	if (portrait) {
+		tm_x = mapX(t_x)
+		tm_y = mapY(t_y)
+	} else {
+		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(t_x)
+		tm_x = mapY(t_y)
+	}
+	
+	var group = d3.select('svg').append('g').attr('class', 'tests');
+	
+	//The width of the tester and estimation circles
+	t_r = 50
+	z_r = 100	//The radius of the tester and estimation circles when hovering over them
+
+	//Render tester position
+	group.append('circle')
+		.attr("cx", tm_x)
+		.attr("cy", tm_y)
+		.attr("data-html", "true")
+		.attr("data-toggle", "tooltip")
+		.attr("title", "Case: " + testid + "<br />Tester.x: " +  t_x.toFixed(4) + "<br />Tester.y: " +  t_y.toFixed(4))
+		.on('mouseover', function() {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", z_r);
+			$(this).tooltip();
+			$(this).tooltip('show');
+		})
+		.on('mouseout', function () {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", t_r);
+		})
+		.style("fill", "green")
+		.style("fill-opacity", "0.6")
+		.style("stroke", "black")
+		.style("stroke-dasharray", "80, 50")
+		.style("stroke-width", "8")
+		.transition()
+		.duration(300)
+		.attr("r", 50)
+		.attr("transform", "rotate(180deg)");
+}
+
 function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, portrait) {
 	
 	//Render positions in either portrait or landscape mode
@@ -486,11 +533,6 @@ function inverseMapY(svgY) {
 
 </script>
 <script>
-render_test_case("Test3673",15.6973,18.69581,22.71305955105885,24.026679947171374,8.811302768145488,"2019-01-24 02:07:31",false)
-render_test_case("Test13139",28.550332,53.800096999999994,27.235930175976574,55.539225533704254,2.1799587637706326,"2019-01-24 02:16:52",false)
-render_test_case("Test23777",10.355779,62.313577,14.423770659826038,49.8137569837193,13.145115312686537,"2019-01-24 02:23:45",false)
-render_test_case("Test86285",9.0204,43.572864,8.988434980165517,36.08286934103061,7.490062867151588,"2019-01-24 02:24:35",false)
-render_test_case("Test36167",13.69423,19.690895,16.781697391227983,20.57059015592153,3.210345535802644,"2019-01-24 02:34:05",false)
 render_test_case("Test42627",15.196532999999999,16.373955,21.350785959712606,16.926345920425565,6.178993868025758,"2019-02-13 22:41:19",false)
 render_test_case("Test57096",15.196532999999999,16.373955,18.425689506302387,17.341546839207986,3.3710066314821905,"2019-02-13 22:41:46",false)
 render_test_case("Test99148",22.874968,15.931693,19.104238753117517,10.362035280756805,6.726030490773906,"2019-02-13 22:44:47",false)
@@ -511,13 +553,13 @@ render_test_case("Test88339",9.0204,48.658838,8.006240435599116,42.9889233017876
 render_test_case("Test50868",10.522703,36.552008,4.100160262922048,29.2170548124464,9.749389389761571,"2019-02-13 23:04:30",false)
 render_test_case("Test7045",10.522703,36.552008,6.1963409119706725,27.86674662224159,9.70315279260918,"2019-02-13 23:04:52",false)
 render_test_case("Test5987",9.354245,27.596269,6.1963409119706725,27.86674662224159,3.1694662600074808,"2019-02-13 23:07:35",false)
-render_beacon(1000.0,511.0,"SB",1.0,7.757860905176678,43.34756805360252,0,false)
-render_beacon(1000.0,539.0,"SB",1.0,10.476580637792203,7.495236031035186,0,false)
-render_beacon(1000.0,594.0,"SB",1.0,29.384043845699672,43.593132591802295,0,false)
-render_beacon(1000.0,541.0,"SB",1.0,29.260466244656378,9.09139753922206,0,false)
-render_beacon(1000.0,552.0,"SB",1.0,8.252173096444572,26.403657531747374,0,false)
 render_beacon(1000.0,575.0,"SB",1.0,29.50762144674296,28.859295811423603,0,false)
+render_beacon(1000.0,541.0,"SB",1.0,29.260466244656378,9.09139753922206,0,false)
+render_beacon(1000.0,539.0,"SB",1.0,10.476580637792203,7.495236031035186,0,false)
+render_beacon(1000.0,552.0,"SB",1.0,8.252173096444572,26.403657531747374,0,false)
+render_beacon(1000.0,594.0,"SB",1.0,29.384043845699672,43.593132591802295,0,false)
 render_beacon(1000.0,524.0,"SB",1.0,7.263547820361415,33.15666546422749,0,false)
+render_beacon(1000.0,511.0,"SB",1.0,7.757860905176678,43.34756805360252,0,false)
 render_beacon(1000.0,573.0,"SB",1.0,29.50762144674296,52.3106532787198,0,false)
 render_beacon(1000.0,531.0,"SB",1.0,26.04743432077296,66.67614347374641,0,false)
 render_beacon(1000.0,514.0,"SB",1.0,7.757860905176678,59.80035305021886,0,false)

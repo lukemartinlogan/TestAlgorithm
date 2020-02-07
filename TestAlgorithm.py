@@ -437,12 +437,12 @@ class TestCases:
 		
 		#Load results for the test cases
 		if results:
-			self.open_results(results, interval, loc_alg, floor_alg, bin_strategy, top_n)
+			self.open_results(results, loc_alg, floor_alg, bin_strategy, top_n)
 	
 	
 	def open_test_cases(
 		self, cases, database = "Datasets/database.csv", results=None, 
-		interval=10, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
+		loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
 	):
 		
 		"""
@@ -468,10 +468,10 @@ class TestCases:
 		#Get data for each unique test case
 		i = 0
 		self.test_cases = {}
-		for index, id in self.test_ids.iterrows():
+		for index, id in self.test_ids.iterrows(): 
 			if id["testid"] not in cases:
 				continue
-			key = str(id["testid"]) + str(id["t_x"]) + str(id["t_y"]) + str(id["t_floor"]) + str(id["t_building"])
+			key = str(id["testid"])
 			self.test_cases[key] = TestCase(
 				self.test_data[
 					(self.test_data["testid"] == id["testid"]) &
@@ -484,10 +484,10 @@ class TestCases:
 		
 		#Load results for the test cases
 		if results:
-			self.open_results(results, interval, loc_alg, floor_alg, bin_strategy, top_n)
+			self.open_results(results, loc_alg, floor_alg, bin_strategy, top_n)
 	
 	
-	def open_results(self, results, interval=10, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3):
+	def open_results(self, results, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3):
 		
 		"""
 		This function will load the results from a previous analysis.
@@ -495,7 +495,6 @@ class TestCases:
 		
 		Inputs:
 			results: the path to the previous analysis
-			interval: The scanning period used to get results
 			loc_alg: The location algorithm used to get results
 			floor_alg: The floor algorithm used to get results
 			bin_strategy: The binning strategy used to get results
@@ -504,7 +503,6 @@ class TestCases:
 		
 		results = pd.read_csv(results)
 		results = results[
-			(results["interval"] == interval) &
 			(results["loc_alg"] == loc_alg) &
 			(results["floor_alg"] == floor_alg) &
 			(results["bin_strat"] == bin_strategy) &
@@ -512,7 +510,7 @@ class TestCases:
 		]
 		for index, id in results.iterrows():
 			#Get case
-			key = str(id["testid"]) + str(id["x_true"]) + str(id["y_true"]) + str(id["floor_true"]) + str(id["building_true"])
+			key = str(id["testid"]) 
 			if key not in self.test_cases.keys():
 				continue
 			case = self.test_cases[key]
@@ -524,7 +522,7 @@ class TestCases:
 			case.y_est = id["y_est"]
 			case.building_error = id["building_error"]
 			case.floor_error = id["floor_error"]
-			case.xy_error = id["xy_error"]
+			case.xy_error = id["xy_error"] 
 	
 	
 	def reset(self):
