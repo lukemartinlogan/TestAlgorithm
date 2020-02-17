@@ -212,10 +212,10 @@ def main():
 	#main_signal_stats()
 	#main_optimize_bins()
 	#main_test_alg()
-	#main_view_stats()
+	main_view_stats()
 	#main_visualize()
 	#main_visualize_beacons()
-	main_visualize_testpos()
+	#main_visualize_testpos()
 	#main_find_outliers()
 	#main_visualize_outlier()
 

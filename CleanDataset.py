@@ -23,44 +23,19 @@ def test_algorithm():
 	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 7, to_csv = True)
 
 def visualize_erronous_points():
-	df = load_results("Datasets/results.csv")
+	results = pd.read_csv("Datasets/results.csv")
 	
-	days=[(2019, 1, 1), (2019, 4, 29)]
+	days=[(2019, 1, 1), (2019, 3, 29)]
 	
-	"""
 	view_tests(
-		df, building="SB", loc_alg=2, floor=1, 
-		days=days, 
-		bin_strategy=6, save_path="Visualizations/SB01_5s_3.html", 
-		interval=5,
-		xy_error=7,
-		results=(0, 100))
-		
-	view_tests(
-		df, building="SB", loc_alg=2, floor=1, 
-		days=days, 
-		bin_strategy=6, save_path="Visualizations/SB01_5s_3.html", 
-		interval=5,
-		xy_error=7,
-		results=(0, 100))
-	"""
-	view_tests(
-		df, building="SB", loc_alg=2, floor=1, 
-		days=days, 
-		bin_strategy=3, save_path="Visualizations/SB01_10s_3.html", 
-		interval=10,
-		xy_error=0,
-		results=(0, 100))
-	"""
-	view_tests(
-		df, building="SB", loc_alg=2, floor=2, 
-		days=days, 
-		bin_strategy=3, save_path="Visualizations/SB02_10s_3.html", 
-		interval=10, 
-		xy_error=6,
-		results=(0, 100))
-		"""
+		results=results, database=None, building="SB", floor=1, days=days, interval=5,
+		loc_alg=2, floor_algorithm=1, bin_strategy=10, top_n=3,
+		num_results=100, xy_error=9, portrait=False, save_path="Visualizations/ERROR_SB_01_5s.html")
 	
+	view_tests(
+		results=results, database=None, building="SB", floor=2, days=days, interval=5,
+		loc_alg=2, floor_algorithm=1, bin_strategy=10, top_n=3,
+		num_results=100, xy_error=9, portrait=False, save_path="Visualizations/ERROR_SB_02_5s.html")
 
 def remove_test(df, testid): 
 	return df[df["testid"] != testid]
