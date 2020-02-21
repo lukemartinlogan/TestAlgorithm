@@ -10,6 +10,7 @@ import lmfit, math, numpy as np
 import random
 import pandas as pd
 from progressbar import ProgressBar
+import datetime
 from Algorithms import *
 from TestData import *
 
@@ -375,7 +376,7 @@ class TestCases:
 	
 	def open_test_data(
 		self, database = "Datasets/database.csv", results = None, 
-		building = None, floor = None, sample=None, 
+		building = None, floor = None, days = None, sample=None, 
 		interval=None, loc_alg=2, floor_alg=1, bin_strategy=3, top_n=3
 		):
 	
@@ -412,6 +413,12 @@ class TestCases:
 		if interval is not None:
 			self.test_data = self.test_data[self.test_data["interval"] == interval]
 		
+		#Select test data taken from this date range
+		if days is not None:
+			pd.to_datetime(self.test_data["timestamp"])
+			day_start = str(datetime.date(days[0][0], days[0][1], days[0][2]))
+			day_end = str(datetime.date(days[1][0], days[1][1], days[1][2]))
+			self.test_data = self.test_data[(self.test_data['timestamp'] >= day_start) & (self.test_data['timestamp'] <= day_end)]
 		
 		#Get the test case ids
 		self.test_ids = self.test_data[["testid", "t_x", "t_y", "t_floor", "t_building"]].drop_duplicates()

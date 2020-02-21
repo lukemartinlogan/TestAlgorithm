@@ -24,18 +24,19 @@ def test_algorithm():
 
 def visualize_erronous_points():
 	results = pd.read_csv("Datasets/results.csv")
+	database = pd.read_csv("Datasets/database.csv")
 	
 	days=[(2019, 1, 1), (2019, 3, 29)]
 	
 	view_tests(
-		results=results, database=None, building="SB", floor=1, days=days, interval=5,
+		results=results, database=database, building="SB", floor=1, days=days, interval=5,
 		loc_alg=2, floor_algorithm=1, bin_strategy=10, top_n=3,
-		num_results=100, xy_error=9, portrait=False, save_path="Visualizations/ERROR_SB_01_5s.html")
+		num_results=100, xy_error=11, portrait=False, save_path="Visualizations/ERROR_SB_01_5s.html")
 	
 	view_tests(
-		results=results, database=None, building="SB", floor=2, days=days, interval=5,
-		loc_alg=2, floor_algorithm=1, bin_strategy=10, top_n=3,
-		num_results=100, xy_error=9, portrait=False, save_path="Visualizations/ERROR_SB_02_5s.html")
+		results=results, database=database, building="SB", floor=1, days=days, interval=10,
+		loc_alg=2, floor_algorithm=1, bin_strategy=3, top_n=3,
+		num_results=100, xy_error=11, portrait=False, save_path="Visualizations/ERROR_SB_01_10s.html")
 
 def remove_test(df, testid): 
 	return df[df["testid"] != testid]
