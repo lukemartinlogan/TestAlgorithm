@@ -24,6 +24,8 @@ import sys, os
 import numpy as np
 import csv
 import pandas as pd
+import ssl
+
 
 
 BuildingCodeToStr = {
@@ -47,7 +49,6 @@ def GetBuildingName(code):
 		return BuildingCodeToStr[code]
 	except KeyError:
 		return "Building"
-
 		
 def download_test_data1(out = "Datasets/full_database.csv"):
 	
@@ -66,6 +67,8 @@ def download_test_data1(out = "Datasets/full_database.csv"):
 		Return:
 			This function will save a CSV file at the location "out"
 		"""
+		
+		ssl._create_default_https_context = ssl._create_unverified_context
 		
 		#Download the test data
 		print("Downloading test data")
@@ -98,7 +101,7 @@ def download_test_data1(out = "Datasets/full_database.csv"):
 		blocs = pd.DataFrame()
 		for building in buildings:
 			name = GetBuildingName(building)
-			if name is "Building":
+			if name == "Building":
 				continue
 			
 			bloc = pd.read_json("https://api.iitrtclab.com/beacons/" + name)
@@ -129,17 +132,67 @@ def download_test_data1(out = "Datasets/full_database.csv"):
 		tests = tests.dropna(axis=0, subset=["b_x", "b_y"])
 		tests.to_csv(out, index=False)
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+def download_beacons(loc="https://api.iitrtclab.com/beacons", out = "Datasets/beacons.csv"):
+	
+	"""
+	Download and store the beacon information
+	"""
+	
+	ssl._create_default_https_context = ssl._create_unverified_context
+	
+	#Get the beacon data for each building
+	print("Getting beacon data")
+	blocs = pd.read_json("https://api.iitrtclab.com/beacons")
+	
+	#We don't need humidity, loc_id, building, timestamp, or temperature
+	blocs = blocs.drop(["humidity", "loc_id", "updatetimestamp", "temperature"], axis=1)
+	
+	#We need to rename x, y, and floor in this table
+	blocs = blocs.rename(
+		columns={
+			"beacon_id" : "b_id",
+			"major" : "b_major",
+			"minor" : "b_minor",
+			"x" : "b_x",
+			"y" : "b_y",
+			"floor" : "b_floor",
+			"building_id" : "b_building"
+		}
+	)
+	
+	#Save this dataframe as a CSV
+	blocs.to_csv(out, index=False)
 
-
+def download_gateways(loc="https://api.iitrtclab.com/gateways", out = "Datasets/gateways.csv"):
+	
+	"""
+	Download and store the red bear information
+	"""
+	
+	ssl._create_default_https_context = ssl._create_unverified_context
+	
+	#Get the beacon data for each building
+	print("Getting red bear data")
+	gateways = pd.read_json(loc) 
+	
+	#We don't need humidity, loc_id, building, timestamp, or temperature
+	gateways = gateways.drop(["charged", "lastseen"], axis=1)
+	
+	#We need to rename x, y, and floor in this table
+	gateways = gateways.rename(
+		columns={
+			"gateway_id" : "g_id",
+			"major" : "g_major",
+			"minor" : "g_minor",
+			"x" : "g_x",
+			"y" : "g_y",
+			"floor" : "g_floor",
+			"building_id" : "g_building"
+		}
+	)
+	
+	#Save this dataframe as a CSV
+	gateways.to_csv(out, index=False)
 
 
 

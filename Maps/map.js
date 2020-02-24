@@ -10,7 +10,7 @@ $(document).ready(function() {
 });
 
 function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
-	
+
 	//Render positions in either portrait or landscape mode
 	if (portrait) {
 		tm_x = mapX(t_x)
@@ -23,9 +23,9 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		em_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(e_x)
 		em_x = mapY(e_y)
 	}
-	
+
 	var group = d3.select('svg').append('g').attr('class', 'tests');
-	
+
 	//The width of the tester and estimation circles
 	t_r = 50
 	e_r = 40
@@ -66,11 +66,11 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		.attr("cy", em_y)
 		.attr("data-html", "true")
 		.attr("data-toggle", "tooltip")
-		.attr("title", 
-			"Case: " + testid + 
-			"<br />Est.x: " +  e_x.toFixed(4) + 
-			"<br />Est.y: " +  e_y.toFixed(4) + 
-			"<br />Est.error: " +  error.toFixed(4) + 
+		.attr("title",
+			"Case: " + testid +
+			"<br />Est.x: " +  e_x.toFixed(4) +
+			"<br />Est.y: " +  e_y.toFixed(4) +
+			"<br />Est.error: " +  error.toFixed(4) +
 			"<br />Est.date: " +  date)
 		.on('mouseover', function() {
 			d3.select(this).transition()
@@ -93,7 +93,7 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 		.duration(300)
 		.attr("r", e_r)
 		.attr("transform", "rotate(180deg)");
-		
+
 	//Render the line between the circles
 	group.append("line")
 		.attr("x1", em_x)
@@ -105,7 +105,7 @@ function render_test_case(testid, t_x, t_y, e_x, e_y, error, date, portrait) {
 }
 
 function render_test_pos(testid, t_x, t_y, portrait) {
-	
+
 	//Render positions in either portrait or landscape mode
 	if (portrait) {
 		tm_x = mapX(t_x)
@@ -114,9 +114,9 @@ function render_test_pos(testid, t_x, t_y, portrait) {
 		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(t_x)
 		tm_x = mapY(t_y)
 	}
-	
+
 	var group = d3.select('svg').append('g').attr('class', 'tests');
-	
+
 	//The width of the tester and estimation circles
 	t_r = 50
 	z_r = 100	//The radius of the tester and estimation circles when hovering over them
@@ -152,7 +152,7 @@ function render_test_pos(testid, t_x, t_y, portrait) {
 }
 
 function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, portrait) {
-	
+
 	//Render positions in either portrait or landscape mode
 	if (portrait) {
 		tm_x = mapX(b_x)
@@ -161,14 +161,14 @@ function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, po
 		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(b_x)
 		tm_x = mapY(b_y)
 	}
-	
+
 	var group = d3.select('svg').append('g').attr('class', 'tests');
-	
+
 	//The width of the beacon circles
 	b_r = 50
 	z_r = 100	//The radius of the tester and estimation circles when hovering over them
 
-	//Render tester position
+	//Render beacon position
 	group.append('circle')
 		.attr("cx", tm_x)
 		.attr("cy", tm_y)
@@ -188,6 +188,53 @@ function render_beacon(b_major, b_minor, b_building, b_floor, b_x, b_y, rssi, po
 				.attr("r", b_r);
 		})
 		.style("fill", "blue")
+		.style("fill-opacity", "0.6")
+		.style("stroke", "black")
+		.style("stroke-dasharray", "80, 50")
+		.style("stroke-width", "8")
+		.transition()
+		.duration(300)
+		.attr("r", 50)
+		.attr("transform", "rotate(180deg)");
+}
+
+function render_gateway(g_major, g_minor, g_building, g_floor, g_x, g_y, portrait) {
+
+	//Render positions in either portrait or landscape mode
+	if (portrait) {
+		tm_x = mapX(g_x)
+		tm_y = mapY(g_y)
+	} else {
+		tm_y = mapX(parseFloat(d3.select('svg').attr('data-width'), 10)) - mapX(g_x)
+		tm_x = mapY(g_y)
+	}
+
+	var group = d3.select('svg').append('g').attr('class', 'tests');
+
+	//The width of the beacon circles
+	b_r = 50
+	z_r = 100	//The radius of the tester and estimation circles when hovering over them
+
+	//Render gateway position
+	group.append('circle')
+		.attr("cx", tm_x)
+		.attr("cy", tm_y)
+		.attr("data-html", "true")
+		.attr("data-toggle", "tooltip")
+		.attr("title", "Gateway.major: " + g_major + "<br />Gateway.minor: " + g_minor + "<br />Gateway.building: " +  g_building + "<br />Gateway.floor: " +  g_floor + "<br />Gateway.x: " +  g_x.toFixed(4) + "<br />Gateway.y: " +  g_y.toFixed(4))
+		.on('mouseover', function() {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", z_r);
+			$(this).tooltip();
+			$(this).tooltip('show');
+		})
+		.on('mouseout', function () {
+			d3.select(this).transition()
+				.duration(300)
+				.attr("r", b_r);
+		})
+		.style("fill", "red")
 		.style("fill-opacity", "0.6")
 		.style("stroke", "black")
 		.style("stroke-dasharray", "80, 50")

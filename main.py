@@ -12,7 +12,9 @@ from AnalyzeSignals import *
 import pandas as pd
 
 def main_download_database():
-	download_test_data1(out="Datasets/full_database.csv")
+	#download_test_data1(out="Datasets/full_database.csv")
+	download_beacons(out="Datasets/beacons.csv")
+	download_gateways(loc="Datasets/gateways.json",out="Datasets/gateways.csv")
 
 def main_signal_stats():
 	cases = TestCases()
@@ -24,7 +26,6 @@ def main_optimize_bins():
 	#Creating bin optimizer
 	bins = BinOptimizer()
 
-	"""
 	#Open test data for 5sec interval
 	print("Opening test cases - 5sec")
 	cases = TestCases()
@@ -40,12 +41,12 @@ def main_optimize_bins():
 		fix_rssi_width = True, fix_dist_width = False,
 		num_guesses = 100)
 	print(bins)
-	"""
 
+	"""
 	#Open test data for 10sec interval
 	print("Opening test cases - 10sec")
 	cases = TestCases()
-	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=10, days=[(2019, 2, 1), (2019, 2, 28)])
+	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=10, days=[(2019, 1, 1), (2019, 4, 28)])
 
 	#Optimize - Varied
 	print("Optimizing Bins - Varied - 10sec")
@@ -57,6 +58,7 @@ def main_optimize_bins():
 		fix_rssi_width = True, fix_dist_width = False,
 		num_guesses = 100)
 	print(bins)
+	"""
 
 def main_test_alg():
 
@@ -65,14 +67,14 @@ def main_test_alg():
 	#Get the location estimates for the bin strategies (5s)
 	print("Opening test cases -5sec")
 	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=5)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, top_n=3, to_csv = True, reset_csv = True)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 10, top_n=3, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 2, bin_strategy = 3, top_n=3, to_csv = True, reset_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 2, bin_strategy = 10, top_n=3, to_csv = True)
 
 	#Get the location estimates for the bin strategies (10s)
 	print("Opening test cases -10sec")
 	cases.open_test_data(database="Datasets/database.csv", building="SB", interval=10)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 3, top_n=3, to_csv = True)
-	cases.test_algorithm(loc_alg = 2, floor_alg = 1, bin_strategy = 11, top_n=3, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 2, bin_strategy = 3, top_n=3, to_csv = True)
+	cases.test_algorithm(loc_alg = 2, floor_alg = 2, bin_strategy = 11, top_n=3, to_csv = True)
 
 def main_view_stats():
 	df = pd.read_csv("Datasets/results.csv")
@@ -149,9 +151,9 @@ def main_error_hist_mat():
 def main_visualize():
 
 	results = pd.read_csv("Datasets/results.csv")
-	database = pd.read_csv("Datasets/full_database.csv")
+	database = pd.read_csv("Datasets/database.csv")
 
-	days = [(2019, 2, 1), (2019, 2, 28)]
+	days = [(2019, 1, 1), (2019, 4, 28)]
 
 	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=3, save_path="Visualizations/SB01_5s_3.html", interval=5, num_results=100)
 	view_tests(results=results, database=database, building="SB", loc_alg=2, floor=1, days=days, bin_strategy=10, save_path="Visualizations/SB01_5s_10.html", interval=5, num_results=100)
@@ -189,8 +191,7 @@ def main_visualize_testpos():
 		bin_strategy=3
 	)
 	view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_positions.html")
-	view_test_cases(cases, building="SB", floor=1, top_n=3, all_beac=True, portrait=False, save_path="Visualizations/SB01_est-unoptimized.html")
-
+	
 	cases.open_test_cases(
 		cases=[
 			"Test57096", "Test57613", "Test71012", "Test81299", "Test44031",
@@ -201,7 +202,37 @@ def main_visualize_testpos():
 		results="Datasets/results.csv",
 		bin_strategy=11
 	)
-	view_test_cases(cases, building="SB", floor=1, top_n=3, all_beac=True, portrait=False, save_path="Visualizations/SB01_est-optimized.html")
+	view_test_positions(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_est-optimized.html")
+
+def main_visualize_tests():
+
+	database = pd.read_csv("Datasets/full_database.csv")
+
+	#SBO1 Test Positions
+	cases = TestCases()
+	cases.open_test_cases(
+		cases=[
+			"Test57096", "Test57613", "Test71012", "Test81299", "Test44031",
+			"Test63717", "Test99541", "Test13099", "Test23777", "Test88339",
+			"Test50868", "Test5987"
+		],
+		database="Datasets/database.csv",
+		results="Datasets/results.csv",
+		bin_strategy=3
+	)
+	view_test_cases(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_est-unoptimized.html")
+
+	cases.open_test_cases(
+		cases=[
+			"Test57096", "Test57613", "Test71012", "Test81299", "Test44031",
+			"Test63717", "Test99541", "Test13099", "Test23777", "Test88339",
+			"Test50868", "Test5987"
+		],
+		database="Datasets/database.csv",
+		results="Datasets/results.csv",
+		bin_strategy=11
+	)
+	view_test_cases(cases, building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/SB01_est-optimized.html")
 
 def main_find_outliers():
 
@@ -237,14 +268,19 @@ def main_visualize_outlier():
 	)
 	"""
 
-	#"""
+	"""
 	cases.open_test_cases(
 		cases=["Test83075"], database="Datasets/database.csv", results="Datasets/results.csv",
 		loc_alg=2, floor_alg=1, bin_strategy=10, top_n=3
 	)
-	#"""
+	"""
 
-	view_test_cases(cases,  building="SB", floor=1, top_n=3, portrait=False, save_path="Visualizations/Test83075.html")
+	cases.open_test_cases(
+		cases=["Test24720"], database="Datasets/database.csv", results="Datasets/results.csv",
+		loc_alg=2, floor_alg=2, bin_strategy=10, top_n=3
+	)
+
+	view_test_cases(cases,  building="SB", floor=2, top_n=3, portrait=False, save_path="Visualizations/Test24720.html")
 	for case in cases.test_cases.values():
 		for b in case.beacons:
 			print(str(b))
@@ -291,8 +327,57 @@ def main_get_cdfs():
 	plt.savefig("Visualizations/error_cdf_row_10s.png", bbox_inches='tight')
 	plt.close()
 
+def main_floor_error():
+
+	df = pd.read_csv("Datasets/results.csv")
+	print(df[["testid", "floor_true", "floor_est", "interval", "bin_strat"]][df["floor_error"] != 0])
+
+def main_error_le_x():
+	df = pd.read_csv("Datasets/results.csv")
+	x = 14
+
+	#Unoptimized, 5s
+	error = GetErrors(bin_strat=3, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	error2 = error[error <= x]
+	print("Unoptimized, 5s: " + str(len(error2)/len(error)))
+
+	#Unoptimized, 10s
+	error = GetErrors(bin_strat=3, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+	error2 = error[error <= x]
+	print("Unoptimized, 10s: " + str(len(error2)/len(error)))
+
+	#Optimized, 5s
+	error = GetErrors(bin_strat=10, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	error2 = error[error <= x]
+	print("Optimized, 5s: " + str(len(error2)/len(error)))
+
+	#Optimized, 10s
+	error = GetErrors(bin_strat=11, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+	error2 = error[error <= x]
+	print("Optimized, 10s: " + str(len(error2)/len(error)))
+
+def main_median_error():
+	df = pd.read_csv("Datasets/results.csv")
+
+	#Unoptimized, 5s
+	error = GetErrors(bin_strat=3, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	print("Unoptimized, 5s: " + str(error.median()))
+
+	#Unoptimized, 10s
+	error = GetErrors(bin_strat=3, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+	print("Unoptimized, 10s: " + str(error.median()))
+
+	#Optimized, 5s
+	error = GetErrors(bin_strat=10, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=5, df=df)
+	print("Optimized, 5s: " + str(error.median()))
+
+	#Optimized, 10s
+	error = GetErrors(bin_strat=11, loc_alg=2, floor_alg=1, top_n=3, building="SB", interval=10, df=df)
+	print("Optimized, 10s: " + str(error.median()))
+
 
 def main():
+	#main_download_database()
 	#main_signal_stats()
 	#main_optimize_bins()
 	#main_test_alg()
@@ -301,9 +386,13 @@ def main():
 	#main_visualize()
 	#main_visualize_beacons()
 	#main_visualize_testpos()
+	main_visualize_tests()
 	#main_find_outliers()
 	#main_visualize_outlier()
-	main_get_cdfs()
+	#main_get_cdfs()
+	#main_error_le_x()
+	#main_median_error()
+	#main_floor_error()
 
 if __name__ == "__main__":
 	main()

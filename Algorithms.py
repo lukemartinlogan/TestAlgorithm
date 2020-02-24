@@ -49,7 +49,7 @@ def find_floor_fancy(floor, proximity, building_id):
     # floor = sum(floor/proximity) / sum(1/proximity)
     t = sum(map(lambda bt: bt[0] * 1.0 / bt[1], zipped))
     b = sum(map(lambda bt: 1.0 / bt[1], zipped))
-    flr = int(round(t / b))
+    flr = int(round(t / b + .01))
     # the most occuring building id.
     bldg = Counter(building_id).most_common(1)[0][0]
 
